@@ -66,6 +66,8 @@ Acceptance: that colleague can install the selected skills and complete the samp
 
 Add dashboards, GitHub Pages publishing, rubric evaluation, and Cisco documents and workbooks in the order supported by actual use. Each addition needs representative inputs, an expected output, meaningful checks, and a clear maintenance owner.
 
+Confluence publishing targets the configuration supplied by Mark: Confluence Cloud at `cisco-learning.atlassian.net`, with Narva Software's HTML Macro for Confluence and its HTML & Iframe Embed and Advanced HTML & Iframe Embed macros. The draft publishing skill and user guide cover direct HTML and hosted iframe delivery. Pilot them against the actual installed app, including viewer access and published-page behavior. Collect representative dashboard examples to define reusable visual conventions; dashboard design and GitHub Pages publishing remain separate skills to build.
+
 Keep rubric evaluation separate from presentation creation. Require evidence for scores and distinguish slide content from spoken delivery. For dashboards, verify calculations as well as the interface. For GitHub Pages, choose a deployment approach compatible with the site's runtime needs.
 
 ## Next implementation increment

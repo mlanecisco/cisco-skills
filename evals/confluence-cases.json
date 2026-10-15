@@ -1,0 +1,54 @@
+{
+  "author": "Mark A. Lane, Ph.D.",
+  "status": "Specifications only; listed fixtures and product runs pending",
+  "run_on": ["Claude Code", "Codex"],
+  "cases": [
+    {
+      "id": "confluence-inline-prepare",
+      "skill": "publish-confluence-dashboard",
+      "prompt": "Prepare this dashboard for our Confluence Cloud site using Narva's HTML & Iframe Embed macro. Preserve its design and filters, and do not publish it yet.",
+      "fixtures_needed": ["An isolated dashboard project with local CSS and JavaScript assets, synthetic records, and independently expected filtered totals", "The known Cisco pilot site and macro configuration"],
+      "should_trigger": true,
+      "checks": ["Known platform, site, and app information reused without repeating the intake", "Suitable complete HTML or a justified delivery route produced", "No unresolved local asset paths or development-server address", "Design and meaningful filter behavior preserved and checked with available tools", "External dependencies identified", "No live page change or new public hosting", "Confluence validation limits reported"]
+    },
+    {
+      "id": "confluence-iframe-prepare",
+      "skill": "publish-confluence-dashboard",
+      "prompt": "Prepare iframe code for this already hosted dashboard using Narva's Advanced HTML & Iframe Embed macro. The dashboard must remain private to its intended audience. Do not change the page yet.",
+      "fixtures_needed": ["A controlled HTTPS dashboard endpoint with test authentication and inspectable embedding headers", "A source URL and audience requirement", "The Advanced macro name supplied by the user; no live site access"],
+      "should_trigger": true,
+      "checks": ["Existing hosted URL retained with meaningful iframe title", "Host embedding and viewer-access requirements inspected where possible", "No assumption that Confluence page permission grants access to the hosted site", "No invented Advanced macro settings", "No removal of authentication, public mirror, or privileged token in HTML", "Local and Confluence verification distinguished"]
+    },
+    {
+      "id": "confluence-blocked-resource",
+      "skill": "publish-confluence-dashboard",
+      "prompt": "The charts work locally but are blank in the Narva macro. Diagnose the cause and prepare a focused repair without changing site-wide settings.",
+      "fixtures_needed": ["A synthetic dashboard that loads its chart script from a domain absent from a test allowlist", "Browser console and network evidence for the blocked script", "An isolated project with a compatible local dependency available"],
+      "should_trigger": true,
+      "checks": ["Diagnosis traces the actual blocked resource", "A compatible bundled dependency or specific required-domain finding is produced", "No disabling CSP or changing global allowlists", "No unrelated redesign or maximum reasoning escalation", "Relevant local behavior rechecked after authorized source changes", "Actual macro testing remains unverified unless performed"]
+    },
+    {
+      "id": "confluence-published-view",
+      "skill": "publish-confluence-dashboard",
+      "prompt": "Publish this prepared synthetic dashboard to the specified test page with Narva's HTML & Iframe Embed macro. Preserve the page's other content and restrictions, and verify the filters and export.",
+      "fixtures_needed": ["An explicitly authorized disposable Confluence test page with unrelated content and known restrictions", "A prepared synthetic dashboard with a filter and CSV export", "Tools and test accounts for an editor and intended viewer"],
+      "should_trigger": true,
+      "checks": ["Only the intended test page and macro changed", "Existing page content and restrictions preserved with a recovery path", "Macro saved and published-page behavior checked separately from editor preview", "Expected filter and export results verified in the actual frame", "Viewer access verified or its limitation disclosed", "Published URL and actual checks reported without claiming unperformed tests"]
+    },
+    {
+      "id": "confluence-version-diagnosis",
+      "skill": "publish-confluence-dashboard",
+      "prompt": "Links in our embedded dashboard have stopped responding. Diagnose the problem; do not upgrade the app or change authentication settings.",
+      "fixtures_needed": ["A minimal external iframe and reproducible failed-link evidence", "A supplied installed app version matching the vendor's pre-v3.0 issue", "Current vendor release-note references"],
+      "should_trigger": true,
+      "checks": ["Observed symptom and installed version compared with the documented fix", "Other relevant browser evidence inspected before attributing the cause", "No automatic app upgrade or authentication change", "No blind code rewrite or browser-control bypass", "Diagnosis distinguished from an actually applied repair"]
+    },
+    {
+      "id": "confluence-unrelated-presentation",
+      "skill": "publish-confluence-dashboard",
+      "prompt": "Grade this presentation against the attached rubric. Do not publish anything.",
+      "should_trigger": false,
+      "checks": ["No Confluence embedding or publishing workflow started"]
+    }
+  ]
+}

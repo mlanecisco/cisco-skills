@@ -14,7 +14,7 @@ For people building apps without a software background, the development workflow
 
 ## Start here
 
-Five draft skills capture the first agreed priorities:
+Six draft skills capture the current priorities:
 
 | Skill | Purpose | Status |
 | --- | --- | --- |
@@ -23,6 +23,7 @@ Five draft skills capture the first agreed priorities:
 | [develop-from-spec](skills/develop-from-spec/SKILL.md) | Build apps from requirements with sensible defaults, common failure checks, tests, and review | Draft; product evaluations pending |
 | [check-code-quality](skills/check-code-quality/SKILL.md) | Discover and run formatting, lint, type, test, and build checks | Draft; product evaluations pending |
 | [review-and-repair-code](skills/review-and-repair-code/SKILL.md) | Review changes or reproduce and repair defects while preserving request scope | Draft; product evaluations pending |
+| [publish-confluence-dashboard](skills/publish-confluence-dashboard/SKILL.md) | Prepare and publish HTML or iframe dashboards using Narva's Confluence Cloud app | Draft; Cisco site walkthrough and product evaluations pending |
 
 The [source review](docs/source-review.md) records the materials reviewed and the proposed reuse decisions. [Pilot cases](evals/pilot-cases.json) define observable checks; they are test specifications, not completed evaluations.
 
@@ -31,6 +32,8 @@ The [build plan](docs/build-plan.md) sets the implementation order and acceptanc
 For installation, start with the [setup guides](docs/setup/README.md). Maintainers can use the [repeatable check command](docs/maintaining.md). The [development evaluations](evals/development-cases.json) include a synthetic dashboard calculation fixture with known expected results.
 
 [Novice development cases](evals/novice-development-cases.json) specify checks for lost records, exposed credentials, incomplete access controls, failed saves, hosting mismatches, and excessive repair attempts. Their listed fixtures and product runs remain pending.
+
+For Confluence delivery, use the [Narva publishing guide](docs/setup/confluence.md). The known Cisco destination is Confluence Cloud at `cisco-learning.atlassian.net`, using HTML & Iframe Embed and Advanced HTML & Iframe Embed. [Confluence evaluations](evals/confluence-cases.json) specify packaging, blocked-resource, version, and published-view checks; their fixtures and runs remain pending.
 
 ## Library design
 
@@ -55,7 +58,7 @@ These are library defaults, not claims that one effort level always gives the be
 
 | User outcome | Scope |
 | --- | --- |
-| Create a dashboard | Check the data, define meaningful measures, build the interface, and verify calculations and interaction |
+| Create a dashboard | Check the data, define meaningful measures, build an attractive Cisco interface from representative examples, and verify calculations and interaction |
 | Publish with GitHub Pages | Prepare a compatible static site, preview it, and publish when authorized |
 | Evaluate a document or presentation | Apply a supplied rubric, cite evidence by page or slide, and explain scores and uncertainty |
 | Create Cisco documents and workbooks | Produce editable deliverables from team templates and validate their contents and presentation |
@@ -82,4 +85,4 @@ For broader team distribution, package tested releases with product-specific plu
 
 A release needs correct triggering, valid artifacts, appropriate handling of missing inputs, and successful use in both target products. Check cases that should not activate the skill, as well as ordinary and difficult requests. For efficiency, compare total usage and quality against the same baseline task. A valid `SKILL.md` alone does not establish those results.
 
-The maintainer command runs linting, formatting, type checking, regression tests, and structural validation for five skills and twenty-seven evaluation definitions. The evaluation specifications have not yet been run as product workflows. No measured token savings, completed platform installation walkthroughs, or official template fidelity is claimed. Hosted CI will run after the repository is published to a configured GitHub remote.
+The maintainer command runs linting, formatting, type checking, regression tests, and structural validation for six skills and thirty-three evaluation definitions. The evaluation specifications have not yet been run as product workflows. No measured token savings, completed platform installation walkthroughs, or official template fidelity is claimed. Hosted CI will run after the repository is published to a configured GitHub remote.
