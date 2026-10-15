@@ -1,0 +1,75 @@
+{
+  "author": "Mark A. Lane, Ph.D.",
+  "status": "Specifications only; behavioral runs pending",
+  "run_on": ["Claude Code", "Codex"],
+  "cases": [
+    {
+      "id": "presentation-template",
+      "skill": "cisco-presentation",
+      "prompt": "Create a ten-minute Cisco leadership deck from this project brief using the supplied current PowerPoint template.",
+      "fixtures_needed": ["A current authorized Cisco template", "A brief with known facts and chart values"],
+      "should_trigger": true,
+      "checks": ["Template theme and layouts retained", "Claims and chart values match the brief", "Editable file opens", "Every slide rendered and inspected", "Author and classification follow supplied instructions"]
+    },
+    {
+      "id": "presentation-no-template",
+      "skill": "cisco-presentation",
+      "prompt": "Make a short Cisco presentation from this proposal. No template is available.",
+      "fixtures_needed": ["A short proposal"],
+      "should_trigger": true,
+      "checks": ["Useful draft produced", "Provisional style identified", "No claim of official brand approval", "Missing logo or fonts not fabricated"]
+    },
+    {
+      "id": "presentation-rubric-only",
+      "skill": "cisco-presentation",
+      "prompt": "Grade this presentation against this rubric. Do not edit or restyle it.",
+      "should_trigger": false,
+      "checks": ["Creation or restyling workflow does not replace evaluation"]
+    },
+    {
+      "id": "efficiency-small-task",
+      "skill": "efficient-workflow",
+      "prompt": "Use the efficient workflow to correct one obvious spelling error in this local document.",
+      "should_trigger": true,
+      "checks": ["Direct edit", "No subagents", "No highest-effort reasoning", "Proportionate verification"]
+    },
+    {
+      "id": "efficiency-bulk",
+      "skill": "efficient-workflow",
+      "prompt": "Classify this batch of records using the supplied labels and keep model usage economical.",
+      "fixtures_needed": ["A representative labeled batch with expected outputs and ambiguous records"],
+      "should_trigger": true,
+      "checks": ["Script used for deterministic portions where suitable", "Haiku or Luna used for suitable delegated work when available", "Worker inputs limited to assigned batches", "Ambiguous records surfaced", "Result quality compared with baseline", "Coordinator and worker usage included"]
+    },
+    {
+      "id": "efficiency-escalation",
+      "skill": "efficient-workflow",
+      "prompt": "Use efficient orchestration to resolve this difficult defect. Here are the reproduction and the failed first attempt.",
+      "fixtures_needed": ["A small reproducible defect and failed-attempt evidence"],
+      "should_trigger": true,
+      "checks": ["Escalation targets a specific unresolved question", "Opus reserved for exceptional Claude difficulty", "Codex uses Sol at a justified effort", "No unchanged retry loop", "Fix independently verified"]
+    },
+    {
+      "id": "efficiency-unsupported-routing",
+      "skill": "efficient-workflow",
+      "prompt": "Use the efficient workflow here, but this host provides only one model and no delegation tools.",
+      "should_trigger": true,
+      "checks": ["Useful direct work continues", "No invented model switching", "No global configuration changes", "Routing limitation disclosed"]
+    },
+    {
+      "id": "efficiency-hard-budget",
+      "skill": "efficient-workflow",
+      "prompt": "Use efficient orchestration with a total token allowance supplied by the test harness.",
+      "fixtures_needed": ["A harness with cumulative usage accounting and an enforced allowance"],
+      "should_trigger": true,
+      "checks": ["All model calls count toward allowance", "Host prevents further calls at limit", "Partial work preserved", "Prompt guidance not misrepresented as enforcement"]
+    },
+    {
+      "id": "efficiency-unrelated",
+      "skill": "efficient-workflow",
+      "prompt": "What does the word dashboard mean?",
+      "should_trigger": false,
+      "checks": ["Simple explanation without orchestration workflow"]
+    }
+  ]
+}
