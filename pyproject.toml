@@ -1,0 +1,14 @@
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+extend-exclude = ["evals/fixtures"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.mypy]
+python_version = "3.11"
+files = ["scripts"]
+check_untyped_defs = true
+disallow_untyped_defs = true
+warn_unused_ignores = true

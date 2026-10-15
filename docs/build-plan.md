@@ -68,4 +68,6 @@ Keep rubric evaluation separate from presentation creation. Require evidence for
 
 ## Next implementation increment
 
-Add the repeatable library validator and continuous integration, then implement the development entrypoints. Continue collecting the current Cisco template and representative pilot inputs while building those independent pieces.
+The repeatable maintainer command, CI workflow, and three development entrypoints are implemented. The development fixture includes a feature starter, a reproducible defect, and independent expected calculations. The setup guides cover Claude Desktop, Claude Code CLI, ChatGPT, Codex, and Cursor on macOS and Windows.
+
+Next, run the development evaluations in the target products and walk through installation with representative users. Continue collecting the current Cisco template and record actual execution and usage results before promoting draft skills to a tested release. Hosted CI, product behavior, and installation walkthroughs remain separate verification steps.

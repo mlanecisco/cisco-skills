@@ -6,22 +6,27 @@ date: 2026-10-15
 
 # Cisco skills library
 
-This library helps Cisco colleagues describe an outcome and complete the work with Claude Code or Codex. It covers software projects and business deliverables, including dashboards, presentations, documents, and evaluations.
+This library helps Cisco colleagues describe an outcome and complete the work with Claude Code or Codex, with setup guidance for Claude Desktop, ChatGPT, and Cursor as well. It covers software projects and business deliverables, including dashboards, presentations, documents, and evaluations.
 
 The goal is reliable results with less prompting and a measured use of tokens. Users should be able to say "build a dashboard from this data" or "evaluate this presentation against this rubric" without knowing which programming tools to select.
 
 ## Start here
 
-Two starter skills capture the first agreed priorities:
+Five draft skills capture the first agreed priorities:
 
 | Skill | Purpose | Status |
 | --- | --- | --- |
 | [cisco-presentation](skills/cisco-presentation/SKILL.md) | Create and edit presentations using a supplied Cisco template, with documented draft defaults | Draft; needs the current team template and a rendered sample |
 | [efficient-workflow](skills/efficient-workflow/SKILL.md) | Control context, model routing, reasoning effort, and repeated work | Draft; needs runtime benchmarks |
+| [develop-from-spec](skills/develop-from-spec/SKILL.md) | Build software from requirements with small increments, meaningful tests, and review | Draft; product evaluations pending |
+| [check-code-quality](skills/check-code-quality/SKILL.md) | Discover and run formatting, lint, type, test, and build checks | Draft; product evaluations pending |
+| [review-and-repair-code](skills/review-and-repair-code/SKILL.md) | Review changes or reproduce and repair defects while preserving request scope | Draft; product evaluations pending |
 
 The [source review](docs/source-review.md) records the materials reviewed and the proposed reuse decisions. [Pilot cases](evals/pilot-cases.json) define observable checks; they are test specifications, not completed evaluations.
 
 The [build plan](docs/build-plan.md) sets the implementation order and acceptance criteria, including development workflows, automated quality checks, and efficiency benchmarks.
+
+For installation, start with the [setup guides](docs/setup/README.md). Maintainers can use the [repeatable check command](docs/maintaining.md). The [development evaluations](evals/development-cases.json) include a synthetic dashboard calculation fixture with known expected results.
 
 ## Library design
 
@@ -46,9 +51,6 @@ These are library defaults, not claims that one effort level always gives the be
 
 | User outcome | Scope |
 | --- | --- |
-| Develop from a specification | Translate a business request into acceptance criteria, build small working increments, and verify the required behavior |
-| Check code quality | Run appropriate formatters, linters, type checks, tests, and build checks using the project's tooling |
-| Review and repair code | Check changes against requirements and standards, diagnose defects, and verify corrections |
 | Create a dashboard | Check the data, define meaningful measures, build the interface, and verify calculations and interaction |
 | Publish with GitHub Pages | Prepare a compatible static site, preview it, and publish when authorized |
 | Evaluate a document or presentation | Apply a supplied rubric, cite evidence by page or slide, and explain scores and uncertainty |
@@ -76,4 +78,4 @@ For broader team distribution, package tested releases with product-specific plu
 
 A release needs correct triggering, valid artifacts, appropriate handling of missing inputs, and successful use in both target products. Check cases that should not activate the skill, as well as ordinary and difficult requests. For efficiency, compare total usage and quality against the same baseline task. A valid `SKILL.md` alone does not establish those results.
 
-The pilot passes skill-manifest validation, local Markdown link checks, agent YAML/TOML parsing, and evaluation-file structure checks. The nine evaluation cases have not yet been run in either product. No measured token savings or official template fidelity is claimed.
+The maintainer command runs linting, formatting, type checking, regression tests, and structural validation for five skills and seventeen evaluation definitions. The evaluation specifications have not yet been run as product workflows. No measured token savings, completed platform installation walkthroughs, or official template fidelity is claimed. Hosted CI will run after the repository is published to a configured GitHub remote.

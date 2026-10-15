@@ -1,0 +1,6 @@
+[
+  {"id": "A", "region": "East", "status": "complete", "value": 40},
+  {"id": "B", "region": "East", "status": "planned", "value": 60},
+  {"id": "C", "region": "West", "status": "complete", "value": 25},
+  {"id": "D", "region": "West", "status": "complete", "value": 75}
+]

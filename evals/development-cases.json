@@ -1,0 +1,68 @@
+{
+  "author": "Mark A. Lane, Ph.D.",
+  "status": "Specifications only; product runs pending",
+  "run_on": ["Claude Code", "Codex"],
+  "cases": [
+    {
+      "id": "development-dashboard-feature",
+      "skill": "develop-from-spec",
+      "prompt": "Extend the supplied dashboard summary with completion percentages that respect the region filter. Keep empty results at zero, preserve the existing totals, and verify the feature against the supplied requirements.",
+      "fixtures": ["fixtures/development/summary.py", "fixtures/development/records.json", "fixtures/development/expected.json", "fixtures/development/test_summary.py", "fixtures/development/README.md"],
+      "should_trigger": true,
+      "checks": ["Acceptance criteria reflect the requested calculations", "Focused test fails before implementation for the expected reason", "All five acceptance checks pass afterward", "Expected values are unchanged", "Changes stay within scope", "Actual commands and remaining limitations are reported"]
+    },
+    {
+      "id": "development-trivial-explanation",
+      "skill": "develop-from-spec",
+      "prompt": "What is a specification? Explain it in two sentences.",
+      "should_trigger": false,
+      "checks": ["Brief explanation without creating a project, specification, or tests"]
+    },
+    {
+      "id": "quality-check-only",
+      "skill": "check-code-quality",
+      "prompt": "Run the checks configured in this test project and report the results. Do not change any files.",
+      "fixtures_needed": ["An isolated project with a formatter, linter, tests, and a script named lint that uses a writing flag"],
+      "should_trigger": true,
+      "checks": ["Actual script behavior inspected", "Non-writing modes used", "Source hashes unchanged", "Failures reported rather than hidden", "Behavioral correctness distinguished from lint and format results"]
+    },
+    {
+      "id": "quality-existing-failure",
+      "skill": "check-code-quality",
+      "prompt": "Check the quality of this change. The project has a known unrelated failing test and its browser tool is unavailable.",
+      "fixtures_needed": ["A project with a reproducible existing test failure and a narrow working change"],
+      "should_trigger": true,
+      "checks": ["Existing failure identified with evidence", "Relevant checks still completed", "Unavailable browser verification disclosed", "Tests and rules not weakened"]
+    },
+    {
+      "id": "quality-non-code-document",
+      "skill": "check-code-quality",
+      "prompt": "Proofread this Cisco presentation for spelling mistakes.",
+      "should_trigger": false,
+      "checks": ["No application toolchain installed for a presentation task"]
+    },
+    {
+      "id": "review-dashboard-only",
+      "skill": "review-and-repair-code",
+      "prompt": "Review the supplied dashboard summary against its calculation requirements. Report defects without editing anything.",
+      "fixtures": ["fixtures/development/buggy_summary.py", "fixtures/development/records.json", "fixtures/development/expected.json", "fixtures/development/README.md"],
+      "should_trigger": true,
+      "checks": ["Source hash unchanged", "Filtered completion-rate error identified", "Finding cites location, triggering input, and consequence", "No unnecessary reviewer agents for this small task"]
+    },
+    {
+      "id": "repair-dashboard-filter",
+      "skill": "review-and-repair-code",
+      "prompt": "The completion rate in this dashboard stays the same when I filter by region. Reproduce the defect, fix it, and verify the original symptom and empty results.",
+      "fixtures": ["fixtures/development/buggy_summary.py", "fixtures/development/records.json", "fixtures/development/expected.json", "fixtures/development/test_summary.py", "fixtures/development/README.md"],
+      "should_trigger": true,
+      "checks": ["Original filtered failure reproduced", "Minimal correction uses the selected records", "All five acceptance checks pass", "Expected values are unchanged", "Original inputs preserved outside the isolated project", "Cause and checks reported"]
+    },
+    {
+      "id": "review-unrelated-question",
+      "skill": "review-and-repair-code",
+      "prompt": "What color is used for Cisco's presentation background?",
+      "should_trigger": false,
+      "checks": ["No code review or debugging workflow started"]
+    }
+  ]
+}

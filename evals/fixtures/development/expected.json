@@ -1,0 +1,6 @@
+{
+  "all": {"count": 4, "total_value": 200, "completion_rate": 75.0},
+  "East": {"count": 2, "total_value": 100, "completion_rate": 50.0},
+  "West": {"count": 2, "total_value": 100, "completion_rate": 100.0},
+  "empty": {"count": 0, "total_value": 0, "completion_rate": 0.0}
+}
