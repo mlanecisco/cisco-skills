@@ -1,42 +1,58 @@
 ---
 author: Mark A. Lane, Ph.D.
 reviewed: 2026-10-15
-status: Provisional public-source reference; current team template needed
+status: Template-derived values; supplied policy excerpts; visual validation pending
 ---
 
 # Cisco presentation brand reference
 
 ## Source priority
 
-Use the current official template and guidance supplied for the team, event, and audience. Record which file or guide governed the presentation. Templates carry more than color: masters, layout geometry, theme fonts, logo placement, and footer treatments are part of the design.
+Use the current official template and applicable guidance supplied for the team, event, and audience. Record the template version and font variant. Its masters, layout geometry, theme fonts, logo placement, and footer treatments govern the presentation's design. Resolve a material conflict between applicable guidance and the template explicitly rather than guessing which rule has been superseded.
 
-The public [Cisco Brand Center](https://www.cisco.com/c/en/us/about/brand-center.html) is the starting point for brand resources. Its landing page does not establish a complete current PowerPoint theme. A supplied current template is still needed to validate exact fidelity.
+Mark supplied the following files as current Cisco Brand templates. Both identify themselves as September 17, 2026 versions with an Inter font theme. They are stored in this repository's `docs/reference/` directory:
 
-## Working palette for drafts
+- `Cisco_PowerPoint_Template_Light_09-17-2026_Inter.potx`
+- `Cisco_PowerPoint_Template_DARK_09-17-2026_Inter.potx`
 
-The palette below appears in the template guidance appended to a [Cisco-hosted October 2025 webcast deck](https://community.cisco.com/kxiwq67737/attachments/kxiwq67737/4031-docs-wireless-mobility/157/1/Webcast_WI-ISSU-oct09-2025.pdf?inline=true), on slides labeled 128 and 129. This review obtained indexed text; direct PDF retrieval failed, so the slides were not visually inspected. Treat these values as provisional until checked against the current template.
+These source files are separate from the installed skill folder. Locate the actual template in the user's project or supplied files; do not assume that installing this skill installs the templates or fonts. If a template is unavailable, produce a clearly identified draft and disclose the missing template validation.
 
-| Role | Name | Hex |
+## Verified theme colors
+
+The values below were read directly from the slide-master theme in both supplied templates. Follow theme references when generating content so light and dark variants retain their intended color behavior.
+
+| Color | Hex | Template use |
 | --- | --- | --- |
-| Base | Midnight Blue | `#07182D` |
-| Base | White | `#FFFFFF` |
-| Primary accent | Cisco Blue | `#02C8FF` |
-| Primary accent | Medium Blue | `#0A60FF` |
-| Decorative accent | Magenta | `#FF007F` |
-| Decorative accent | Orange | `#FF9000` |
+| Midnight Blue | `#07182D` | Dark base background; light base text |
+| White | `#FFFFFF` | Light base background; dark base text |
+| Cisco Blue | `#02C8FF` | Theme accent 1 |
+| Medium Blue | `#0A60FF` | Theme accent 2 |
+| Magenta | `#FF007F` | Theme accent 3; usage restrictions apply |
+| Orange | `#FF9000` | Theme accent 4; usage restrictions apply |
+| Light gray | `#D6D6D6` | Theme accent 5 |
+| Medium gray | `#6B6B6B` | Theme accent 6 |
+| Light supporting shade | `#B4B9C0` | Supporting theme color; slot differs by variant |
+| Dark supporting shade | `#525E6C` | Supporting theme color; slot differs by variant |
+| Visited hyperlink gray | `#C0C0C0` | Followed hyperlink color |
 
-Cisco's [Network as Code documentation](https://netascode.cisco.com/docs/data_models/meraki/networks/networks_management/webhooks_http_servers/) also uses `#07182D`, `#02C8FF`, and `#0A60FF` in its diagram theme code. That corroborates those values in a Cisco product context; it does not establish a corporate presentation standard.
+The templates resolve the earlier public-source discrepancy: stored Cisco Blue is `#02C8FF`, equivalent to RGB `(2, 200, 255)`. Use the actual theme value when another supplied version differs.
 
-The indexed webcast guidance uses white text on dark backgrounds and Midnight Blue on light backgrounds, with accents used sparingly. It names CiscoSansTT Medium for headings and CiscoSansTT for body text, and favors template theme settings. Preserve those settings when present in the actual template.
+## Typography and layouts
 
-The indexed RGB value for Cisco Blue disagrees with its hex value. Use the actual template's stored color when available. For a draft using the hex above, its calculated RGB is `(2, 200, 255)`; do not describe that calculation as a corrected official standard.
+The supplied templates use Inter SemiBold for the Latin heading theme and Inter for the Latin body theme. Mark's Cisco Brand AI response reports a documented transition from CiscoSansTT to Inter. Use the selected template's theme for new presentation text; the transition does not establish that every asset-specific CiscoSansTT rule has been withdrawn. Read [typography policy and evidence](typography-policy.md) when guidance conflicts, a font variant is unclear, or an asset such as a program ID lockup has its own rules.
 
-## Typography and layout
+Resolve the theme through the slide master's relationships. Both packages also contain an older CiscoSansTT theme for notes; it is not the active slide theme. Some sample slide text has explicit overrides: CiscoSansTT on slides 32, 47, 48, and 49, and Aptos on classification labels on slides 20, 21, 24, 25, and 26. Check reused content for intended formatting instead of assuming that a theme change updates every run. Preserve approved lockups and other supplied brand assets.
 
-Preserve the template's theme fonts and sizes. If the required font is unavailable, report the substitution. For a provisional draft, use an installed readable sans-serif font, such as Arial if available, and identify it as a fallback.
+Each template contains 72 sample slides and 65 layouts at 16:9, measuring 13 1/3 by 7.5 inches. Use the relevant layout's sizes and spacing rather than imposing one universal title or body size. Review speaker, date, session, and other sample placeholders. Set classification for the intended use; a sample `Cisco Confidential` label or `BRKSEC-XXXX` session ID is not a business decision.
 
-Without a template, 16:9 slides, generous margins, and a simple title-and-content hierarchy are practical library defaults. They are not certified Cisco layout requirements. Do not invent precise official type sizes, margins, or spacing rules.
+If the required font is unavailable, report the substitution and verify its effect on wrapping and layout. For a draft without a template, use an available readable sans-serif font and identify the fallback. Preserve supplied logo proportions and placement; omit an unavailable logo rather than drawing an approximation.
 
-Use assets supplied for the task or available through authorized team resources. Preserve an existing template logo's proportions and placement. If no logo is available, omit it from the draft rather than drawing an approximation. Fonts, logos, and official templates are not bundled with this skill.
+## Color usage and readability
 
-Confirm contrast for the actual foreground/background pair. As a working accessibility check, target 4.5:1 for ordinary text and 3:1 for large text and meaningful non-text graphics. A brand color is not readable on every background.
+Theme membership does not authorize every use of a color. The [Cisco-hosted 2025 guidance](https://community.cisco.com/kxiwq67737/attachments/kxiwq67737/4031-docs-wireless-mobility/157/1/Webcast_WI-ISSU-oct09-2025.pdf?inline=true) restricts solid Magenta and Orange to small accents, with a 5% maximum of the visual. It prohibits their use as text or call-to-action buttons, as certain two-color gradients, and as logo components, backdrops, or nearby elements. It also prohibits pairing them solely with White or Midnight Blue. These rules come from the older public source; preserve supplied approved compositions and consult current usage guidance before inventing additional treatments.
+
+Check contrast for each actual foreground/background pair. As a working accessibility check, target 4.5:1 for ordinary text and 3:1 for large text and meaningful non-text graphics. See [W3C text contrast](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html) and [non-text contrast](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html).
+
+## Validation limits
+
+The template review inspected package XML, slide-master relationships, themes, layouts, text overrides, and embedded previews. Native PowerPoint opened both templates, but PDF export did not complete. Full visual validation of rendered slides and a generated sample remains outstanding. The private policy pages were not independently retrieved; their supplied excerpts are attributed in the typography reference.

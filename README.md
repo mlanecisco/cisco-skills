@@ -18,7 +18,7 @@ Five draft skills capture the first agreed priorities:
 
 | Skill | Purpose | Status |
 | --- | --- | --- |
-| [cisco-presentation](skills/cisco-presentation/SKILL.md) | Create and edit presentations using a supplied Cisco template, with documented draft defaults | Draft; needs the current team template and a rendered sample |
+| [cisco-presentation](skills/cisco-presentation/SKILL.md) | Create and edit presentations using a supplied Cisco template and its font variant | Draft; 2026 Inter templates inspected; rendered sample pending |
 | [efficient-workflow](skills/efficient-workflow/SKILL.md) | Control context, model routing, reasoning effort, and repeated work | Draft; needs runtime benchmarks |
 | [develop-from-spec](skills/develop-from-spec/SKILL.md) | Build apps from requirements with sensible defaults, common failure checks, tests, and review | Draft; product evaluations pending |
 | [check-code-quality](skills/check-code-quality/SKILL.md) | Discover and run formatting, lint, type, test, and build checks | Draft; product evaluations pending |
