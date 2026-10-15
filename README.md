@@ -33,7 +33,7 @@ For installation, start with the [setup guides](docs/setup/README.md). Maintaine
 
 [Novice development cases](evals/novice-development-cases.json) specify checks for lost records, exposed credentials, incomplete access controls, failed saves, hosting mismatches, and excessive repair attempts. Their listed fixtures and product runs remain pending.
 
-For Confluence delivery, use the [Narva publishing guide](docs/setup/confluence.md). The known Cisco destination is Confluence Cloud at `cisco-learning.atlassian.net`, using HTML & Iframe Embed and Advanced HTML & Iframe Embed. [Confluence evaluations](evals/confluence-cases.json) specify packaging, blocked-resource, version, and published-view checks; their fixtures and runs remain pending.
+For Confluence delivery, use the [Narva publishing guide](docs/setup/confluence.md), which covers manual insertion and agent publishing through the API. The known Cisco destination is Confluence Cloud at `cisco-learning.atlassian.net`, using HTML & Iframe Embed and Advanced HTML & Iframe Embed. [Confluence evaluations](evals/confluence-cases.json) specify packaging, authentication, blocked-resource, version, and published-view checks; their fixtures and runs remain pending.
 
 ## Library design
 
@@ -85,4 +85,4 @@ For broader team distribution, package tested releases with product-specific plu
 
 A release needs correct triggering, valid artifacts, appropriate handling of missing inputs, and successful use in both target products. Check cases that should not activate the skill, as well as ordinary and difficult requests. For efficiency, compare total usage and quality against the same baseline task. A valid `SKILL.md` alone does not establish those results.
 
-The maintainer command runs linting, formatting, type checking, regression tests, and structural validation for six skills and thirty-three evaluation definitions. The evaluation specifications have not yet been run as product workflows. No measured token savings, completed platform installation walkthroughs, or official template fidelity is claimed. Hosted CI will run after the repository is published to a configured GitHub remote.
+The maintainer command runs linting, formatting, type checking, regression tests, and structural validation for six skills and thirty-five evaluation definitions. The evaluation specifications have not yet been run as product workflows. No measured token savings, completed platform installation walkthroughs, or official template fidelity is claimed. Hosted CI will run after the repository is published to a configured GitHub remote.
