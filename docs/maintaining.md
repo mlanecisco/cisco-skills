@@ -38,7 +38,9 @@ After setup, run the last command whenever the library changes. CI uses `python 
 
 The validator follows the [Agent Skills specification](https://agentskills.io/specification). It rejects duplicate YAML and JSON keys, malformed files, unresolved local links, cross-folder skill dependencies, and evaluation cases that refer to unknown skills or missing fixtures. Agent examples receive syntax and required-field checks; their model availability and runtime behavior are not established by parsing.
 
-Markdown links, images, and reference-style links are checked with a Markdown parser. External URLs and heading anchors are not fetched or verified. Literal paths in prose and code blocks are not checked as links. Tool caches and generated outputs are excluded from discovery. Evaluation input code under `evals/fixtures/` is deliberately unfinished or defective and is excluded from maintainer linting and typing; separate tests verify its acceptance oracle.
+Markdown links, images, and reference-style links are checked with a Markdown parser. Local links in every Markdown file within a skill, including supporting references and nested resources, must resolve inside that skill's folder. The check resolves symbolic links before testing the boundary. Repository documentation can link across folders within the repository.
+
+External URLs and heading anchors are not fetched or verified. Literal paths in prose and code blocks are not checked as links. Tool caches and generated outputs are excluded from discovery. Evaluation input code under `evals/fixtures/` is deliberately unfinished or defective and is excluded from maintainer linting and typing; separate tests verify its acceptance oracle.
 
 To run only structural checks, including against an isolated fixture:
 

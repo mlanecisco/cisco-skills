@@ -73,7 +73,7 @@ GitHub Pages hosting and applications that need a backend require different depl
 2. Benchmark token efficiency alongside those tasks. Compare direct execution with selective delegation using the same inputs and acceptance criteria. Include coordinator usage, retries, latency, and result quality; cumulative budget enforcement still needs runtime implementation.
 3. Validate the Cisco business workflows. Generate an editable presentation and inspect every rendered slide. Test Confluence manual insertion and API publishing on a designated test page, including the actual Narva macro representation, interactions, and viewer access.
 4. Build dashboard design and GitHub Pages publishing skills. Use representative dashboard examples to establish visual conventions and reuse a synthetic dashboard across development and delivery evaluations.
-5. Package a tested pilot release. Simplify installation and updates, provide complete skill ZIPs and a short first-task walkthrough, and test with colleagues on both operating systems. Fix the validator gap described below before packaging. Configure the team repository and run hosted CI.
+5. Package a tested pilot release. Simplify installation and updates, provide complete skill ZIPs and a short first-task walkthrough, and test with colleagues on both operating systems. Configure the team repository and run hosted CI.
 6. Add rubric evaluation, followed by Cisco documents and workbooks. Reuse suitable upstream skills selectively, recording source revisions, licenses, dependencies, and required notices before bundling material.
 
 ## Trying a draft
@@ -88,8 +88,8 @@ For broader team distribution, package tested releases with product-specific plu
 
 A release needs correct triggering, valid artifacts, appropriate handling of missing inputs, and successful use in both target products. Check cases that should not activate the skill, as well as ordinary and difficult requests. For efficiency, compare total usage and quality against the same baseline task. A valid `SKILL.md` alone does not establish those results.
 
-The latest local maintainer run passed linting, formatting, type checking, 31 regression tests, and structural validation of six skills and 35 evaluation definitions. Those checks do not execute the skills in the target products. Completed product evaluations are not recorded, and 24 cases still list inputs that must be created or supplied. No measured token savings, completed platform installation walkthroughs, or validated presentation sample is claimed.
+The latest local maintainer run passed linting, formatting, type checking, 36 regression tests, and structural validation of six skills and 35 evaluation definitions. Those checks do not execute the skills in the target products. Completed product evaluations are not recorded, and 24 cases still list inputs that must be created or supplied. No measured token savings, completed platform installation walkthroughs, or validated presentation sample is claimed.
 
-A known [validator gap](scripts/validate_library.py) remains: links inside supporting references can leave the installable skill folder without being flagged. The folder-boundary check currently applies only to links in `SKILL.md`. Extend it to supporting references before packaging skills for distribution.
+The [validator](scripts/validate_library.py) checks local Markdown links in entrypoints and supporting resources against the skill folder, helping catch dependencies that would be missing from an installed copy.
 
 The repository has no configured remote, published release, or bundled installer. Hosted CI has not run. The immediate milestone is a tested pilot release with recorded artifacts, quality checks, installation results, and usage measurements.

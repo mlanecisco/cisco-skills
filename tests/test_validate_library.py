@@ -170,6 +170,73 @@ Create the requested artifact.
         self.write("skills/demo/SKILL.md", self.manifest + "[Guide](../../README.md)")
         self.assertIn("leaves its installable folder", self.errors())
 
+    def test_supporting_resource_links_cannot_leave_skill_folder(self) -> None:
+        self.write("README.md", "Library instructions.")
+        for relative, target in [
+            ("skills/demo/references/guide.md", "../../../README.md"),
+            ("skills/demo/assets/examples/guide.md", "../../../../README.md"),
+        ]:
+            for link in [
+                f"[Guide]({target})",
+                f'![Example]({target} "Preview")',
+                f"[Guide][guide]\n\n[guide]: {target}",
+            ]:
+                with self.subTest(relative=relative, link=link):
+                    path = self.write(relative, link)
+                    self.assertIn(
+                        f"{path.relative_to(self.root)}: "
+                        "skill reference leaves its installable folder: "
+                        f"{target}",
+                        self.errors(),
+                    )
+
+    def test_supporting_reference_cannot_link_to_another_skill(self) -> None:
+        self.write(
+            "skills/demo-other/SKILL.md",
+            self.manifest.replace("name: demo", "name: demo-other"),
+        )
+        self.write("skills/demo-other/references/guide.md", "Other skill instructions.")
+        self.write(
+            "skills/demo/references/guide.md",
+            "[Other guide](../../demo-other/references/guide.md)",
+        )
+        self.assertIn("leaves its installable folder", self.errors())
+
+    def test_supporting_resources_allow_links_within_skill_folder(self) -> None:
+        self.write("skills/demo/assets/preview.png", "Synthetic image fixture.")
+        self.write("skills/demo/references/My guide (v1).md", "A reference.")
+        self.write(
+            "skills/demo/references/guide.md",
+            """[Instructions](../SKILL.md)
+[Related guide](<My%20guide%20(v1).md#section>)
+![Preview](../assets/preview.png)
+[External](https://invalid.example/anything)
+[Section](#section)
+""",
+        )
+        self.write(
+            "skills/demo/assets/examples/guide.md",
+            "[Guide](../../references/guide.md)",
+        )
+        self.assertEqual(self.errors(), "")
+
+    def test_supporting_reference_cannot_escape_through_symlink(self) -> None:
+        outside = self.write("README.md", "Library instructions.")
+        shortcut = self.root / "skills/demo/assets/shared.md"
+        shortcut.parent.mkdir(parents=True)
+        try:
+            shortcut.symlink_to(outside)
+        except (OSError, NotImplementedError) as exc:
+            self.skipTest(f"Symlinks unavailable: {exc}")
+        self.write("skills/demo/references/guide.md", "[Shared](../assets/shared.md)")
+        self.assertIn("leaves its installable folder", self.errors())
+
+    def test_repository_documentation_can_link_across_folders(self) -> None:
+        self.write("skills/demo/references/guide.md", "Skill instructions.")
+        self.write("docs/guide.md", "[Skill guide](../skills/demo/references/guide.md)")
+        self.write("README.md", "[Setup](docs/guide.md)")
+        self.assertEqual(self.errors(), "")
+
     def test_local_links_cannot_leave_repository(self) -> None:
         self.write("README.md", "[Outside](../outside.md)")
         self.assertIn("leaves the repository", self.errors())

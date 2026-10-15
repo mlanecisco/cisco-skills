@@ -148,12 +148,18 @@ class Validator:
         link = urlsplit(target)
         if link.scheme or link.netloc or not link.path:
             return
+        skills = self.root / "skills"
+        skill_root: Path | None = None
+        if path.is_relative_to(skills):
+            relative = path.relative_to(skills)
+            if len(relative.parts) > 1:
+                skill_root = skills / relative.parts[0]
         destination = (path.parent / unquote(link.path)).resolve()
         if not destination.is_relative_to(self.root):
             self.error(path, f"local reference leaves the repository: {target}")
         elif not destination.exists():
             self.error(path, f"missing local reference: {target}")
-        elif path.name == "SKILL.md" and not destination.is_relative_to(path.parent):
+        elif skill_root is not None and not destination.is_relative_to(skill_root):
             self.error(path, f"skill reference leaves its installable folder: {target}")
 
     def markdown(self, path: Path) -> None:
