@@ -1,12 +1,12 @@
 ---
 author: Mark A. Lane, Ph.D.
-status: Working proposal and pilot skills
+status: Draft library; pilot validation pending
 date: 2026-10-15
 ---
 
 # Cisco skills library
 
-This library helps Cisco colleagues describe an outcome and complete the work with Claude Code or Codex, with setup guidance for Claude Desktop, ChatGPT, and Cursor as well. It covers software projects and business deliverables, including dashboards, presentations, documents, and evaluations.
+This library is for Cisco colleagues building apps and business deliverables with Claude Code or Codex, including people without a software background. Setup guidance also covers Claude Desktop, ChatGPT, and Cursor. The current drafts support development, Cisco presentations, token efficiency, and Confluence dashboard publishing. Dedicated dashboard design, GitHub Pages, rubric evaluation, and document and workbook skills are planned.
 
 The goal is reliable results with less prompting and a measured use of tokens. Users should be able to say "build a dashboard from this data" or "evaluate this presentation against this rubric" without knowing which programming tools to select.
 
@@ -31,7 +31,7 @@ The [source review](docs/source-review.md) records the materials reviewed and th
 
 The [build plan](docs/build-plan.md) sets the implementation order and acceptance criteria, including development workflows, automated quality checks, and efficiency benchmarks.
 
-For installation, start with the [setup guides](docs/setup/README.md). Maintainers can use the [repeatable check command](docs/maintaining.md). The [development evaluations](evals/development-cases.json) include a synthetic dashboard calculation fixture with known expected results.
+For installation on macOS and Windows, start with the [setup guides](docs/setup/README.md). Maintainers can use the [repeatable check command](docs/maintaining.md). The [development evaluations](evals/development-cases.json) include a synthetic dashboard calculation fixture with known expected results.
 
 [Novice development cases](evals/novice-development-cases.json) specify checks for lost records, exposed credentials, incomplete access controls, failed saves, hosting mismatches, and excessive repair attempts. Their listed fixtures and product runs remain pending.
 
@@ -67,13 +67,14 @@ These are library defaults, not claims that one effort level always gives the be
 
 GitHub Pages hosting and applications that need a backend require different deployment choices. Evaluation should distinguish content, visual design, and spoken delivery; slides alone do not establish delivery quality.
 
-## Development sequence
+## Next steps
 
-1. Establish repeatable library validation and continuous integration. Collect representative requests and define the expected deliverables and success criteria.
-2. Build the development workflows for specifications, implementation, automated quality checks, code review, and defect repair.
-3. Pilot efficient execution and Cisco presentations. Compare realistic tasks with and without the skills, and validate presentation fidelity against the current official template.
-4. Reuse suitable upstream skills selectively. Record their source revision, license, dependencies, local changes, and evaluation results before including them in a release.
-5. Package a small tested release with a plain-language catalog, example prompts, and a simple installation path. Assign maintainers and expand from demonstrated demand.
+1. Run the development pilot in Claude Code and Codex. Use the existing feature, review, and repair fixtures, then add a browser app covering saved records, filters, exports, and failed requests. Record actual results and user interventions.
+2. Benchmark token efficiency alongside those tasks. Compare direct execution with selective delegation using the same inputs and acceptance criteria. Include coordinator usage, retries, latency, and result quality; cumulative budget enforcement still needs runtime implementation.
+3. Validate the Cisco business workflows. Generate an editable presentation and inspect every rendered slide. Test Confluence manual insertion and API publishing on a designated test page, including the actual Narva macro representation, interactions, and viewer access.
+4. Build dashboard design and GitHub Pages publishing skills. Use representative dashboard examples to establish visual conventions and reuse a synthetic dashboard across development and delivery evaluations.
+5. Package a tested pilot release. Simplify installation and updates, provide complete skill ZIPs and a short first-task walkthrough, and test with colleagues on both operating systems. Fix the validator gap described below before packaging. Configure the team repository and run hosted CI.
+6. Add rubric evaluation, followed by Cisco documents and workbooks. Reuse suitable upstream skills selectively, recording source revisions, licenses, dependencies, and required notices before bundling material.
 
 ## Trying a draft
 
@@ -87,4 +88,8 @@ For broader team distribution, package tested releases with product-specific plu
 
 A release needs correct triggering, valid artifacts, appropriate handling of missing inputs, and successful use in both target products. Check cases that should not activate the skill, as well as ordinary and difficult requests. For efficiency, compare total usage and quality against the same baseline task. A valid `SKILL.md` alone does not establish those results.
 
-The maintainer command runs linting, formatting, type checking, regression tests, and structural validation for six skills and thirty-five evaluation definitions. The evaluation specifications have not yet been run as product workflows. No measured token savings, completed platform installation walkthroughs, or official template fidelity is claimed. Hosted CI will run after the repository is published to a configured GitHub remote.
+The latest local maintainer run passed linting, formatting, type checking, 31 regression tests, and structural validation of six skills and 35 evaluation definitions. Those checks do not execute the skills in the target products. Completed product evaluations are not recorded, and 24 cases still list inputs that must be created or supplied. No measured token savings, completed platform installation walkthroughs, or validated presentation sample is claimed.
+
+A known [validator gap](scripts/validate_library.py) remains: links inside supporting references can leave the installable skill folder without being flagged. The folder-boundary check currently applies only to links in `SKILL.md`. Extend it to supporting references before packaging skills for distribution.
+
+The repository has no configured remote, published release, or bundled installer. Hosted CI has not run. The immediate milestone is a tested pilot release with recorded artifacts, quality checks, installation results, and usage measurements.
