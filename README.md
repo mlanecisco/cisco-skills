@@ -10,6 +10,8 @@ This library helps Cisco colleagues describe an outcome and complete the work wi
 
 The goal is reliable results with less prompting and a measured use of tokens. Users should be able to say "build a dashboard from this data" or "evaluate this presentation against this rubric" without knowing which programming tools to select.
 
+For people building apps without a software background, the development workflows handle routine engineering choices and common failure checks. The [app-building guide](docs/building-apps.md) explains what to tell the assistant, what it should verify, and what a useful handoff looks like.
+
 ## Start here
 
 Five draft skills capture the first agreed priorities:
@@ -18,7 +20,7 @@ Five draft skills capture the first agreed priorities:
 | --- | --- | --- |
 | [cisco-presentation](skills/cisco-presentation/SKILL.md) | Create and edit presentations using a supplied Cisco template, with documented draft defaults | Draft; needs the current team template and a rendered sample |
 | [efficient-workflow](skills/efficient-workflow/SKILL.md) | Control context, model routing, reasoning effort, and repeated work | Draft; needs runtime benchmarks |
-| [develop-from-spec](skills/develop-from-spec/SKILL.md) | Build software from requirements with small increments, meaningful tests, and review | Draft; product evaluations pending |
+| [develop-from-spec](skills/develop-from-spec/SKILL.md) | Build apps from requirements with sensible defaults, common failure checks, tests, and review | Draft; product evaluations pending |
 | [check-code-quality](skills/check-code-quality/SKILL.md) | Discover and run formatting, lint, type, test, and build checks | Draft; product evaluations pending |
 | [review-and-repair-code](skills/review-and-repair-code/SKILL.md) | Review changes or reproduce and repair defects while preserving request scope | Draft; product evaluations pending |
 
@@ -27,6 +29,8 @@ The [source review](docs/source-review.md) records the materials reviewed and th
 The [build plan](docs/build-plan.md) sets the implementation order and acceptance criteria, including development workflows, automated quality checks, and efficiency benchmarks.
 
 For installation, start with the [setup guides](docs/setup/README.md). Maintainers can use the [repeatable check command](docs/maintaining.md). The [development evaluations](evals/development-cases.json) include a synthetic dashboard calculation fixture with known expected results.
+
+[Novice development cases](evals/novice-development-cases.json) specify checks for lost records, exposed credentials, incomplete access controls, failed saves, hosting mismatches, and excessive repair attempts. Their listed fixtures and product runs remain pending.
 
 ## Library design
 
@@ -78,4 +82,4 @@ For broader team distribution, package tested releases with product-specific plu
 
 A release needs correct triggering, valid artifacts, appropriate handling of missing inputs, and successful use in both target products. Check cases that should not activate the skill, as well as ordinary and difficult requests. For efficiency, compare total usage and quality against the same baseline task. A valid `SKILL.md` alone does not establish those results.
 
-The maintainer command runs linting, formatting, type checking, regression tests, and structural validation for five skills and seventeen evaluation definitions. The evaluation specifications have not yet been run as product workflows. No measured token savings, completed platform installation walkthroughs, or official template fidelity is claimed. Hosted CI will run after the repository is published to a configured GitHub remote.
+The maintainer command runs linting, formatting, type checking, regression tests, and structural validation for five skills and twenty-seven evaluation definitions. The evaluation specifications have not yet been run as product workflows. No measured token savings, completed platform installation walkthroughs, or official template fidelity is claimed. Hosted CI will run after the repository is published to a configured GitHub remote.

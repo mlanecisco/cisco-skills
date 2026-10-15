@@ -1,0 +1,87 @@
+{
+  "author": "Mark A. Lane, Ph.D.",
+  "status": "Specifications only; product runs and listed fixtures pending",
+  "run_on": ["Claude Code", "Codex"],
+  "cases": [
+    {
+      "id": "novice-team-tracker",
+      "skill": "develop-from-spec",
+      "prompt": "I'm not a programmer. Build a milestone tracker for my team with filters and an export. Start with synthetic data and choose sensible tools.",
+      "fixtures_needed": ["An empty disposable project with no existing app or toolchain", "A user response confirming team-only access and shared records that survive closing the app"],
+      "should_trigger": true,
+      "checks": ["Clarification concerns consequential audience, sharing, and persistence choices rather than framework or lint-rule selection", "No repetition of facts already supplied", "A small specification records concrete milestones, filter, export, and persistence behavior", "Sample records are visibly identified", "Tooling stays proportionate and checks run without a separate user reminder", "Handoff includes actual verification, run instructions, storage scope, and unfinished work"]
+    },
+    {
+      "id": "novice-simple-static-page",
+      "skill": "develop-from-spec",
+      "prompt": "Create a one-page public workshop guide from this content. It needs working links and a readable mobile layout. There are no saved records, accounts, or external services.",
+      "fixtures_needed": ["A short workshop brief with headings and links in an empty disposable project"],
+      "should_trigger": true,
+      "checks": ["No database, authentication, paid service, or full application framework introduced without a current need", "No unnecessary interview about already specified data or access", "Links and layout checked with available tools", "Verification remains proportionate without an unrelated security audit", "No deployment or external account change inferred from a build request"]
+    },
+    {
+      "id": "novice-persistence-repair",
+      "skill": "review-and-repair-code",
+      "prompt": "The tracker says my milestone is saved, but it disappears when I reload. Fix it without losing the milestones I already have.",
+      "fixtures_needed": ["An isolated browser app whose save action updates memory but not its existing storage adapter", "Pre-existing synthetic records in disposable storage", "A documented requirement for persistence across reload"],
+      "should_trigger": true,
+      "checks": ["Original symptom reproduced through the save and reload path", "Existing synthetic records preserved", "Regression check fails for the original behavior and passes for the repair", "App-level save and reload verified when browser tools are available", "No database reset or unrelated rewrite used to obtain a pass", "Storage scope and actual verification reported in plain language"]
+    },
+    {
+      "id": "novice-client-secret",
+      "skill": "develop-from-spec",
+      "prompt": "Connect this app to the metered reporting API. The .env file already contains the test credential. Keep the credential private and handle request failures.",
+      "fixtures_needed": ["A disposable Vite app with a synthetic VITE_REPORTING_SECRET value imported into browser code", "A local mock reporting service; no real credential or billable account", "Existing backend route support and documented API behavior"],
+      "should_trigger": true,
+      "checks": ["Client-exposed environment value recognized as incompatible with the privacy requirement", "Credential access moved to the supported service boundary", "Synthetic secret absent from browser assets and tracked configuration; verification reports no value", "Configuration example uses a placeholder", "Failed requests produce useful feedback without fake results", "Bounded retries or request controls are applied where supported", "No live paid request or account change needed for the test"]
+    },
+    {
+      "id": "novice-private-record-review",
+      "skill": "review-and-repair-code",
+      "prompt": "Review this private team tracker before we share it. Users should only be able to read or edit their own milestones. Report problems without changing files.",
+      "fixtures_needed": ["An isolated tracker with two synthetic users, hidden edit controls, and routes that omit record ownership checks", "A disposable local service that permits direct requests", "Source hashes recorded before review"],
+      "should_trigger": true,
+      "checks": ["Source files remain unchanged", "Review traces direct read and write requests instead of relying on hidden buttons", "An unauthorized synthetic user reproduces the affected access", "Findings cite the location, triggering request, and consequence", "No claim that successful sign-in establishes record permission", "Coverage limits reported without claiming certification"]
+    },
+    {
+      "id": "novice-failed-save-feedback",
+      "skill": "review-and-repair-code",
+      "prompt": "Some milestones never appear even though the app says Saved. Please fix the problem and keep the form usable when saving fails.",
+      "fixtures_needed": ["An isolated app with a mock save endpoint returning a configurable failure", "A form that currently clears input and shows success regardless of the response", "A synthetic record and retry scenario"],
+      "should_trigger": true,
+      "checks": ["Failed response and misleading success reproduced", "Failure preserves useful input and shows actionable feedback", "A successful retry saves the intended record", "Repeated submission does not create duplicate records where the operation requires uniqueness", "Regression checks cover success and failure without mocking away the failing path", "Relevant browser and project checks reported honestly"]
+    },
+    {
+      "id": "novice-pages-runtime-mismatch",
+      "skill": "develop-from-spec",
+      "prompt": "Prepare this team tracker for GitHub Pages. It has private shared records and a server-only API credential. Do not publish it yet.",
+      "fixtures_needed": ["A disposable tracker with a server route, shared data store, and placeholder server credential", "A short description of required private access; no hosting account connected"],
+      "should_trigger": true,
+      "checks": ["Static hosting limitations identified before claiming deployment readiness", "Private shared records and secret handling retained as requirements", "A compatible separate backend or suitable hosting choice explained in plain language", "No credentials or private records moved into static assets", "Unresolved hosting choice made explicit while independent preparation continues", "No publication or external account mutation performed"]
+    },
+    {
+      "id": "novice-quality-behavior-gap",
+      "skill": "check-code-quality",
+      "prompt": "Set up sensible checks for this dashboard and verify its filtered totals. I don't know which testing tools to choose.",
+      "fixtures_needed": ["An isolated dashboard project with a formatter and linter but no behavioral tests", "A small dataset, independently calculated totals, and an incorrect filtered total", "Locally available compatible test tooling"],
+      "should_trigger": true,
+      "checks": ["Existing tooling inspected and retained where suitable", "Routine tool selection handled directly", "A meaningful calculation check detects the incorrect filtered result", "A passing formatter or linter is not reported as proof of correct totals", "The failure is reported without weakening expected results", "Project commands are documented without installing overlapping tools"]
+    },
+    {
+      "id": "novice-browser-unavailable",
+      "skill": "develop-from-spec",
+      "prompt": "Finish the CSV export for this dashboard and make sure the selected rows are exported. Give me a short handoff I can understand.",
+      "fixtures_needed": ["An isolated dashboard with data fixtures, independent expected exports, and existing test and build commands", "An environment with no real browser tool"],
+      "should_trigger": true,
+      "checks": ["Selected-row behavior verified with available meaningful tests", "Existing applicable quality checks completed", "Unavailable browser verification disclosed for the actual export control", "Manual check instructions are not described as a completed browser test", "No claim of deployment or production readiness", "Handoff identifies the run command and remaining verification in plain language"]
+    },
+    {
+      "id": "novice-repeated-repair-failure",
+      "skill": "review-and-repair-code",
+      "prompt": "Saving still fails after the last two attempts. Find the cause and fix it while preserving the working parts of the app.",
+      "fixtures_needed": ["An isolated app, two unsuccessful repair diffs, and reproducible failure evidence", "Unrelated user edits and existing synthetic stored records", "A relevant local service log with no credentials"],
+      "should_trigger": true,
+      "checks": ["Existing attempts and failure evidence inspected before another speculative edit", "A focused diagnosis supported by a reproduction or targeted observation", "User edits and stored records preserved", "No framework rewrite, repeated blind upgrade, or automatic maximum reasoning escalation", "Original reproduction rerun after a sound correction", "Actual checks and any unresolved cause reported"]
+    }
+  ]
+}

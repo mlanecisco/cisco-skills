@@ -3,7 +3,7 @@ name: review-and-repair-code
 description: Review code changes against requirements and project standards, or diagnose and repair a reported defect with reproducible evidence and regression checks. Use for code reviews, debugging, and repair; review-only requests must not modify files.
 metadata:
   author: Mark A. Lane, Ph.D.
-  version: "0.1.0"
+  version: "0.2.0"
   status: draft
 ---
 
@@ -21,6 +21,8 @@ Identify the relevant specification, acceptance criteria, project standards, and
 
 Check both whether the implementation meets the requirements and whether it introduces defects or violates applicable project standards. Trace affected paths, callers, and tests far enough to substantiate findings. Consider boundary conditions, invalid inputs, calculations, state changes, and error handling relevant to the change.
 
+For app changes, look for plausible but incomplete behavior: a save that does not persist, sample data presented as live, controls with no working action, and failures reported as success. When the change touches private data or services, check the relevant permission enforcement and secret exposure. Keep these checks within the affected paths and support findings with evidence.
+
 Let configured tools handle formatting and routine lint rules. Use `check-code-quality` when available or inspect the project's existing checks directly. Focus model review on behavior, requirements, and maintainability concerns that tools do not establish.
 
 Report actionable findings with a file and location, the triggering condition, the consequence, and supporting evidence. Separate confirmed defects from uncertain concerns. Avoid presenting a stylistic preference as a defect or claiming complete coverage from a limited diff.
@@ -35,7 +37,7 @@ Test a focused explanation of the failure rather than making speculative changes
 
 For an important reproducible defect, add a regression check that fails for the original behavior, then make the smallest sound correction. Use independently derived expected values. Rerun the original reproduction and relevant project checks. Preserve the requirements rather than weakening tests or suppressing errors.
 
-Remove temporary instrumentation created for the investigation and inspect the final diff. After repeated unsuccessful attempts, reassess the evidence and approach instead of repeating the same change. Use a more capable model or higher reasoning effort only for a specific unresolved difficulty and within the applicable budget.
+Remove temporary instrumentation created for the investigation and inspect the final diff. After two unsuccessful attempts at the same symptom, reassess the evidence and approach instead of repeating the same change. Do not reset user data or rewrite working parts of the app to bypass the failure. Use a more capable model or higher reasoning effort only for a specific unresolved difficulty and within the applicable budget.
 
 ## Deliver
 

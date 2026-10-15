@@ -30,9 +30,11 @@ Preserve existing conventions and working tooling. Use test-first development wh
 
 Connect requirements to observable checks so a passing linter cannot stand in for correct behavior. Do not disable rules, remove tests, or weaken acceptance criteria simply to obtain a passing result. Report checks that could not run.
 
+For users without a software background, handle routine engineering decisions and common failure checks as part of development. Use the intended audience and data needs to choose proportionate storage, access, and hosting. Verify relevant persistence, failed requests, input handling, and complete user flows. Preserve user work during repairs and provide operating instructions with an honest account of what remains unverified. Keep conditional detail in references so simple tasks stay economical.
+
 Use the reviewed upstream skills as candidates and references, with license and dependency checks before incorporating material. Adapt extensive interviews, specifications, and mandatory multi-agent reviews to the team's task sizes and token constraints. Keep publishing and deployment within the user's authorization.
 
-Acceptance: pilot a small dashboard feature and a reproducible defect. Demonstrate the requested behavior, meaningful checks, and a review of the resulting changes. A nonprogrammer should be able to request the complete workflow without selecting tools or remembering commands.
+Acceptance: pilot a small dashboard feature and a reproducible defect. Demonstrate the requested behavior, meaningful checks, and a review of the resulting changes. A nonprogrammer should be able to request the complete workflow without selecting tools or remembering commands. Include [novice development cases](../evals/novice-development-cases.json) that expose convincing but incomplete apps, and a simple-page case that checks whether the workflow avoids unnecessary tools and services.
 
 ## 3. Evaluate efficient execution
 

@@ -28,6 +28,8 @@ The product installation, account sign-in, library installation, and verificatio
 
 For local coding products, work in a selected project folder so the agent has a clear scope. For document work, attach the actual input and template. A skill cannot replace missing files, accounts, or tool permissions.
 
+For app development, continue with [building apps without a software background](../building-apps.md). It provides example requests and explains the checks the development skills should handle without a separate reminder.
+
 ## Updates and support
 
 Keep the library source separate from installed copies. Before replacing an installed skill, preserve local edits and use the same distribution route. Avoid installing the same skill through several routes in one product. To remove it, disable it in the product or remove only its installed folder; retain the project and maintained sources.
