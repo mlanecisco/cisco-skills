@@ -10,6 +10,8 @@ status: Template-derived values; supplied policy excerpts; visual validation pen
 
 Use the current official template and applicable guidance supplied for the team, event, and audience. Record the template version and font variant. Its masters, layout geometry, theme fonts, logo placement, and footer treatments govern the presentation's design. Resolve a material conflict between applicable guidance and the template explicitly rather than guessing which rule has been superseded.
 
+Find brand guidance and approved assets in the [Cisco Brand Exchange employee collection](https://bx.cisco.com/cisco-brand-exchange/employee). The collection requires employee sign-in through Cisco SSO. If the agent cannot access it, have the user download the template or asset files needed for the task.
+
 Mark supplied the following files as current Cisco Brand templates. Both identify themselves as September 17, 2026 versions with an Inter font theme. They are stored in this repository's `docs/reference/` directory:
 
 - `Cisco_PowerPoint_Template_Light_09-17-2026_Inter.potx`
