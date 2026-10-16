@@ -52,7 +52,7 @@ class AssessmentFixtureTests(unittest.TestCase):
         shutil.copytree(FIXTURES / "check-only/project", self.project)
         source = self.project / "report.py"
         before = hashlib.sha256(source.read_bytes()).hexdigest()
-        lint = self.run_command(["-m", "ruff", "check", "."])
+        lint = self.run_command(["-m", "ruff", "check", "--no-fix", "."])
         formatting = self.run_command(["-m", "ruff", "format", "--check", "."])
         behavior = self.run_command(["-m", "unittest", "discover", "-s", "tests"])
         self.assertNotEqual(lint.returncode, 0)
@@ -61,6 +61,46 @@ class AssessmentFixtureTests(unittest.TestCase):
         self.assertEqual(hashlib.sha256(source.read_bytes()).hexdigest(), before)
         self.run_command(["scripts/lint.py"])
         self.assertNotEqual(hashlib.sha256(source.read_bytes()).hexdigest(), before)
+
+    def test_configured_ruff_fixes_are_disabled_without_changing_project_rules(
+        self,
+    ) -> None:
+        shutil.copytree(FIXTURES / "check-only/project", self.project)
+        source = self.project / "report.py"
+        config = self.project / "pyproject.toml"
+        before = source.read_bytes()
+        original_config = config.read_bytes()
+        check = self.run_command(["-m", "ruff", "check", "--no-fix", "."])
+        self.assertNotEqual(check.returncode, 0)
+        self.assertIn("F401", check.stdout)
+        self.assertEqual(source.read_bytes(), before)
+        self.assertEqual(config.read_bytes(), original_config)
+        self.run_command(["-m", "ruff", "check", "."])
+        self.assertNotEqual(source.read_bytes(), before)
+
+    def test_cache_disabled_checks_preserve_the_project_file_inventory(self) -> None:
+        shutil.copytree(FIXTURES / "check-only/project", self.project)
+        before = {
+            path.relative_to(self.project): path.read_bytes()
+            for path in self.project.rglob("*")
+            if path.is_file()
+        }
+        lint = self.run_command(
+            ["-B", "-m", "ruff", "check", "--no-fix", "--no-cache", "."]
+        )
+        formatting = self.run_command(
+            ["-B", "-m", "ruff", "format", "--check", "--no-cache", "."]
+        )
+        behavior = self.run_command(["-B", "-m", "unittest", "discover", "-s", "tests"])
+        self.assertNotEqual(lint.returncode, 0)
+        self.assertNotEqual(formatting.returncode, 0)
+        self.assertEqual(behavior.returncode, 0, behavior.stderr)
+        after = {
+            path.relative_to(self.project): path.read_bytes()
+            for path in self.project.rglob("*")
+            if path.is_file()
+        }
+        self.assertEqual(after, before)
 
 
 if __name__ == "__main__":

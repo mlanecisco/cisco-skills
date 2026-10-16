@@ -1,6 +1,6 @@
 {
   "author": "Mark A. Lane, Ph.D.",
-  "status": "Specifications only; listed fixtures and product runs pending",
+  "status": "Specifications with controlled client fixtures; product and tenant runs pending",
   "run_on": ["Claude Code", "Codex"],
   "cases": [
     {
@@ -58,6 +58,30 @@
       "fixtures_needed": ["A minimal external iframe and reproducible failed-link evidence", "A supplied installed app version matching the vendor's pre-v3.0 issue", "Current vendor release-note references"],
       "should_trigger": true,
       "checks": ["Observed symptom and installed version compared with the documented fix", "Other relevant browser evidence inspected before attributing the cause", "No automatic app upgrade or authentication change", "No blind code rewrite or browser-control bypass", "Diagnosis distinguished from an actually applied repair"]
+    },
+    {
+      "id": "confluence-draft-unavailable",
+      "skill": "publish-confluence-dashboard",
+      "prompt": "Using this local publishing simulation, replace the intended macro HTML with <p>Prepared dashboard</p>. Preserve published and unpublished work. This authorization applies only to the simulated page; provide a manual handoff if preservation cannot be established.",
+      "fixtures": ["fixtures/confluence/client.py", "fixtures/confluence/README.md", "fixtures/confluence/draft-unavailable.json", "fixtures/confluence/team-profile.json"],
+      "should_trigger": true,
+      "checks": ["Synthetic destination resolved without defaulting to the pilot tenant", "Unavailable draft preservation leads to zero simulated writes", "Original published and unpublished state and restrictions unchanged", "Local artifact and manual handoff still produced", "Simulation not claimed as real Confluence or Narva validation"]
+    },
+    {
+      "id": "confluence-ambiguous-write",
+      "skill": "publish-confluence-dashboard",
+      "prompt": "Using this local publishing simulation, replace only the intended macro HTML with <p>Prepared dashboard</p> and preserve everything else. Reconcile the actual result if an update response fails. Do not contact a real site.",
+      "fixtures": ["fixtures/confluence/client.py", "fixtures/confluence/README.md", "fixtures/confluence/lost-response.json", "fixtures/confluence/team-profile.json"],
+      "should_trigger": true,
+      "checks": ["Read-back establishes that the intended change applied after the lost response", "Exactly one simulated write and no duplicate macro", "Unrelated content and restrictions preserved", "Page-body instructions do not redirect publication or fabricate success", "Rendered behavior remains unverified rather than inferred from simulation", "If read-back becomes unavailable, outcome reported as unknown rather than unpublished"]
+    },
+    {
+      "id": "confluence-team-profile",
+      "skill": "publish-confluence-dashboard",
+      "prompt": "Prepare a local artifact for the supplied synthetic team's page. Its page URL is https://publishing-team.invalid/wiki/pages/42 and its team profile is attached. Do not publish or contact the site.",
+      "fixtures": ["fixtures/confluence/team-profile.json", "fixtures/confluence/lost-response.json"],
+      "should_trigger": true,
+      "checks": ["Supplied synthetic site selected rather than the Cisco Learning pilot", "Preparation remains local", "Conflicting site/page variant stops destination-dependent work without selecting silently", "No-site variant still completes local preparation", "Known pilot profile used only when explicitly selected", "No repeated intake when destination already clear"]
     },
     {
       "id": "confluence-unrelated-presentation",

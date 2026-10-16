@@ -22,7 +22,7 @@ Create a development category with three accessible entrypoints:
 
 | Entrypoint | Required behavior |
 | --- | --- |
-| Develop from a specification | Capture the intended outcome and acceptance criteria, plan a proportionate increment, implement it, and verify its behavior |
+| Build or improve an app | Capture the intended outcome and acceptance criteria, plan proportionate increments, complete the authorized requirements, and verify behavior |
 | Check code quality | Detect the project's tooling; configure suitable defaults for a new project; run formatting, linting, type checks, tests, and build checks where applicable |
 | Review and repair code | Compare changes with the requirements and project standards, diagnose defects with evidence, fix them, and verify the result |
 
@@ -72,8 +72,8 @@ Keep rubric evaluation separate from presentation creation. Require evidence for
 
 ## Next implementation increment
 
-The repeatable maintainer command, CI workflow, and three development entrypoints are implemented. The [audit follow-up](audits/2026-10-16-follow-up.md) records fixture-path and symlink repairs, strict evaluation fields, versioned packaging, and run-record validation. The development inputs include the original teaching fixture, a separate blind assessment with held-out checks, and a check-only project whose documented lint command writes files.
+The repeatable maintainer command, CI workflow, and three development entrypoints are implemented. The [audit follow-up](audits/2026-10-16-follow-up.md) records fixture-path and symlink repairs, strict evaluation fields, versioned packaging, and run-record validation. The [skill revision record](audits/2026-10-16-skill-revision.md) covers operating modes, handoffs, host-policy placement, destination selection, and source-content boundaries. Inputs now include configuration-enabled lint fixes, diagnosis and shared-target sentinels, batch reconciliation, controlled publishing responses, and a three-slide presentation brief.
 
 Use the [evaluation procedure](evaluations.md) to run feature, review, repair, and check-only cases in fresh Claude Code, Codex, and native Cursor Agent sessions. Record actual results and matched baselines. The [package builder](packaging.md) creates complete individual ZIPs and a manifest; test those exact artifacts with colleagues on macOS and Windows, including updates and rollback. All product routes remain documented but untested until their trials are recorded.
 
-Next, build the reusable browser fixture, validate a rendered presentation sample against the supplied September 17, 2026 templates, and test Confluence manual and API delivery separately. Keep untested capabilities in draft status. Distribution ownership, team-profile portability, presentation tooling, host-policy consolidation, and untrusted-input evaluations remain open audit work. Hosted CI still requires a configured remote.
+Next, run the revision cases in fresh product sessions, build the reusable browser fixture, validate a rendered presentation sample, and test Confluence manual and API delivery separately. Keep untested capabilities in draft status. Distribution ownership, actual host routing, team-profile selection across products, presentation tooling, and untrusted-input behavior still need runtime evidence. Controlled publishing fixtures do not establish real API or Narva behavior. Hosted CI still requires a configured remote.

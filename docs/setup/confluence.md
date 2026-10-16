@@ -8,6 +8,8 @@ status: Vendor-documentation-based guide; Cisco user walkthrough pending
 
 This guide covers Confluence Cloud at `cisco-learning.atlassian.net`, using Narva Software's HTML Macro for Confluence. The documented pilot configuration lists HTML & Iframe Embed and Advanced HTML & Iframe Embed. Their installed version and exact controls have not yet been checked.
 
+Use this destination when the request or active team configuration selects the Cisco Learning pilot. The skill includes an explicit [pilot profile](../../skills/publish-confluence-dashboard/assets/team-profiles/cisco-learning.json); other teams should supply their own destination. Follow [destination selection](../../skills/publish-confluence-dashboard/references/team-profile.md) and resolve any site/page mismatch before publishing.
+
 You can build and prepare the dashboard in Cursor, Claude Code, or Codex. Confluence is the publishing destination. Install the [publish-confluence-dashboard skill](../../skills/publish-confluence-dashboard/SKILL.md) in your coding product using its [setup guide](README.md).
 
 ## Choose how to publish

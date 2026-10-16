@@ -6,6 +6,8 @@ status: Configuration guidance; runtime behavior not yet benchmarked
 
 # Model routing
 
+Apply a product section only when that host and its configured capabilities match the session. Preserve active user and project selections. Native Cursor Agent and unfamiliar hosts have no routing profile here: use the current suitable model directly, without inventing switching or installing adapters. Codex inside an editor uses the Codex route only when its actual controls are available. Do not substitute another vendor's models without an authorized configured integration.
+
 ## Claude Code
 
 Use `claude-sonnet-5-5` for the main session. Route simple extraction, classification, and repetitive subtasks to `claude-haiku-5-5`. Reserve `claude-opus-5-5` for exceptionally difficult work that needs a focused expert pass.

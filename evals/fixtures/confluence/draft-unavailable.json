@@ -1,0 +1,10 @@
+{
+  "site": "https://publishing-team.invalid",
+  "page_id": "42",
+  "version": 4,
+  "published": {"intro": "Keep this introduction.", "macro": {"type": "synthetic-html", "html": "<p>Old dashboard</p>"}, "other": "Keep this table."},
+  "draft": {"intro": "Unpublished work must survive.", "macro": {"type": "synthetic-html", "html": "<p>Old dashboard</p>"}, "other": "Keep this table."},
+  "draft_available": false,
+  "restrictions": ["synthetic-team-only"],
+  "writes": 0
+}

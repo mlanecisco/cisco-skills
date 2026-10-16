@@ -11,8 +11,8 @@ Build individual ZIPs from complete skill folders. The output includes a release
 From the library root, using the [maintainer environment](maintaining.md):
 
 ```bash
-.venv/bin/python -m scripts.package_skills --version 0.1.0-pilot.2
-.venv/bin/python -m scripts.package_skills --verify dist/0.1.0-pilot.2
+.venv/bin/python -m scripts.package_skills --version 0.1.0-pilot.3
+.venv/bin/python -m scripts.package_skills --verify dist/0.1.0-pilot.3
 ```
 
 In Windows PowerShell, replace `.venv/bin/python` with `.\.venv\Scripts\python.exe`. To package selected skills, repeat `--skill`, for example `--skill develop-from-spec --skill check-code-quality`. `--output` selects another destination. The builder refuses to overwrite an existing output directory; use a new version or location for a revised candidate.

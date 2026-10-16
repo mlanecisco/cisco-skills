@@ -16,14 +16,14 @@ For people building apps without a software background, the development workflow
 
 Six draft skills capture the current priorities:
 
-| Skill | Purpose | Status |
+| What you want to do | Purpose | Status |
 | --- | --- | --- |
-| [cisco-presentation](skills/cisco-presentation/SKILL.md) | Create and edit presentations using a supplied Cisco template and its font variant | Draft; 2026 Inter templates inspected; rendered sample pending |
-| [efficient-workflow](skills/efficient-workflow/SKILL.md) | Control context, model routing, reasoning effort, and repeated work | Draft; needs runtime benchmarks |
-| [develop-from-spec](skills/develop-from-spec/SKILL.md) | Build apps from requirements with sensible defaults, common failure checks, tests, and review | Draft; product evaluations pending |
-| [check-code-quality](skills/check-code-quality/SKILL.md) | Discover and run formatting, lint, type, test, and build checks | Draft; product evaluations pending |
-| [review-and-repair-code](skills/review-and-repair-code/SKILL.md) | Review changes or reproduce and repair defects while preserving request scope | Draft; product evaluations pending |
-| [publish-confluence-dashboard](skills/publish-confluence-dashboard/SKILL.md) | Prepare and publish HTML or iframe dashboards using Narva's Confluence Cloud app | Draft; Cisco site walkthrough and product evaluations pending |
+| [Create a Cisco presentation](skills/cisco-presentation/SKILL.md) | Create and edit presentations using a supplied Cisco template and its font variant | Draft; 2026 Inter templates inspected; rendered sample pending |
+| [Work efficiently on large or repetitive tasks](skills/efficient-workflow/SKILL.md) | Control context, model routing, reasoning effort, and repeated work | Draft; needs runtime benchmarks |
+| [Build or improve an app](skills/develop-from-spec/SKILL.md) | Turn conversational requirements into working software with sensible defaults, tests, and review | Draft; product evaluations pending |
+| [Check code quality](skills/check-code-quality/SKILL.md) | Run, configure, or fix formatting, lint, type, test, and build checks within the requested scope | Draft; product evaluations pending |
+| [Review, diagnose, or repair code](skills/review-and-repair-code/SKILL.md) | Investigate existing apps or changes, preserving diagnosis-only and review-only scope | Draft; product evaluations pending |
+| [Publish a Confluence dashboard](skills/publish-confluence-dashboard/SKILL.md) | Prepare and publish HTML or iframe dashboards using Narva's Confluence Cloud app | Draft; tenant walkthrough and product evaluations pending |
 
 For Cisco brand guidance and approved assets, visit the [Cisco Brand Exchange employee collection](https://bx.cisco.com/cisco-brand-exchange/employee). Sign in with Cisco SSO to find current resources for your deliverable.
 
@@ -33,11 +33,11 @@ The [build plan](docs/build-plan.md) sets the implementation order and acceptanc
 
 For installation on macOS and Windows, start with the [setup guides](docs/setup/README.md). Maintainers can use the [repeatable check command](docs/maintaining.md). The [development evaluations](evals/development-cases.json) include a synthetic dashboard calculation fixture with known expected results.
 
-The [evaluation guide](docs/evaluations.md) explains the pilot procedure, blind review and check-only fixtures, and run records with explicit evaluator attribution. The [packaging guide](docs/packaging.md) covers versioned skill ZIPs, manifests, verification, updates, and rollback. The current local draft candidate is `0.1.0-pilot.2`. All product routes remain documented but untested in colleague walkthroughs. Native Cursor Agent is included in the development pilot alongside Claude Code and Codex.
+The [evaluation guide](docs/evaluations.md) explains the pilot procedure, runnable fixtures, and run records with explicit evaluator attribution. Inputs now cover configuration-enabled lint fixes, diagnosis around stored data, incomplete batches, and controlled publishing responses. The [packaging guide](docs/packaging.md) covers versioned skill ZIPs, manifests, verification, updates, and rollback. The current local draft candidate is `0.1.0-pilot.3`. All product routes remain documented but untested in colleague walkthroughs. Native Cursor Agent is included in the development pilot alongside Claude Code and Codex.
 
 [Novice development cases](evals/novice-development-cases.json) specify checks for lost records, exposed credentials, incomplete access controls, failed saves, hosting mismatches, and excessive repair attempts. Their listed fixtures and product runs remain pending.
 
-For Confluence delivery, use the [Narva publishing guide](docs/setup/confluence.md), which covers manual insertion and agent publishing through the API. The known Cisco destination is Confluence Cloud at `cisco-learning.atlassian.net`, using HTML & Iframe Embed and Advanced HTML & Iframe Embed. [Confluence evaluations](evals/confluence-cases.json) specify packaging, authentication, blocked-resource, version, and published-view checks; their fixtures and runs remain pending.
+For Confluence delivery, use the [Narva publishing guide](docs/setup/confluence.md), which covers manual insertion and agent publishing through the API. Select the destination from the request or an active team profile. The bundled [Cisco Learning pilot profile](skills/publish-confluence-dashboard/assets/team-profiles/cisco-learning.json) records `cisco-learning.atlassian.net` and its supplied macro names; it is not a default for other teams. [Confluence evaluations](evals/confluence-cases.json) include local draft-preservation and lost-response scenarios. Live authentication, macro, and published-view trials remain pending.
 
 ## Library design
 
@@ -90,8 +90,8 @@ For broader team distribution, use verified packages and an installation guide. 
 
 A release needs correct triggering, valid artifacts, appropriate handling of missing inputs, and successful use in both target products. Check cases that should not activate the skill, as well as ordinary and difficult requests. For efficiency, compare total usage and quality against the same baseline task. A valid `SKILL.md` alone does not establish those results.
 
-The latest local maintainer run passed linting, formatting, type checking, 61 regression tests, and structural validation of six skills and 35 evaluation definitions. The tests cover package integrity, independent evaluator attribution, run-record consistency, and the teaching and assessment fixtures. Those checks do not execute the skills in the target products. Completed product evaluations are not recorded, and 23 cases still list inputs that must be created or supplied. No measured token savings, completed platform installation walkthroughs, or validated presentation sample is claimed.
+The latest local maintainer run passed linting, formatting, type checking, 75 regression tests, and structural validation of six skills and 46 evaluation definitions. Tests cover packaging, evaluator attribution, run records, calculation fixtures, non-fixing checks, isolated data targets, batch integrity, and the controlled publishing client. Those checks do not execute the skills in the target products. Completed product evaluations are not recorded, and 21 cases still list inputs that must be created or supplied. No measured token savings, completed platform installation walkthroughs, or validated presentation sample is claimed.
 
-The [validator](scripts/validate_library.py) checks local Markdown links throughout each skill, rejects symlinked skill resources, requires existing relative local fixture paths, and rejects unknown evaluation fields and unsupported suite locations. The maintainer command also validates retained run records. The [audit follow-up](docs/audits/2026-10-16-follow-up.md) records addressed findings and remaining work.
+The [validator](scripts/validate_library.py) checks local Markdown links throughout each skill, rejects symlinked skill resources, requires existing relative local fixture paths, and rejects unknown evaluation fields and unsupported suite locations. The maintainer command also validates retained run records. The [audit follow-up](docs/audits/2026-10-16-follow-up.md) and [skill revision record](docs/audits/2026-10-16-skill-revision.md) distinguish implemented changes from pending product evidence.
 
 The repository has a local package builder and verifier, with no configured remote, published release, or bundled installer. Hosted CI has not run. The immediate milestone is a tested pilot release with recorded artifacts, quality checks, installation results, and usage measurements.

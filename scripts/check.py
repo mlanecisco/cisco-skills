@@ -8,7 +8,7 @@ from pathlib import Path
 def main() -> int:
     root = Path(__file__).resolve().parents[1]
     checks = [
-        ("Lint", ["-m", "ruff", "check", "."]),
+        ("Lint", ["-m", "ruff", "check", "--no-fix", "."]),
         ("Format", ["-m", "ruff", "format", "--check", "."]),
         ("Types", ["-m", "mypy"]),
         ("Regression tests", ["-m", "unittest", "discover", "-s", "tests", "-v"]),

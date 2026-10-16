@@ -1,0 +1,6 @@
+{
+  "profile_name": "Synthetic publishing team",
+  "site_url": "https://publishing-team.invalid",
+  "app": "Synthetic local publishing client",
+  "macro_names": ["synthetic-html"]
+}

@@ -1,0 +1,9 @@
+{
+  "profile_name": "Cisco Learning pilot",
+  "recorded": "2026-10-15",
+  "platform": "Confluence Cloud",
+  "site_url": "https://cisco-learning.atlassian.net",
+  "app": "HTML Macro for Confluence by Narva Software",
+  "macro_names": ["HTML & Iframe Embed", "Advanced HTML & Iframe Embed"],
+  "verification_status": "Supplied pilot configuration; tenant and installed controls unverified"
+}

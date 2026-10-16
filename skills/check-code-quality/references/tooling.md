@@ -22,13 +22,13 @@ Inspect `pyproject.toml`, dependency files, and the project's virtual environmen
 Examples for configured tools:
 
 ```bash
-python -m ruff check .
+python -m ruff check --no-fix .
 python -m ruff format --check .
 python -m mypy
 python -m unittest discover -s tests
 ```
 
-The bare mypy command needs configured targets. Use the existing pytest command instead of unittest when the project uses pytest. Do not introduce a second test framework just for a small change.
+Ruff configuration can enable fixes without a command-line fix flag. Use `--no-fix` for checking; inspect wrappers and other fix-related settings as well. Retain project rules and exclusions rather than using `--isolated`. The bare mypy command needs configured targets. Use the existing pytest command instead of unittest when the project uses pytest.
 
 ## Other stacks and mixed projects
 
@@ -36,4 +36,4 @@ Use the language's established tools and the repository's scripts. Identify whic
 
 ## Check versus fix
 
-Check modes should leave source files unchanged. Formatter write modes and automatic lint fixes need an editing request or existing authorization. Some formatters and linters overlap; choose a compatible combination and avoid conflicting style rules.
+Check-only work preserves source, configuration, lockfiles, and user data. Tools may still produce caches or build output. If the user prohibits those writes too, use supported no-write settings or an authorized disposable copy outside the protected project. A prohibition on all filesystem writes also applies outside that project. Report checks that cannot meet the requested limit. Formatter write modes and automatic lint fixes need existing editing authorization.

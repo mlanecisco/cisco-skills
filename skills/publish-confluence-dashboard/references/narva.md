@@ -6,18 +6,11 @@ status: Vendor-documentation-based draft; Cisco site walkthrough pending
 
 # Narva delivery guidance
 
-## Known Cisco configuration
+## Select the team configuration
 
-Pilot configuration recorded on October 15, 2026:
+Resolve the destination using [team-profile guidance](team-profile.md). The [Cisco Learning pilot profile](../assets/team-profiles/cisco-learning.json) records the supplied October 15, 2026 configuration; select it explicitly for that pilot. It is not a default destination for Cisco employees.
 
-| Setting | Value |
-| --- | --- |
-| Platform | Confluence Cloud |
-| Site | `https://cisco-learning.atlassian.net` |
-| App | HTML Macro for Confluence by Narva Software |
-| Macros used | HTML & Iframe Embed; Advanced HTML & Iframe Embed |
-
-Use this configuration for the Cisco pilot unless the user specifies another destination. The tenant has not been inspected. Installed version, exact editor controls, allowed domains, and page permissions remain unverified. Narva's current overview documents HTML & Iframe Embed; the Advanced macro name is recorded in the pilot configuration and has not been independently verified in the installed app. Confirm the installed editor rather than inventing differences between the two macros.
+The pilot tenant has not been inspected. Installed version, exact editor controls, allowed domains, and page permissions remain unverified. Narva's overview documents HTML & Iframe Embed; the Advanced macro name is recorded in the pilot profile and has not been independently verified in the installed app. Confirm the editor rather than inventing differences between the macros.
 
 ## Delivery routes
 
