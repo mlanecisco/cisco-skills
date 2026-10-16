@@ -8,7 +8,7 @@
       "skill": "cisco-presentation",
       "prompt": "Create a ten-minute Cisco leadership deck from this project brief using the supplied current PowerPoint template.",
       "fixtures": ["../docs/reference/Cisco_PowerPoint_Template_Light_09-17-2026_Inter.potx", "../docs/reference/Cisco_PowerPoint_Template_DARK_09-17-2026_Inter.potx"],
-      "fixtures_needed": ["A brief with known facts and chart values", "Mark's supplied Brand AI excerpts describing both the Inter transition and CiscoSansTT requirements for program ID lockups", "An approved existing program ID lockup to preserve"],
+      "fixtures_needed": ["A brief with known facts and chart values", "A Cisco Brand AI summary with excerpts describing both the Inter transition and CiscoSansTT requirements for program ID lockups", "An approved existing program ID lockup to preserve"],
       "should_trigger": true,
       "checks": ["Run separately with the supplied light and dark variants", "Template theme and layouts retained", "Inter SemiBold and Inter selected through the active slide-master theme rather than the older notes theme", "Explicit font overrides in reused content inspected", "Existing approved program ID lockup preserved without applying the presentation font transition to it", "Private policy excerpts attributed to the supplied evidence without claiming independent retrieval", "Claims and chart values match the brief", "Editable file opens", "Every slide rendered and inspected", "Author and classification follow supplied instructions; sample session IDs removed or replaced"]
     },

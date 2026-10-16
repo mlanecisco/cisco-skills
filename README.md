@@ -33,7 +33,7 @@ The [build plan](docs/build-plan.md) sets the implementation order and acceptanc
 
 For installation on macOS and Windows, start with the [setup guides](docs/setup/README.md). Maintainers can use the [repeatable check command](docs/maintaining.md). The [development evaluations](evals/development-cases.json) include a synthetic dashboard calculation fixture with known expected results.
 
-The [evaluation guide](docs/evaluations.md) explains the pilot procedure, blind review and check-only fixtures, and run records. The [packaging guide](docs/packaging.md) covers versioned skill ZIPs, manifests, verification, updates, and rollback. All product routes remain documented but untested in colleague walkthroughs. Native Cursor Agent is included in the development pilot alongside Claude Code and Codex.
+The [evaluation guide](docs/evaluations.md) explains the pilot procedure, blind review and check-only fixtures, and run records with explicit evaluator attribution. The [packaging guide](docs/packaging.md) covers versioned skill ZIPs, manifests, verification, updates, and rollback. The current local draft candidate is `0.1.0-pilot.2`. All product routes remain documented but untested in colleague walkthroughs. Native Cursor Agent is included in the development pilot alongside Claude Code and Codex.
 
 [Novice development cases](evals/novice-development-cases.json) specify checks for lost records, exposed credentials, incomplete access controls, failed saves, hosting mismatches, and excessive repair attempts. Their listed fixtures and product runs remain pending.
 
@@ -45,7 +45,7 @@ Maintain one source folder per skill under `skills/`, using the open Agent Skill
 
 Keep platform configuration separate from task instructions. A skill can describe routing, but the host must supply model access, delegation tools, and enforcement of spending limits. Platform examples belong beside the relevant skill. Avoid maintaining separate copies of its core instructions for each product.
 
-Keep Cisco templates and team knowledge distinct from personal preferences. Document authors, destinations, and presentation audiences come from the user or team configuration. This repository's documents are authored by Mark A. Lane, Ph.D.
+Keep Cisco templates and team knowledge distinct from personal preferences. Document authors, destinations, and presentation audiences come from the user or team configuration. Shared guidance identifies evidence by its source, version, date, and verification status.
 
 ## Model policy
 
@@ -90,7 +90,7 @@ For broader team distribution, use verified packages and an installation guide. 
 
 A release needs correct triggering, valid artifacts, appropriate handling of missing inputs, and successful use in both target products. Check cases that should not activate the skill, as well as ordinary and difficult requests. For efficiency, compare total usage and quality against the same baseline task. A valid `SKILL.md` alone does not establish those results.
 
-The latest local maintainer run passed linting, formatting, type checking, 58 regression tests, and structural validation of six skills and 35 evaluation definitions. The tests cover package integrity, run-record consistency, and the teaching and assessment fixtures. Those checks do not execute the skills in the target products. Completed product evaluations are not recorded, and 23 cases still list inputs that must be created or supplied. No measured token savings, completed platform installation walkthroughs, or validated presentation sample is claimed.
+The latest local maintainer run passed linting, formatting, type checking, 61 regression tests, and structural validation of six skills and 35 evaluation definitions. The tests cover package integrity, independent evaluator attribution, run-record consistency, and the teaching and assessment fixtures. Those checks do not execute the skills in the target products. Completed product evaluations are not recorded, and 23 cases still list inputs that must be created or supplied. No measured token savings, completed platform installation walkthroughs, or validated presentation sample is claimed.
 
 The [validator](scripts/validate_library.py) checks local Markdown links throughout each skill, rejects symlinked skill resources, requires existing relative local fixture paths, and rejects unknown evaluation fields and unsupported suite locations. The maintainer command also validates retained run records. The [audit follow-up](docs/audits/2026-10-16-follow-up.md) records addressed findings and remaining work.
 

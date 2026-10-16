@@ -8,7 +8,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from scripts.package_skills import AUTHOR, sha256, source_revision
+from scripts.package_skills import sha256, source_revision
 from scripts.validate_library import PLATFORMS, unique_json
 
 
@@ -31,7 +31,11 @@ def new_record(
     condition: str = "with-skills",
     invocation: str = "automatic",
     package_manifest: Path | None = None,
+    *,
+    evaluator: str,
 ) -> dict[str, Any]:
+    if not evaluator.strip():
+        raise ValueError("evaluator must be a nonempty name")
     root = root.resolve()
     case = find_case(root, case_id)
     revision, dirty = source_revision(root)
@@ -61,7 +65,7 @@ def new_record(
         package_hash = sha256(package_manifest)
     return {
         "schema_version": 1,
-        "author": AUTHOR,
+        "author": evaluator.strip(),
         "run_id": "",
         "case_id": case_id,
         "status": "planned",
@@ -389,6 +393,11 @@ def main() -> int:
     init.add_argument("--case", required=True)
     init.add_argument("--product", choices=sorted(PLATFORMS), required=True)
     init.add_argument(
+        "--evaluator",
+        required=True,
+        help="Name of the evaluator responsible for this run",
+    )
+    init.add_argument(
         "--condition", choices=["with-skills", "baseline"], default="with-skills"
     )
     init.add_argument(
@@ -411,6 +420,7 @@ def main() -> int:
                 args.condition,
                 args.invocation,
                 args.package_manifest,
+                evaluator=args.evaluator,
             )
             args.output.parent.mkdir(parents=True, exist_ok=True)
             with args.output.open("x", encoding="utf-8") as target:

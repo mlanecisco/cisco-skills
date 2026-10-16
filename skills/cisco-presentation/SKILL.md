@@ -3,7 +3,7 @@ name: cisco-presentation
 description: Create or edit Cisco presentations and PowerPoint decks using Cisco templates, theme colors, typography, and slide layouts. Use for Cisco slide creation or restyling; rubric grading belongs to a separate evaluation workflow.
 metadata:
   author: Mark A. Lane, Ph.D.
-  version: "0.2.0"
+  version: "0.2.1"
   status: draft
 ---
 

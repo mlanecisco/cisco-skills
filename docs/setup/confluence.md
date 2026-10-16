@@ -6,7 +6,7 @@ status: Vendor-documentation-based guide; Cisco user walkthrough pending
 
 # Publish a dashboard to Confluence
 
-This guide covers Confluence Cloud at `cisco-learning.atlassian.net`, using Narva Software's HTML Macro for Confluence. Mark reports that colleagues use HTML & Iframe Embed and Advanced HTML & Iframe Embed. Their installed version and exact controls have not yet been checked.
+This guide covers Confluence Cloud at `cisco-learning.atlassian.net`, using Narva Software's HTML Macro for Confluence. The documented pilot configuration lists HTML & Iframe Embed and Advanced HTML & Iframe Embed. Their installed version and exact controls have not yet been checked.
 
 You can build and prepare the dashboard in Cursor, Claude Code, or Codex. Confluence is the publishing destination. Install the [publish-confluence-dashboard skill](../../skills/publish-confluence-dashboard/SKILL.md) in your coding product using its [setup guide](README.md).
 

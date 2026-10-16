@@ -3,7 +3,7 @@ name: publish-confluence-dashboard
 description: Prepare, publish, or troubleshoot HTML dashboards in Confluence Cloud using Narva Software's HTML Macro for Confluence, including HTML & Iframe Embed and Advanced HTML & Iframe Embed. Use for dashboard embedding and delivery; dashboard creation and ordinary Confluence page writing are separate tasks.
 metadata:
   author: Mark A. Lane, Ph.D.
-  version: "0.2.0"
+  version: "0.2.1"
   status: draft
 ---
 

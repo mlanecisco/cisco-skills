@@ -8,7 +8,7 @@ status: Vendor-documentation-based draft; Cisco site walkthrough pending
 
 ## Known Cisco configuration
 
-Mark supplied these details on October 15, 2026:
+Pilot configuration recorded on October 15, 2026:
 
 | Setting | Value |
 | --- | --- |
@@ -17,7 +17,7 @@ Mark supplied these details on October 15, 2026:
 | App | HTML Macro for Confluence by Narva Software |
 | Macros used | HTML & Iframe Embed; Advanced HTML & Iframe Embed |
 
-Use this configuration for the Cisco pilot unless the user specifies another destination. The tenant has not been inspected. Installed version, exact editor controls, allowed domains, and page permissions remain unverified. Narva's current overview documents HTML & Iframe Embed; the Advanced macro name comes from Mark. Confirm the installed editor rather than inventing differences between the two macros.
+Use this configuration for the Cisco pilot unless the user specifies another destination. The tenant has not been inspected. Installed version, exact editor controls, allowed domains, and page permissions remain unverified. Narva's current overview documents HTML & Iframe Embed; the Advanced macro name is recorded in the pilot configuration and has not been independently verified in the installed app. Confirm the installed editor rather than inventing differences between the two macros.
 
 ## Delivery routes
 

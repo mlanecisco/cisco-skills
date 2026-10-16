@@ -6,7 +6,7 @@ status: User-supplied Cisco Brand AI excerpts; private source retrieval unavaila
 
 # Typography policy and evidence
 
-Mark supplied a Cisco Brand AI response on October 15, 2026, with policy excerpts and the source links below. The browser tool could not access the ZeroHeight pages, and the Brand Exchange asset required sign-in. Treat the excerpts as supplied evidence, not an independently completed review of those pages. Their publication dates, full context, and transition schedule have not been established.
+The policy excerpts below come from a Cisco Brand AI summary captured on October 15, 2026. The linked ZeroHeight pages and Brand Exchange asset have not been independently verified; the asset requires sign-in. Treat the excerpts as supplied evidence. Their publication dates, full context, and transition schedule have not been established.
 
 ## Transition to Inter
 
@@ -22,7 +22,7 @@ For presentation work, follow the selected current official template and record 
 
 The same response reports the following requirements:
 
-| Asset or context | Reported guidance | Source supplied by Mark |
+| Asset or context | Reported guidance | Source reference |
 | --- | --- | --- |
 | Program ID text lockups | Start with CiscoSansTT and use no other font | [Development and design](https://globalbrand.cisco.com/2bcbfdc58/v/latest/p/31cc3e-development-and-design) |
 | Cisco branded assets generally | An FAQ says to use only CiscoSans and consult Brand about specific questions | Brand Exchange FAQ result; no separate FAQ URL supplied |

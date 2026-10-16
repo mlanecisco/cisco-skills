@@ -12,7 +12,7 @@ Use the current official template and applicable guidance supplied for the team,
 
 Find brand guidance and approved assets in the [Cisco Brand Exchange employee collection](https://bx.cisco.com/cisco-brand-exchange/employee). The collection requires employee sign-in through Cisco SSO. If the agent cannot access it, have the user download the template or asset files needed for the task.
 
-Mark supplied the following files as current Cisco Brand templates. Both identify themselves as September 17, 2026 versions with an Inter font theme. They are stored in this repository's `docs/reference/` directory:
+The repository contains the following Cisco PowerPoint reference templates, identified as September 17, 2026 Inter variants, in `docs/reference/`:
 
 - `Cisco_PowerPoint_Template_Light_09-17-2026_Inter.potx`
 - `Cisco_PowerPoint_Template_DARK_09-17-2026_Inter.potx`
@@ -41,7 +41,7 @@ The templates resolve the earlier public-source discrepancy: stored Cisco Blue i
 
 ## Typography and layouts
 
-The supplied templates use Inter SemiBold for the Latin heading theme and Inter for the Latin body theme. Mark's Cisco Brand AI response reports a documented transition from CiscoSansTT to Inter. Use the selected template's theme for new presentation text; the transition does not establish that every asset-specific CiscoSansTT rule has been withdrawn. Read [typography policy and evidence](typography-policy.md) when guidance conflicts, a font variant is unclear, or an asset such as a program ID lockup has its own rules.
+The supplied templates use Inter SemiBold for the Latin heading theme and Inter for the Latin body theme. A Cisco Brand AI summary captured on October 15, 2026 reports a documented transition from CiscoSansTT to Inter. Use the selected template's theme for new presentation text; the transition does not establish that every asset-specific CiscoSansTT rule has been withdrawn. Read [typography policy and evidence](typography-policy.md) when guidance conflicts, a font variant is unclear, or an asset such as a program ID lockup has its own rules.
 
 Resolve the theme through the slide master's relationships. Both packages also contain an older CiscoSansTT theme for notes; it is not the active slide theme. Some sample slide text has explicit overrides: CiscoSansTT on slides 32, 47, 48, and 49, and Aptos on classification labels on slides 20, 21, 24, 25, and 26. Check reused content for intended formatting instead of assuming that a theme change updates every run. Preserve approved lockups and other supplied brand assets.
 

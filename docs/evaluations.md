@@ -32,10 +32,10 @@ For the check-only project, use its pinned Ruff dependency and an available Pyth
 From the library root, with the [maintainer environment](maintaining.md) available:
 
 ```bash
-.venv/bin/python -m scripts.evaluation_runs init --case review-dashboard-only --product Codex --package-manifest dist/0.1.0-pilot.1/manifest.json --output output/evaluations/review-codex.json
+.venv/bin/python -m scripts.evaluation_runs init --case review-dashboard-only --product Codex --evaluator "Evaluator Name" --package-manifest dist/0.1.0-pilot.2/manifest.json --output output/evaluations/review-codex.json
 ```
 
-In Windows PowerShell, replace `.venv/bin/python` with `.\.venv\Scripts\python.exe`. Choose the actual product name: `Claude Code`, `Codex`, or `Cursor` for these development trials. The record command also accepts `Claude Desktop` and `ChatGPT` for applicable future document trials.
+In Windows PowerShell, replace `.venv/bin/python` with `.\.venv\Scripts\python.exe`. Replace `Evaluator Name` with the person responsible for the evaluation; `--evaluator` is required and sets the record's `author` independently of package authorship. Choose the actual product name: `Claude Code`, `Codex`, or `Cursor` for these development trials. The record command also accepts `Claude Desktop` and `ChatGPT` for applicable future document trials.
 
 This command creates a **planned** record. It captures the current source revision, available package identity, and input hashes. It does not launch an agent, install a skill, measure usage, or record a successful run. Store the record outside the agent's test project because it includes evaluator criteria and input locations.
 

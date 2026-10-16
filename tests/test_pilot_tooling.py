@@ -51,7 +51,67 @@ class PilotToolingTests(unittest.TestCase):
         )
 
     def record(self) -> dict:
-        return new_record(self.root, "demo", "Codex")
+        return new_record(self.root, "demo", "Codex", evaluator="Pilot Evaluator")
+
+    def test_evaluator_identity_is_independent_of_package_authorship(self) -> None:
+        release = self.base / "release"
+        package = build_release(self.root, release, "0.1.0")
+        data = new_record(
+            self.root,
+            "demo",
+            "Codex",
+            package_manifest=release / "manifest.json",
+            evaluator="  Independent Evaluator  ",
+        )
+        self.assertEqual(data["author"], "Independent Evaluator")
+        self.assertNotEqual(data["author"], package["author"])
+        self.assertEqual(
+            data["source"]["package_manifest_sha256"], sha256(release / "manifest.json")
+        )
+        self.assertEqual(validate_record(data, self.case, self.root), [])
+
+    def test_empty_evaluator_identity_is_rejected(self) -> None:
+        with self.assertRaisesRegex(ValueError, "evaluator must be a nonempty name"):
+            new_record(self.root, "demo", "Codex", evaluator=" \t ")
+
+    def test_evaluation_cli_requires_and_uses_explicit_evaluator_identity(self) -> None:
+        output = self.base / "planned.json"
+        command = [
+            sys.executable,
+            "-m",
+            "scripts.evaluation_runs",
+            "--root",
+            str(self.root),
+            "init",
+            "--case",
+            "demo",
+            "--product",
+            "Codex",
+            "--output",
+            str(output),
+        ]
+        missing = subprocess.run(
+            command,
+            cwd=REPOSITORY,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(missing.returncode, 2)
+        self.assertIn("--evaluator", missing.stderr)
+        self.assertFalse(output.exists())
+        supplied = subprocess.run(
+            [*command, "--evaluator", "Pilot Reviewer"],
+            cwd=REPOSITORY,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(supplied.returncode, 0, supplied.stdout)
+        data = json.loads(output.read_text())
+        self.assertEqual(data["author"], "Pilot Reviewer")
+        self.assertEqual(data["status"], "planned")
+        self.assertIsNone(data["outcome"])
 
     def completed(self) -> dict:
         data = self.record()
