@@ -1,0 +1,26 @@
+[
+  {
+    "source_id": "row-01",
+    "category": "training"
+  },
+  {
+    "source_id": "row-02",
+    "category": "engineering"
+  },
+  {
+    "source_id": "row-03",
+    "category": "training"
+  },
+  {
+    "source_id": "row-04",
+    "category": "needs-review"
+  },
+  {
+    "source_id": "row-05",
+    "category": "engineering"
+  },
+  {
+    "source_id": "row-06",
+    "category": "training"
+  }
+]

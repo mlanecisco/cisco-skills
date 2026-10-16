@@ -1,0 +1,139 @@
+{
+  "format_version": 1,
+  "author": "Mark A. Lane, Ph.D.",
+  "release_version": "0.1.0-pilot.3",
+  "source_revision": "ee9c37a9c6ee5433fc22ae63da76a133f222256a",
+  "source_dirty": false,
+  "skills": [
+    {
+      "name": "check-code-quality",
+      "version": "0.2.1",
+      "status": "draft",
+      "archive": "check-code-quality-0.1.0-pilot.3.zip",
+      "sha256": "51bd3bc1915c1861c933523bb7504a1efbd707d9242a51ca3bad0817a4654adf",
+      "files": [
+        {
+          "path": "check-code-quality/SKILL.md",
+          "sha256": "91de634ae916400c0538febd2c422354b14b53515360fa996ca3f7ac9afdddb8"
+        },
+        {
+          "path": "check-code-quality/references/tooling.md",
+          "sha256": "775941a0de988e59960dbb142d566ee083aa06a5086ec39e5f853af3b46217dd"
+        }
+      ]
+    },
+    {
+      "name": "cisco-presentation",
+      "version": "0.2.2",
+      "status": "draft",
+      "archive": "cisco-presentation-0.1.0-pilot.3.zip",
+      "sha256": "f99ae6752d2797c49b6ba9ceaa5b04719460a3828d559e366fef2310cfe9fc6d",
+      "files": [
+        {
+          "path": "cisco-presentation/SKILL.md",
+          "sha256": "402232f279654ee9db01e0d3bfd0b78ce553b2e07e531d3f41c4db51c1060129"
+        },
+        {
+          "path": "cisco-presentation/references/brand.md",
+          "sha256": "97784ed0faaaf2d5255715661c47103b20231782a5e1df1e682dfe439a689bc0"
+        },
+        {
+          "path": "cisco-presentation/references/typography-policy.md",
+          "sha256": "2ae3e80eef45ef1c23df16cf429bcf938f5ad219007bc5663d47bc65f359a4a6"
+        }
+      ]
+    },
+    {
+      "name": "develop-from-spec",
+      "version": "0.2.1",
+      "status": "draft",
+      "archive": "develop-from-spec-0.1.0-pilot.3.zip",
+      "sha256": "cc48ad9a20c89ed8dce99c950925455ed620a03e0fd2755a9f9fbbb6adbde5c4",
+      "files": [
+        {
+          "path": "develop-from-spec/SKILL.md",
+          "sha256": "eb2ea188252fdaf53d4c0a011b61482c5831fb58a7995a7747e741e698feb19d"
+        },
+        {
+          "path": "develop-from-spec/references/app-foundations.md",
+          "sha256": "a2673ca116ac3e0f5502c74d62b2ec5254b8cd0dd5b7b33cf0c3fe5cb514a07c"
+        },
+        {
+          "path": "develop-from-spec/references/user-flows.md",
+          "sha256": "ed1fb895104810d9c98c1efa9903b745f84ab4e902509af83ec6381e294e58e6"
+        }
+      ]
+    },
+    {
+      "name": "efficient-workflow",
+      "version": "0.1.1",
+      "status": "draft",
+      "archive": "efficient-workflow-0.1.0-pilot.3.zip",
+      "sha256": "a17dff50cac4023e5525ba2259da0333076339fe59d8245d4dac5019fbdb820b",
+      "files": [
+        {
+          "path": "efficient-workflow/SKILL.md",
+          "sha256": "6f3c8149c4522e4c5b5ab48476c2f0beeafc2320ffbf4409e4629c6d3f943ce0"
+        },
+        {
+          "path": "efficient-workflow/assets/claude-code/agents/cisco-bulk-worker.md",
+          "sha256": "b7dff2e32e5b2ff20fef307c9ea340930e8060c93fc41b26cae88a9c6ca1d233"
+        },
+        {
+          "path": "efficient-workflow/assets/claude-code/agents/cisco-hard-problem.md",
+          "sha256": "2084dbef189ac430cba63cbd296b6164316a914c72b87cb57e447b1fd8586327"
+        },
+        {
+          "path": "efficient-workflow/assets/codex/agents/cisco-bulk-worker.toml",
+          "sha256": "c519ec28116ea0f46ebe0e739aeb750bcb19e19d53ec8b84bc68f2a57798c9df"
+        },
+        {
+          "path": "efficient-workflow/references/routing.md",
+          "sha256": "e1fd8295107cc8f506aeb668016a91bfcaa1fdc2524090400bfb81b873110c31"
+        }
+      ]
+    },
+    {
+      "name": "publish-confluence-dashboard",
+      "version": "0.2.2",
+      "status": "draft",
+      "archive": "publish-confluence-dashboard-0.1.0-pilot.3.zip",
+      "sha256": "ae97b9f1d850624b1cc6d9a8bd6988fd919791a9ea45fb69b15e50cb85c6e090",
+      "files": [
+        {
+          "path": "publish-confluence-dashboard/SKILL.md",
+          "sha256": "506a4ef7c4bb51382ed5be33523eab62636a96e337220b386db2c99fd1bb2daa"
+        },
+        {
+          "path": "publish-confluence-dashboard/assets/team-profiles/cisco-learning.json",
+          "sha256": "a80226463a72621cd93bc2999fa992d9a8f4b666cbcd937a2e815328c8e4c3fb"
+        },
+        {
+          "path": "publish-confluence-dashboard/references/authentication.md",
+          "sha256": "6ca260c1fa39fce7625534c1f884e8f2af04d47fc429c364219f9b08b7b78643"
+        },
+        {
+          "path": "publish-confluence-dashboard/references/narva.md",
+          "sha256": "e880c8ada3438105ecbd42313e445588fd4d0a712563c2139875785d2491592e"
+        },
+        {
+          "path": "publish-confluence-dashboard/references/team-profile.md",
+          "sha256": "20564b0083438741f2b81511527e66f440d158c17821d87c3e52a47c4d338915"
+        }
+      ]
+    },
+    {
+      "name": "review-and-repair-code",
+      "version": "0.2.1",
+      "status": "draft",
+      "archive": "review-and-repair-code-0.1.0-pilot.3.zip",
+      "sha256": "ff7c6f430a37ce3aab0252dc4c5468109ab74a660e46b09993f763ea063c2251",
+      "files": [
+        {
+          "path": "review-and-repair-code/SKILL.md",
+          "sha256": "3ae019bae5ec68ed6061dbcb0349dd5aa64937d65958d463836b1be2e4e4b4a9"
+        }
+      ]
+    }
+  ]
+}

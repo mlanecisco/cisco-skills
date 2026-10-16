@@ -3,7 +3,7 @@ name: efficient-workflow
 description: Reduce token use in substantial or repetitive work through selective context, scripts, bounded delegation, and task-appropriate models and reasoning. Use when the user requests efficiency, model routing, cost control, or high-volume processing.
 metadata:
   author: Mark A. Lane, Ph.D.
-  version: "0.1.1"
+  version: "0.1.2"
   status: draft
 ---
 
@@ -15,7 +15,7 @@ Complete the requested outcome with the least unnecessary model work. Preserve c
 
 For a small task, work directly. Use scripts for deterministic operations such as counting, sorting, format conversion, and repeated calculations. Delegate independent work only when its benefit justifies worker context, coordination, and verification costs. Direct execution may already be cheaper.
 
-Use the model policy in [routing](references/routing.md) for the active product. Read only the relevant product section. A skill supplies guidance; the host supplies actual model selection, delegation, and usage controls. If a requested model or capability is unavailable, say so and continue with an available suitable approach without claiming that routing occurred.
+For direct work with a suitable active model, skip the routing reference. Read the relevant product section of [routing](references/routing.md) only when model selection or delegation is needed. The host supplies actual selection, delegation, and usage controls. If a requested capability is unavailable, continue with a suitable approach and disclose the limitation without claiming routing occurred.
 
 Keep explicit budgets, authorized scope, and active user or project model settings. Reasoning guidance applies where the host exposes suitable controls; it does not imply the agent can change its own runtime. With no applicable routing profile, use the current suitable model directly. Do not install adapters or change account configuration for an ordinary task.
 

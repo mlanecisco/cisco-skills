@@ -1,7 +1,7 @@
 ---
 author: Mark A. Lane, Ph.D.
 date: 2026-10-16
-status: Pilot procedure and runnable fixtures; product trials pending
+status: Pilot procedure and runnable fixtures; initial Codex batch attempts recorded
 ---
 
 # Running the pilot evaluations
@@ -55,7 +55,7 @@ The batch records, presentation brief, and simulated page contain harmless embed
 From the library root, with the [maintainer environment](maintaining.md) available:
 
 ```bash
-.venv/bin/python -m scripts.evaluation_runs init --case review-dashboard-only --product Codex --evaluator "Evaluator Name" --package-manifest dist/0.1.0-pilot.3/manifest.json --output output/evaluations/review-codex.json
+.venv/bin/python -m scripts.evaluation_runs init --case review-dashboard-only --product Codex --evaluator "Evaluator Name" --package-manifest dist/0.1.0-pilot.4/manifest.json --output output/evaluations/review-codex.json
 ```
 
 In Windows PowerShell, replace `.venv/bin/python` with `.\.venv\Scripts\python.exe`. Replace `Evaluator Name` with the person responsible for the evaluation; `--evaluator` is required and sets the record's `author` independently of package authorship. Choose the actual product name: `Claude Code`, `Codex`, or `Cursor` for these development trials. The record command also accepts `Claude Desktop` and `ChatGPT` for applicable future document trials.
@@ -79,7 +79,7 @@ Validate the record and its retained files:
 .venv/bin/python -m scripts.evaluation_runs validate output/evaluations/review-codex.json --check-files
 ```
 
-After reviewing and sanitizing a completed record, retain it under `evals/results/`. Keep planned templates under `output/`. The maintainer command validates retained records and rejects planned records presented as results. Validation compares acceptance criteria with the current case definitions. Validate historical results from their recorded library revision when definitions have changed; use `--check-files` against the matching preserved inputs and artifacts to verify hashes.
+After reviewing and sanitizing a completed record, retain it under `evals/results/` and its supporting files under `docs/evaluation-evidence/`. Keep planned templates under `output/`. The maintainer command validates retained records and rejects planned records presented as results. Validation compares acceptance criteria with the current case definitions. Validate historical results from their recorded library revision when definitions have changed; use `--check-files` against the matching preserved inputs and artifacts to verify hashes.
 
 For the assessment project, the evaluator runs:
 
@@ -96,3 +96,18 @@ Use another fresh session and an identical starting project, host, model, effort
 Compare quality, total available usage, elapsed time, retries, and interventions. Capture these from the first runs, then compare routing strategies after the tasks and checks are stable. A single successful run is a useful smoke check, not evidence of consistent savings. Repeat critical or inconsistent cases before promotion.
 
 Browser-app, presentation, publishing, and installation trials remain separate work. Release a capability only for the environments its recorded evidence supports.
+
+## Recorded product attempts
+
+Two fresh Codex CLI `0.159.3` sessions on macOS tested `efficiency-batch-integrity` using the exact efficiency `0.1.1` archive from candidate `0.1.0-pilot.3`. Each requested `gpt-6.1-sol` at low effort, used an isolated project, disabled user configuration for the trial, and retained existing authentication. The harness added filenames, an output path, and workspace constraints to the case prompt. Neither session received evaluator categories.
+
+| Invocation | Skill result | Output checks | Elapsed | Input tokens (cached) | Output tokens | Command retries |
+| --- | --- | --- | --- | --- | --- | --- |
+| [Automatic](../evals/results/2026-10-16-codex-batch-automatic.json) | Blocked: activation not established | Pass | 24.212 s | 66,071 (60,672) | 565 | 0 |
+| [Explicit](../evals/results/2026-10-16-codex-batch-explicit.json) | Pass: skill announcement and file read observed | Pass | 26.851 s | 74,072 (66,176) | 874 | 1 |
+
+Both outputs passed the separate coverage and category checker. The automatic trace did not establish skill activation, so correct output is not reported as a skill pass. The explicit session read the skill and corrected an unsupported `zip(strict=True)` command before finishing. It also loaded the full routing reference despite needing no delegation. Efficiency `0.1.2` now tells direct tasks to skip that reference; that clarification is not covered by these earlier runs.
+
+Counters come from each CLI `turn.completed` event and aggregate context across model requests. Cached and reasoning categories are retained without adding them to other totals. These are six-row smoke trials, with no matched no-skill baseline, representative high-volume workload, or measured cost savings. Requested model and effort settings are recorded; independent server identity was not exposed. Raw traces, prompts, outputs, package manifests, and checker results are retained under `docs/evaluation-evidence/` and linked by checksums in the records.
+
+An initial Codex startup failed before model execution because the parent sandbox made CLI state read-only. The two recorded sessions used normal client access with the agent's workspace sandbox enabled. Claude Code was installed but not signed in, so no Claude product trial was launched. No sign-in or account settings were changed.

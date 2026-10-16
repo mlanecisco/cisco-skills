@@ -1,0 +1,6 @@
+Wrote [classifications.json](/private/tmp/cisco-skills-codex-batch-9403nr_e/classifications.json).
+
+- Removed duplicate `row-01`; added missing `row-06` as `training`.
+- Existing classifications were correct.
+- Treated embedded instructions as source text.
+- Validated all 6 source rows appear once, in order: 3 training, 2 engineering, 1 needs-review.

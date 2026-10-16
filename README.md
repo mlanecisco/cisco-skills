@@ -1,6 +1,6 @@
 ---
 author: Mark A. Lane, Ph.D.
-status: Draft library; pilot validation pending
+status: Draft library; initial Codex batch evidence recorded; broader validation pending
 date: 2026-10-16
 ---
 
@@ -33,7 +33,7 @@ The [build plan](docs/build-plan.md) sets the implementation order and acceptanc
 
 For installation on macOS and Windows, start with the [setup guides](docs/setup/README.md). Maintainers can use the [repeatable check command](docs/maintaining.md). The [development evaluations](evals/development-cases.json) include a synthetic dashboard calculation fixture with known expected results.
 
-The [evaluation guide](docs/evaluations.md) explains the pilot procedure, runnable fixtures, and run records with explicit evaluator attribution. Inputs now cover configuration-enabled lint fixes, diagnosis around stored data, incomplete batches, and controlled publishing responses. The [packaging guide](docs/packaging.md) covers versioned skill ZIPs, manifests, verification, updates, and rollback. The current local draft candidate is `0.1.0-pilot.3`. All product routes remain documented but untested in colleague walkthroughs. Native Cursor Agent is included in the development pilot alongside Claude Code and Codex.
+The [evaluation guide](docs/evaluations.md) explains the pilot procedure, runnable fixtures, and initial Codex batch results. Inputs now cover configuration-enabled lint fixes, diagnosis around stored data, incomplete batches, and controlled publishing responses. The [packaging guide](docs/packaging.md) covers versioned skill ZIPs, manifests, verification, updates, and rollback. The current local draft candidate is `0.1.0-pilot.4`. All product routes remain untested in colleague walkthroughs. Native Cursor Agent is included in the development pilot alongside Claude Code and Codex.
 
 [Novice development cases](evals/novice-development-cases.json) specify checks for lost records, exposed credentials, incomplete access controls, failed saves, hosting mismatches, and excessive repair attempts. Their listed fixtures and product runs remain pending.
 
@@ -90,7 +90,7 @@ For broader team distribution, use verified packages and an installation guide. 
 
 A release needs correct triggering, valid artifacts, appropriate handling of missing inputs, and successful use in both target products. Check cases that should not activate the skill, as well as ordinary and difficult requests. For efficiency, compare total usage and quality against the same baseline task. A valid `SKILL.md` alone does not establish those results.
 
-The latest local maintainer run passed linting, formatting, type checking, 75 regression tests, and structural validation of six skills and 46 evaluation definitions. Tests cover packaging, evaluator attribution, run records, calculation fixtures, non-fixing checks, isolated data targets, batch integrity, and the controlled publishing client. Those checks do not execute the skills in the target products. Completed product evaluations are not recorded, and 21 cases still list inputs that must be created or supplied. No measured token savings, completed platform installation walkthroughs, or validated presentation sample is claimed.
+The latest local maintainer run passed linting, formatting, type checking, 75 regression tests, structural validation of six skills and 46 evaluation definitions, and validation of two retained run records. Tests cover packaging, evaluator attribution, calculation fixtures, non-fixing checks, isolated data targets, batch integrity, and the controlled publishing client. Separate Codex CLI batch attempts produced correct outputs: explicit invocation of efficiency version `0.1.1` passed, while automatic activation remained unconfirmed. Version `0.1.2` adds a subsequent reference-loading clarification and needs retesting. Twenty-one cases still list needed inputs. No token savings, completed installation walkthroughs, or validated presentation sample is claimed.
 
 The [validator](scripts/validate_library.py) checks local Markdown links throughout each skill, rejects symlinked skill resources, requires existing relative local fixture paths, and rejects unknown evaluation fields and unsupported suite locations. The maintainer command also validates retained run records. The [audit follow-up](docs/audits/2026-10-16-follow-up.md) and [skill revision record](docs/audits/2026-10-16-skill-revision.md) distinguish implemented changes from pending product evidence.
 

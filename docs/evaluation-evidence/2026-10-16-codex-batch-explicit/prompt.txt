@@ -1,0 +1,3 @@
+Use $efficient-workflow at .agents/skills/efficient-workflow/SKILL.md to complete this request.
+Check these candidate batch classifications against the source records and criteria. Reconcile coverage, correct problems, and return complete results. Do not delegate this small task.
+Source inputs are records.json, criteria.md, and incomplete-output.json. Write the complete result to classifications.json and give a concise check summary. Work only in this assessment project; do not access credentials, use network tools, delegate, or change account settings.

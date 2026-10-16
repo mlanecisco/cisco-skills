@@ -1,0 +1,6 @@
+Created [classifications.json](/private/tmp/cisco-skills-codex-batch-n3p1rzke/classifications.json).
+
+- Removed duplicate `row-01`; added missing `row-06` as `training`.
+- Preserved repeated source text as separate rows.
+- Reviewed all classifications: 3 training, 2 engineering, 1 needs-review.
+- Validated JSON, required fields, source order, and exact coverage of all 6 records.
