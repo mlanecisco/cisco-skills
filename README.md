@@ -1,7 +1,7 @@
 ---
 author: Mark A. Lane, Ph.D.
 status: Draft library; pilot validation pending
-date: 2026-10-15
+date: 2026-10-16
 ---
 
 # Cisco skills library
@@ -32,6 +32,8 @@ The [source review](docs/source-review.md) records the materials reviewed and th
 The [build plan](docs/build-plan.md) sets the implementation order and acceptance criteria, including development workflows, automated quality checks, and efficiency benchmarks.
 
 For installation on macOS and Windows, start with the [setup guides](docs/setup/README.md). Maintainers can use the [repeatable check command](docs/maintaining.md). The [development evaluations](evals/development-cases.json) include a synthetic dashboard calculation fixture with known expected results.
+
+The [evaluation guide](docs/evaluations.md) explains the pilot procedure, blind review and check-only fixtures, and run records. The [packaging guide](docs/packaging.md) covers versioned skill ZIPs, manifests, verification, updates, and rollback. All product routes remain documented but untested in colleague walkthroughs. Native Cursor Agent is included in the development pilot alongside Claude Code and Codex.
 
 [Novice development cases](evals/novice-development-cases.json) specify checks for lost records, exposed credentials, incomplete access controls, failed saves, hosting mismatches, and excessive repair attempts. Their listed fixtures and product runs remain pending.
 
@@ -69,11 +71,11 @@ GitHub Pages hosting and applications that need a backend require different depl
 
 ## Next steps
 
-1. Run the development pilot in Claude Code and Codex. Use the existing feature, review, and repair fixtures, then add a browser app covering saved records, filters, exports, and failed requests. Record actual results and user interventions.
+1. Run the development pilot in Claude Code, Codex, and native Cursor Agent using the evaluation guide. Use the feature, blind review, repair, and check-only fixtures, then add a browser app covering saved records, filters, exports, and failed requests. Record actual results and user interventions.
 2. Benchmark token efficiency alongside those tasks. Compare direct execution with selective delegation using the same inputs and acceptance criteria. Include coordinator usage, retries, latency, and result quality; cumulative budget enforcement still needs runtime implementation.
 3. Validate the Cisco business workflows. Generate an editable presentation and inspect every rendered slide. Test Confluence manual insertion and API publishing on a designated test page, including the actual Narva macro representation, interactions, and viewer access.
 4. Build dashboard design and GitHub Pages publishing skills. Use representative dashboard examples to establish visual conventions and reuse a synthetic dashboard across development and delivery evaluations.
-5. Package a tested pilot release. Simplify installation and updates, provide complete skill ZIPs and a short first-task walkthrough, and test with colleagues on both operating systems. Configure the team repository and run hosted CI.
+5. Validate a pilot release with colleagues on both operating systems using the generated ZIPs and manifests. Test installation, updates, and rollback, and correct the first-task walkthrough from observed friction. Configure the team repository and run hosted CI.
 6. Add rubric evaluation, followed by Cisco documents and workbooks. Reuse suitable upstream skills selectively, recording source revisions, licenses, dependencies, and required notices before bundling material.
 
 ## Trying a draft
@@ -82,14 +84,14 @@ For a project, place the selected skill folder in `.claude/skills/` for Claude C
 
 Ask the assistant to install a selected draft into a test project, then try a representative request. Merely storing it under this repository's `skills/` directory does not make it discoverable by both products. Model routing also requires the host setup described in [routing](skills/efficient-workflow/references/routing.md).
 
-For broader team distribution, package tested releases with product-specific plugin metadata and an installation guide. ChatGPT workspace installation is a separate route and can depend on account eligibility and administrator settings. No team-wide installation or publishing is part of this pilot.
+For broader team distribution, use verified packages and an installation guide. Add product-specific plugin metadata when using a plugin distribution route. ChatGPT workspace installation is a separate route and can depend on account eligibility and administrator settings. No team-wide installation or publishing is part of this pilot.
 
 ## Release criteria
 
 A release needs correct triggering, valid artifacts, appropriate handling of missing inputs, and successful use in both target products. Check cases that should not activate the skill, as well as ordinary and difficult requests. For efficiency, compare total usage and quality against the same baseline task. A valid `SKILL.md` alone does not establish those results.
 
-The latest local maintainer run passed linting, formatting, type checking, 36 regression tests, and structural validation of six skills and 35 evaluation definitions. Those checks do not execute the skills in the target products. Completed product evaluations are not recorded, and 24 cases still list inputs that must be created or supplied. No measured token savings, completed platform installation walkthroughs, or validated presentation sample is claimed.
+The latest local maintainer run passed linting, formatting, type checking, 58 regression tests, and structural validation of six skills and 35 evaluation definitions. The tests cover package integrity, run-record consistency, and the teaching and assessment fixtures. Those checks do not execute the skills in the target products. Completed product evaluations are not recorded, and 23 cases still list inputs that must be created or supplied. No measured token savings, completed platform installation walkthroughs, or validated presentation sample is claimed.
 
-The [validator](scripts/validate_library.py) checks local Markdown links in entrypoints and supporting resources against the skill folder, helping catch dependencies that would be missing from an installed copy.
+The [validator](scripts/validate_library.py) checks local Markdown links throughout each skill, rejects symlinked skill resources, requires existing relative local fixture paths, and rejects unknown evaluation fields and unsupported suite locations. The maintainer command also validates retained run records. The [audit follow-up](docs/audits/2026-10-16-follow-up.md) records addressed findings and remaining work.
 
-The repository has no configured remote, published release, or bundled installer. Hosted CI has not run. The immediate milestone is a tested pilot release with recorded artifacts, quality checks, installation results, and usage measurements.
+The repository has a local package builder and verifier, with no configured remote, published release, or bundled installer. Hosted CI has not run. The immediate milestone is a tested pilot release with recorded artifacts, quality checks, installation results, and usage measurements.

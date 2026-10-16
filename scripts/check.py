@@ -13,6 +13,7 @@ def main() -> int:
         ("Types", ["-m", "mypy"]),
         ("Regression tests", ["-m", "unittest", "discover", "-s", "tests", "-v"]),
         ("Library structure", ["scripts/validate_library.py"]),
+        ("Evaluation records", ["-m", "scripts.evaluation_runs", "validate-all"]),
     ]
     failed = []
     for label, arguments in checks:

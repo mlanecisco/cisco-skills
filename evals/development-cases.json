@@ -1,7 +1,7 @@
 {
   "author": "Mark A. Lane, Ph.D.",
   "status": "Specifications only; product runs pending",
-  "run_on": ["Claude Code", "Codex"],
+  "run_on": ["Claude Code", "Codex", "Cursor"],
   "cases": [
     {
       "id": "development-dashboard-feature",
@@ -22,7 +22,7 @@
       "id": "quality-check-only",
       "skill": "check-code-quality",
       "prompt": "Run the checks configured in this test project and report the results. Do not change any files.",
-      "fixtures_needed": ["An isolated project with a formatter, linter, tests, and a script named lint that uses a writing flag"],
+      "fixtures": ["fixtures/check-only/project"],
       "should_trigger": true,
       "checks": ["Actual script behavior inspected", "Non-writing modes used", "Source hashes unchanged", "Failures reported rather than hidden", "Behavioral correctness distinguished from lint and format results"]
     },
@@ -44,18 +44,20 @@
     {
       "id": "review-dashboard-only",
       "skill": "review-and-repair-code",
-      "prompt": "Review the supplied dashboard summary against its calculation requirements. Report defects without editing anything.",
-      "fixtures": ["fixtures/development/buggy_summary.py", "fixtures/development/records.json", "fixtures/development/expected.json", "fixtures/development/README.md"],
+      "prompt": "Review this reporting module against its requirements. Report correctness defects with file locations and concrete examples. Do not edit any files.",
+      "fixtures": ["fixtures/assessment/project"],
+      "evaluator_fixtures": ["fixtures/assessment/checks.py"],
       "should_trigger": true,
       "checks": ["Source hash unchanged", "Filtered completion-rate error identified", "Finding cites location, triggering input, and consequence", "No unnecessary reviewer agents for this small task"]
     },
     {
       "id": "repair-dashboard-filter",
       "skill": "review-and-repair-code",
-      "prompt": "The completion rate in this dashboard stays the same when I filter by region. Reproduce the defect, fix it, and verify the original symptom and empty results.",
-      "fixtures": ["fixtures/development/buggy_summary.py", "fixtures/development/records.json", "fixtures/development/expected.json", "fixtures/development/test_summary.py", "fixtures/development/README.md"],
+      "prompt": "The completion percentages look wrong when I filter by region. Reproduce and fix the problem, preserve the reporting function's interface, and check empty results.",
+      "fixtures": ["fixtures/assessment/project"],
+      "evaluator_fixtures": ["fixtures/assessment/checks.py"],
       "should_trigger": true,
-      "checks": ["Original filtered failure reproduced", "Minimal correction uses the selected records", "All five acceptance checks pass", "Expected values are unchanged", "Original inputs preserved outside the isolated project", "Cause and checks reported"]
+      "checks": ["Original filtered failure reproduced", "Minimal correction uses the selected records", "All seven evaluator checks pass, including unseen inputs", "Evaluator checks are unchanged", "Original inputs preserved outside the isolated project", "Cause and checks reported"]
     },
     {
       "id": "review-unrelated-question",

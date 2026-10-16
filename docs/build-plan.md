@@ -1,6 +1,6 @@
 ---
 author: Mark A. Lane, Ph.D.
-date: 2026-10-15
+date: 2026-10-16
 status: Implementation plan
 ---
 
@@ -72,6 +72,8 @@ Keep rubric evaluation separate from presentation creation. Require evidence for
 
 ## Next implementation increment
 
-The repeatable maintainer command, CI workflow, and three development entrypoints are implemented. The development fixture includes a feature starter, a reproducible defect, and independent expected calculations. The setup guides cover Claude Desktop, Claude Code CLI, ChatGPT, Codex, and Cursor on macOS and Windows.
+The repeatable maintainer command, CI workflow, and three development entrypoints are implemented. The [audit follow-up](audits/2026-10-16-follow-up.md) records fixture-path and symlink repairs, strict evaluation fields, versioned packaging, and run-record validation. The development inputs include the original teaching fixture, a separate blind assessment with held-out checks, and a check-only project whose documented lint command writes files.
 
-Next, run the development evaluations in the target products and walk through installation with representative users. The supplied September 17, 2026 Cisco templates have been inspected for their Inter font themes, colors, and layouts. Validate a rendered presentation sample and record actual execution and usage results before promoting draft skills to a tested release. Hosted CI, product behavior, and installation walkthroughs remain separate verification steps.
+Use the [evaluation procedure](evaluations.md) to run feature, review, repair, and check-only cases in fresh Claude Code, Codex, and native Cursor Agent sessions. Record actual results and matched baselines. The [package builder](packaging.md) creates complete individual ZIPs and a manifest; test those exact artifacts with colleagues on macOS and Windows, including updates and rollback. All product routes remain documented but untested until their trials are recorded.
+
+Next, build the reusable browser fixture, validate a rendered presentation sample against the supplied September 17, 2026 templates, and test Confluence manual and API delivery separately. Keep untested capabilities in draft status. Distribution ownership, team-profile portability, presentation tooling, host-policy consolidation, and untrusted-input evaluations remain open audit work. Hosted CI still requires a configured remote.

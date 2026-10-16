@@ -1,0 +1,309 @@
+{
+  "author": "Mark A. Lane, Ph.D.",
+  "audit_date": "2026-10-15",
+  "commit": "a25b57a6342debb8d606eadfa233672bd49a03b3",
+  "inventory": {
+    "tracked_files": 54,
+    "tracked_bytes": 59306060,
+    "tracked_symlinks": [],
+    "skills": 6,
+    "evaluation_suites": [
+      {
+        "path": "evals/confluence-cases.json",
+        "cases": 8,
+        "positive": 7,
+        "negative": 1,
+        "with_declared_fixtures": 0,
+        "with_needed_fixtures": 7
+      },
+      {
+        "path": "evals/development-cases.json",
+        "cases": 8,
+        "positive": 5,
+        "negative": 3,
+        "with_declared_fixtures": 3,
+        "with_needed_fixtures": 2
+      },
+      {
+        "path": "evals/novice-development-cases.json",
+        "cases": 10,
+        "positive": 10,
+        "negative": 0,
+        "with_declared_fixtures": 0,
+        "with_needed_fixtures": 10
+      },
+      {
+        "path": "evals/pilot-cases.json",
+        "cases": 9,
+        "positive": 7,
+        "negative": 2,
+        "with_declared_fixtures": 1,
+        "with_needed_fixtures": 5
+      }
+    ],
+    "entrypoints": [
+      {
+        "skill": "check-code-quality",
+        "whitespace_words": 598,
+        "lines": 48
+      },
+      {
+        "skill": "cisco-presentation",
+        "whitespace_words": 702,
+        "lines": 49
+      },
+      {
+        "skill": "develop-from-spec",
+        "whitespace_words": 920,
+        "lines": 58
+      },
+      {
+        "skill": "efficient-workflow",
+        "whitespace_words": 787,
+        "lines": 62
+      },
+      {
+        "skill": "publish-confluence-dashboard",
+        "whitespace_words": 884,
+        "lines": 57
+      },
+      {
+        "skill": "review-and-repair-code",
+        "whitespace_words": 663,
+        "lines": 50
+      }
+    ]
+  },
+  "checks": {
+    "python": "3.12.13",
+    "current_tree": {
+      "command": ".venv/bin/python scripts/check.py",
+      "exit_code": 0,
+      "regression_tests": 36,
+      "structural_skills": 6,
+      "structural_cases": 35
+    },
+    "clean_export": {
+      "source": "git archive HEAD",
+      "execution": "Existing virtual-environment Python ran exported scripts/check.py with cwd set to export root",
+      "exit_code": 0,
+      "regression_tests": 36,
+      "fresh_dependency_install": false
+    },
+    "dependency_versions": [
+      {
+        "package": "librt",
+        "required": "0.16.0",
+        "installed": "0.16.0",
+        "matches": true
+      },
+      {
+        "package": "markdown-it-py",
+        "required": "4.2.0",
+        "installed": "4.2.0",
+        "matches": true
+      },
+      {
+        "package": "mdurl",
+        "required": "0.1.2",
+        "installed": "0.1.2",
+        "matches": true
+      },
+      {
+        "package": "mypy",
+        "required": "1.20.2",
+        "installed": "1.20.2",
+        "matches": true
+      },
+      {
+        "package": "mypy-extensions",
+        "required": "1.1.0",
+        "installed": "1.1.0",
+        "matches": true
+      },
+      {
+        "package": "pathspec",
+        "required": "1.1.1",
+        "installed": "1.1.1",
+        "matches": true
+      },
+      {
+        "package": "pyyaml",
+        "required": "6.0.3",
+        "installed": "6.0.3",
+        "matches": true
+      },
+      {
+        "package": "ruff",
+        "required": "0.17.1",
+        "installed": "0.17.1",
+        "matches": true
+      },
+      {
+        "package": "types-pyyaml",
+        "required": "6.0.12.20260906",
+        "installed": "6.0.12.20260906",
+        "matches": true
+      },
+      {
+        "package": "typing-extensions",
+        "required": "4.16.0",
+        "installed": "4.16.0",
+        "matches": true
+      }
+    ],
+    "configured_remotes": []
+  },
+  "validator_probes": [
+    {
+      "name": "external_fixture",
+      "mutation": {
+        "fixtures": [
+          "https://invalid.example/missing.json"
+        ]
+      },
+      "observed": "No errors",
+      "assessment": "Defect: does not identify an existing local fixture"
+    },
+    {
+      "name": "fragment_fixture",
+      "mutation": {
+        "fixtures": [
+          "#missing"
+        ]
+      },
+      "observed": "No errors",
+      "assessment": "Defect: does not identify an existing local fixture"
+    },
+    {
+      "name": "directory_fixture",
+      "mutation": {
+        "fixtures": [
+          "."
+        ]
+      },
+      "observed": "No errors",
+      "assessment": "Define whether directory fixtures are intentional; not necessarily a defect"
+    },
+    {
+      "name": "typo_fixtures",
+      "mutation": {
+        "fixture_needed": [
+          "Missing required project"
+        ]
+      },
+      "observed": "No errors",
+      "assessment": "Unknown optional field silently ignored"
+    },
+    {
+      "name": "nested_eval",
+      "mutation": "Add evals/new/invalid.json containing not JSON alongside a valid top-level suite",
+      "observed": "No errors",
+      "assessment": "Nested suites are not discovered"
+    },
+    {
+      "name": "symlink_skill",
+      "mutation": "Move skills/demo to a sibling directory outside the temporary library; symlink skills/demo to it; add [Missing](missing.md) to its valid SKILL.md",
+      "observed": "No errors",
+      "assessment": "Defect: symlinked skill root passes metadata checks and skips Markdown traversal"
+    },
+    {
+      "name": "non_utf8_eval",
+      "mutation": "Write byte 0xff to the only evaluation JSON file",
+      "observed": "Invalid evaluation JSON error and expected-at-least-one-evaluation error",
+      "assessment": "Correctly rejected"
+    },
+    {
+      "name": "missing_ref_definition",
+      "mutation": "Append Read [required guide][guide]. without defining guide",
+      "observed": "No errors",
+      "assessment": "Undefined reference syntax parses as text; optional lint improvement"
+    }
+  ],
+  "probe_baseline": {
+    "manifest": "---\nname: demo\ndescription: Demonstration.\n---\n\nDo the task.\n",
+    "suite": {
+      "author": "Mark A. Lane, Ph.D.",
+      "status": "Draft",
+      "run_on": [
+        "Codex"
+      ],
+      "cases": [
+        {
+          "id": "demo",
+          "skill": "demo",
+          "prompt": "Do the task",
+          "should_trigger": true,
+          "checks": [
+            "Result correct"
+          ]
+        }
+      ]
+    },
+    "method": "For each probe, create a new temporary library with skills/demo/SKILL.md and evals/demo.json, apply only the specified mutation, then call Validator(root).run(). No source changes were made."
+  },
+  "template_inspection": [
+    {
+      "path": "docs/reference/Cisco_PowerPoint_Template_DARK_09-17-2026_Inter.potx",
+      "bytes": 30019200,
+      "sha256": "22c9a7cf865727debe113da856437f21de1891852835612053142cf2a54487ce",
+      "zip_integrity": "passed",
+      "slides": 72,
+      "layouts": 65,
+      "width_emu": 12192000,
+      "height_emu": 6858000,
+      "active_slide_theme": "ppt/theme/theme1.xml",
+      "heading_font": "Inter SemiBold",
+      "body_font": "Inter",
+      "accent1": "02C8FF",
+      "rendered_during_audit": false
+    },
+    {
+      "path": "docs/reference/Cisco_PowerPoint_Template_Light_09-17-2026_Inter.potx",
+      "bytes": 29085491,
+      "sha256": "8b4933f7b5604cef10e59346a850b1ab9244aa42c9ca5700af836be9c2080931",
+      "zip_integrity": "passed",
+      "slides": 72,
+      "layouts": 65,
+      "width_emu": 12192000,
+      "height_emu": 6858000,
+      "active_slide_theme": "ppt/theme/theme1.xml",
+      "heading_font": "Inter SemiBold",
+      "body_font": "Inter",
+      "accent1": "02C8FF",
+      "rendered_during_audit": false
+    }
+  ],
+  "secret_pattern_check": {
+    "scope": "Current tracked text files only; excludes PowerPoint binary packages and Git history",
+    "patterns": {
+      "private_key_block": "-----BEGIN (?:RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----",
+      "aws_access_key_id": "\\b(?:AKIA|ASIA)[A-Z0-9]{16}\\b",
+      "github_classic_token": "\\bgh[pousr]_[A-Za-z0-9]{30,}\\b",
+      "openai_project_token": "\\bsk-proj-[A-Za-z0-9_-]{30,}\\b"
+    },
+    "findings_without_values": [],
+    "claim": "No matches to these limited patterns does not establish the absence of secrets"
+  },
+  "not_executed": [
+    "Fresh product-session evaluations",
+    "Windows and macOS installation walkthroughs",
+    "PowerPoint rendering or artifact generation",
+    "Authenticated Cisco or Confluence access",
+    "Hosted CI",
+    "Fresh dependency installation",
+    "Git-history secret scan",
+    "Comprehensive dependency vulnerability scan"
+  ],
+  "official_sources_checked": [
+    "https://learn.chatgpt.com/docs/build-skills",
+    "https://learn.chatgpt.com/docs/agent-configuration/subagents",
+    "https://cursor.com/docs/skills",
+    "https://code.claude.com/docs/en/skills",
+    "https://agentskills.io/specification",
+    "https://help.narva.net/html-macro-for-confluence",
+    "https://developer.atlassian.com/cloud/confluence/rest/v2/api-group-page/",
+    "https://github.com/actions/checkout/releases/tag/v7.0.0",
+    "https://github.com/actions/setup-python/releases/tag/v7.0.0"
+  ]
+}

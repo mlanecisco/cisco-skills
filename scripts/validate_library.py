@@ -7,7 +7,7 @@ import re
 import sys
 import tomllib
 from collections.abc import Iterable
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from typing import Any
 from urllib.parse import unquote, urlsplit
 
@@ -31,8 +31,21 @@ IGNORED = {
     "__pycache__",
     "output",
     "tmp",
+    "dist",
+    "build",
 }
-PLATFORMS = {"Claude Code", "Codex"}
+PLATFORMS = {"Claude Code", "Codex", "Cursor", "Claude Desktop", "ChatGPT"}
+SUITE_FIELDS = {"author", "status", "run_on", "cases"}
+CASE_FIELDS = {
+    "id",
+    "skill",
+    "prompt",
+    "should_trigger",
+    "checks",
+    "fixtures",
+    "evaluator_fixtures",
+    "fixtures_needed",
+}
 
 
 class UniqueLoader(yaml.SafeLoader):
@@ -78,6 +91,47 @@ class Validator:
                 path = Path(directory) / name
                 if path.is_file() and path.suffix.lower() in suffixes:
                     yield path
+
+    def skill_symlinks(self) -> None:
+        skills = self.root / "skills"
+        if skills.is_symlink():
+            self.error(skills, "symlinks are not allowed in installable skills")
+            return
+        for directory, folders, filenames in os.walk(skills):
+            for name in folders + filenames:
+                path = Path(directory) / name
+                if path.is_symlink():
+                    self.error(path, "symlinks are not allowed in installable skills")
+
+    def fixture(self, path: Path, value: str, case_id: str) -> None:
+        try:
+            link = urlsplit(value)
+        except ValueError:
+            self.error(
+                path, f"case {case_id}: fixture must be a relative local path: {value}"
+            )
+            return
+        windows = PureWindowsPath(value)
+        if (
+            link.scheme
+            or link.netloc
+            or link.query
+            or link.fragment
+            or not link.path
+            or Path(value).is_absolute()
+            or windows.drive
+            or windows.root
+            or "\\" in value
+        ):
+            self.error(
+                path, f"case {case_id}: fixture must be a relative local path: {value}"
+            )
+            return
+        destination = (path.parent / value).resolve()
+        if not destination.is_relative_to(self.root):
+            self.error(path, f"case {case_id}: fixture leaves the repository: {value}")
+        elif not destination.exists():
+            self.error(path, f"case {case_id}: missing local reference: {value}")
 
     def yaml(self, path: Path, text: str) -> Any:
         try:
@@ -197,6 +251,8 @@ class Validator:
         if not isinstance(data, dict):
             self.error(path, "evaluation must be an object")
             return
+        for key in data.keys() - SUITE_FIELDS:
+            self.error(path, f"unknown evaluation suite field: {key}")
         for key in ["author", "status"]:
             self.string(path, data, key)
         platforms = data.get("run_on")
@@ -205,7 +261,7 @@ class Validator:
             or not platforms
             or any(not isinstance(p, str) or p not in PLATFORMS for p in platforms)
         ):
-            self.error(path, "run_on must list Claude Code and/or Codex")
+            self.error(path, "run_on must list supported product names")
         cases = data.get("cases")
         if not isinstance(cases, list) or not cases:
             self.error(path, "cases must be a non-empty list")
@@ -214,6 +270,8 @@ class Validator:
             if not isinstance(case, dict):
                 self.error(path, f"case {index + 1} must be an object")
                 continue
+            for key in case.keys() - CASE_FIELDS:
+                self.error(path, f"case {index + 1}: unknown evaluation field: {key}")
             if self.string(path, case, "id"):
                 if case["id"] in self.case_ids:
                     self.error(path, f"duplicate evaluation id: {case['id']}")
@@ -233,7 +291,7 @@ class Validator:
                 or any(not isinstance(c, str) or not c.strip() for c in checks)
             ):
                 self.error(path, f"case {index + 1}: checks must be non-empty strings")
-            for key in ["fixtures", "fixtures_needed"]:
+            for key in ["fixtures", "evaluator_fixtures", "fixtures_needed"]:
                 if key not in case:
                     continue
                 values = case[key]
@@ -241,17 +299,18 @@ class Validator:
                     not isinstance(v, str) or not v.strip() for v in values
                 ):
                     self.error(path, f"case {index + 1}: {key} must list strings")
-                elif key == "fixtures":
+                elif key in {"fixtures", "evaluator_fixtures"}:
                     for value in values:
-                        self.local_target(path, value)
+                        self.fixture(path, value, str(case.get("id", index + 1)))
 
-    def run(self) -> list[str]:
+    def run(self, *, evaluations: bool = True) -> list[str]:
+        self.skill_symlinks()
         skills = self.root / "skills"
         if not skills.is_dir() or not any(skills.iterdir()):
             self.error(skills, "expected at least one skill folder")
         elif skills.is_dir():
             for folder in sorted(skills.iterdir()):
-                if folder.is_dir():
+                if folder.is_dir() and not folder.is_symlink():
                     manifest = folder / "SKILL.md"
                     if (
                         "SKILL.md" in {entry.name for entry in folder.iterdir()}
@@ -279,10 +338,16 @@ class Validator:
                     self.yaml(path, path.read_text(encoding="utf-8"))
             except (ValueError, OSError) as exc:
                 self.error(path, f"cannot validate file: {exc}")
-        for path in sorted((self.root / "evals").glob("*.json")):
-            self.evaluation(path)
-        if not self.case_ids:
-            self.error(self.root / "evals", "expected at least one evaluation case")
+        if evaluations:
+            evals = self.root / "evals"
+            for path in sorted(evals.rglob("*.json")):
+                relative = path.relative_to(evals)
+                if len(relative.parts) == 1:
+                    self.evaluation(path)
+                elif relative.parts[0] not in {"fixtures", "results"}:
+                    self.error(path, "evaluation suites must be directly under evals/")
+            if not self.case_ids:
+                self.error(evals, "expected at least one evaluation case")
         return list(dict.fromkeys(self.errors))
 
 

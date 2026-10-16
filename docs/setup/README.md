@@ -21,7 +21,7 @@ The product installation, account sign-in, library installation, and verificatio
 ## First session
 
 1. Install and sign in to one product using its guide.
-2. Obtain the library folder from the maintainer. This repository currently has no published GitHub URL or release download; do not substitute an unrelated repository.
+2. Obtain a selected skill ZIP and its version manifest from the maintainer, or the source folder for local development. The [packaging guide](../packaging.md) explains package identity, verification, updates, and rollback. This repository currently has no published GitHub URL or release download.
 3. Add one relevant draft skill, preserving its full folder and references.
 4. Run that guide's first-use check before asking for a larger project.
 5. Use low or medium reasoning for ordinary work. Model routing needs the product configuration described in the [routing reference](../../skills/efficient-workflow/references/routing.md); installing its skill alone does not configure workers.

@@ -1,0 +1,10 @@
+[
+  {"id": "A", "region": "East", "status": "complete", "value": 10},
+  {"id": "B", "region": "East", "status": "planned", "value": 20},
+  {"id": "C", "region": "East", "status": "planned", "value": 0},
+  {"id": "D", "region": "East", "status": "in-progress", "value": 70},
+  {"id": "E", "region": "West", "status": "complete", "value": 25},
+  {"id": "F", "region": "West", "status": "complete", "value": 75},
+  {"id": "G", "region": "North", "status": "planned", "value": 40},
+  {"id": "H", "region": "North", "status": "in-progress", "value": 60}
+]

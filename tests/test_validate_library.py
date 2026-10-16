@@ -312,6 +312,85 @@ Do the assigned task.
         self.save_evaluation()
         self.assertIn("missing local reference", self.errors())
 
+    def test_fixture_paths_reject_urls_fragments_and_absolute_paths(self) -> None:
+        existing = self.write("evals/fixtures/input.json", "{}")
+        for value in [
+            "https://invalid.example/input.json",
+            "http://[",
+            "#missing",
+            "?input=missing",
+            str(existing),
+            "C:/fixtures/input.json",
+            "C:input.json",
+            "//server/input",
+            "fixtures/input.json#section",
+            "fixtures\\input.json",
+        ]:
+            with self.subTest(value=value):
+                self.evaluation["cases"][0]["fixtures"] = [value]
+                self.save_evaluation()
+                self.assertIn("case demo-request: fixture must be", self.errors())
+
+    def test_fixtures_accept_local_files_and_project_directories(self) -> None:
+        self.write("evals/fixtures/project/input.json", "{}")
+        self.evaluation["cases"][0]["fixtures"] = ["fixtures/project"]
+        self.evaluation["cases"][0]["evaluator_fixtures"] = [
+            "fixtures/project/input.json"
+        ]
+        self.save_evaluation()
+        self.assertEqual(self.errors(), "")
+
+    def test_fixture_cannot_leave_repository(self) -> None:
+        self.evaluation["cases"][0]["fixtures"] = ["../../outside.json"]
+        self.save_evaluation()
+        self.assertIn("fixture leaves the repository", self.errors())
+
+    def test_unknown_evaluation_fields_are_rejected(self) -> None:
+        self.evaluation["unexpected"] = True
+        self.evaluation["cases"][0]["fixture_needed"] = ["Missing input"]
+        self.save_evaluation()
+        self.assertIn("unknown evaluation suite field", self.errors())
+        self.assertIn("unknown evaluation field: fixture_needed", self.errors())
+
+    def test_nested_suites_are_rejected_but_fixture_json_is_not_a_suite(self) -> None:
+        self.write("evals/fixtures/input.json", "not an evaluation suite")
+        self.assertEqual(self.errors(), "")
+        self.write("evals/nested/invalid.json", "not JSON")
+        self.assertIn("evaluation suites must be directly under evals/", self.errors())
+
+    def test_product_names_include_native_cursor_and_document_interfaces(self) -> None:
+        self.evaluation["run_on"] = ["Cursor", "Claude Desktop", "ChatGPT"]
+        self.save_evaluation()
+        self.assertEqual(self.errors(), "")
+
+    def test_symlinked_skill_directories_and_resources_are_rejected(self) -> None:
+        for relative in [
+            "skills/demo",
+            "skills/demo/references",
+            "skills/demo/asset.md",
+        ]:
+            with (
+                self.subTest(relative=relative),
+                tempfile.TemporaryDirectory() as other,
+            ):
+                external = Path(other) / "external"
+                external.mkdir()
+                (external / "SKILL.md").write_text(
+                    self.manifest + "[Missing](missing.md)"
+                )
+                link = self.root / relative
+                if link.is_dir():
+                    (link / "SKILL.md").unlink()
+                    link.rmdir()
+                link.parent.mkdir(parents=True, exist_ok=True)
+                try:
+                    link.symlink_to(external, target_is_directory=True)
+                except (OSError, NotImplementedError) as exc:
+                    self.skipTest(f"Symlinks unavailable: {exc}")
+                self.assertIn("symlinks are not allowed", self.errors())
+                link.unlink()
+                self.write("skills/demo/SKILL.md", self.manifest)
+
     def test_empty_library_fails(self) -> None:
         temporary = tempfile.TemporaryDirectory()
         self.addCleanup(temporary.cleanup)

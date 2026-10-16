@@ -35,8 +35,9 @@ After setup, run the last command whenever the library changes. CI uses `python 
 | mypy | Types in the maintainer scripts |
 | unittest | Validator regressions and the development fixture's acceptance oracle |
 | Library validator | Skill metadata, exact manifest names, local Markdown links, configuration syntax, and evaluation definitions |
+| Evaluation records | Retained run identities, environment details, acceptance checks, outcomes, and evidence fields |
 
-The validator follows the [Agent Skills specification](https://agentskills.io/specification). It rejects duplicate YAML and JSON keys, malformed files, unresolved local links, cross-folder skill dependencies, and evaluation cases that refer to unknown skills or missing fixtures. Agent examples receive syntax and required-field checks; their model availability and runtime behavior are not established by parsing.
+The validator follows the [Agent Skills specification](https://agentskills.io/specification). It rejects duplicate YAML and JSON keys, malformed files, unresolved local links, cross-folder skill dependencies, and symlinks anywhere in installable skills. Agent examples receive syntax and required-field checks; their model availability and runtime behavior are not established by parsing.
 
 Markdown links, images, and reference-style links are checked with a Markdown parser. Local links in every Markdown file within a skill, including supporting references and nested resources, must resolve inside that skill's folder. The check resolves symbolic links before testing the boundary. Repository documentation can link across folders within the repository.
 
@@ -54,9 +55,13 @@ Use the environment's Python interpreter when the shell's default is different. 
 
 Create a folder under `skills/` with a matching name and `SKILL.md`. Use standard frontmatter, keep instructions focused, and bundle any resources the skill actually needs. Keep local references within the skill folder so copying the folder preserves its instructions.
 
-Add evaluation cases under `evals/` with a unique ID, target skill, realistic prompt, trigger expectation, and observable acceptance checks. Use `fixtures` for existing paths relative to the evaluation file and `fixtures_needed` for descriptive inputs still to be supplied. The latter does not prove that an evaluation is ready to run.
+Place evaluation suites directly under `evals/`. Suite fields are `author`, `status`, `run_on`, and `cases`. Case fields are `id`, `skill`, `prompt`, `should_trigger`, `checks`, `fixtures`, `evaluator_fixtures`, and `fixtures_needed`; unknown fields fail validation. `run_on` accepts Claude Code, Codex, Cursor, Claude Desktop, and ChatGPT. Listing a product identifies an intended trial, not completed support.
+
+Use `fixtures` for existing files or project directories, with plain relative paths from the suite file and forward slashes. URL schemes, queries, fragments, absolute paths, and paths outside the repository are rejected. `evaluator_fixtures` follows the same path rules and identifies inputs withheld from the agent. `fixtures_needed` describes unresolved prerequisites and does not establish readiness. JSON under `evals/fixtures/` is input data; retained evidence under `evals/results/` receives separate run-record validation through the maintainer command. Other nested suite locations fail.
 
 Run the maintainer command, then test behavior in the intended products. Record actual outputs and usage separately from evaluation specifications. Keep a draft label until those results justify a stronger claim. Preserve upstream licenses and notices whenever material is incorporated.
+
+Use the [evaluation guide](evaluations.md) to prepare independent runs and records. Use the [packaging guide](packaging.md) to build, verify, and pilot the exact skill archives. Planned record templates stay under `output/`; only reviewed completed attempts belong under `evals/results/`.
 
 ## Updating tools
 
