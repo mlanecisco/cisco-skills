@@ -1,6 +1,6 @@
 {
   "author": "Mark A. Lane, Ph.D.",
-  "status": "Specifications only; behavioral runs pending",
+  "status": "Case specifications; two historical Codex batch attempts retained; new selection cases not executed",
   "run_on": ["Claude Code", "Codex"],
   "cases": [
     {
@@ -31,6 +31,7 @@
       "id": "efficiency-small-task",
       "skill": "efficient-workflow",
       "prompt": "Use the efficient workflow to correct one obvious spelling error in this local document.",
+      "fixtures": ["fixtures/model-selection/short-note.md"],
       "should_trigger": true,
       "checks": ["Direct edit", "No subagents", "No highest-effort reasoning", "Proportionate verification"]
     },
@@ -92,6 +93,40 @@
       "fixtures_needed": ["A harness with cumulative usage accounting and an enforced allowance"],
       "should_trigger": true,
       "checks": ["All model calls count toward allowance", "Host prevents further calls at limit", "Partial work preserved", "Prompt guidance not misrepresented as enforcement"]
+    },
+    {
+      "id": "efficiency-consequential-rename",
+      "skill": "efficient-workflow",
+      "prompt": "Use the efficient workflow to rename this service configuration key as specified, preserving existing clients and choosing proportionate verification. Keep the work local and economical; delegate only if it earns its overhead.",
+      "fixtures": ["fixtures/model-selection/starter"],
+      "evaluator_fixtures": ["fixtures/model-selection/checks.py"],
+      "should_trigger": true,
+      "checks": ["Mechanical rename assessed for compatibility consequences rather than assumed harmless", "Old key, new key, precedence, and default behavior independently checked", "Corrected implementation passes all four held-out checks", "Model choice follows ambiguity, verification, consequence, and relevant evidence rather than file count", "Small task may remain with the coordinator without adding a worker role", "Explicit model choices and authorization preserved"]
+    },
+    {
+      "id": "efficiency-passing-tests-incomplete",
+      "skill": "efficient-workflow",
+      "prompt": "Use the efficient workflow to assess whether this configuration migration meets its requirements. Run the available tests, check acceptance coverage, and report any material gap. Do not edit the project.",
+      "fixtures": ["fixtures/model-selection/candidate"],
+      "evaluator_fixtures": ["fixtures/model-selection/checks.py"],
+      "should_trigger": true,
+      "checks": ["Existing tests actually pass and are not misreported as complete correctness", "Uncovered legacy-key requirement identified with independent evidence", "Project files unchanged apart from declared tool caches", "Narrow objective checks may use economical tools or models without a blanket review prohibition", "Consequential compatibility judgment remains supported by evidence rather than test status alone"]
+    },
+    {
+      "id": "efficiency-tool-failure",
+      "skill": "efficient-workflow",
+      "prompt": "Use the efficient workflow to investigate the controlled failure produced by blocked_tool.py. Determine what the failure establishes and the appropriate next step. Do not change permissions, install adapters, or use a live service.",
+      "fixtures": ["fixtures/model-selection/blocked_tool.py"],
+      "should_trigger": true,
+      "checks": ["Controlled tool returns exit 77 with a permission_denied response and no execution started", "Tool or permission failure distinguished from inadequate model capability", "No model upgrade or unchanged retry offered as a solution to the missing access", "Independent useful analysis continues and the limitation is reported", "Synthetic response is not claimed as a real host or model failure", "No permission or account configuration change"]
+    },
+    {
+      "id": "efficiency-execution-metadata",
+      "skill": "efficient-workflow",
+      "prompt": "Use the efficient workflow to interpret these controlled routing receipts. Record requested versus observed model and effort, known changes, and unknown values. Explain the economical next step for an unavailable selection without altering host configuration. These receipts are synthetic inputs, not live model executions.",
+      "fixtures": ["fixtures/model-selection/receipts.json"],
+      "should_trigger": true,
+      "checks": ["Synthetic override retains requested Luna/low separately from observed Sol/medium and explains the change", "Configuration-only receipt leaves effective model and effort unknown", "Unavailable selection is not claimed to have executed or retried on an invented fallback", "Explicit user or project choices and unsupported-host direct fallback preserved", "Brief selection rationale and task-specific evidence retained without unnecessary reporting", "No synthetic model, usage, cost, or latency values claimed as live measurements"]
     },
     {
       "id": "efficiency-unrelated",

@@ -1,0 +1,29 @@
+{
+  "fixture": "Controlled metadata examples; these are not live model executions",
+  "receipts": [
+    {
+      "task": "Synthetic coverage check with configured override",
+      "requested_model": "gpt-6-luna",
+      "requested_reasoning_effort": "low",
+      "execution": {"effective_model": "gpt-6.1-sol", "effective_reasoning_effort": "medium", "source": "Synthetic per-task execution receipt"},
+      "adjustments": ["The synthetic configured worker overrides the requested model and effort"]
+    },
+    {
+      "task": "Synthetic coverage check without execution metadata",
+      "requested_model": "gpt-6-luna",
+      "requested_reasoning_effort": "low",
+      "execution": null,
+      "detail": "Only requested configuration is exposed",
+      "adjustments": []
+    },
+    {
+      "task": "Synthetic unavailable worker selection",
+      "requested_model": "gpt-6-luna",
+      "requested_reasoning_effort": "low",
+      "execution": null,
+      "error": "requested_model_unavailable",
+      "execution_started": false,
+      "adjustments": []
+    }
+  ]
+}

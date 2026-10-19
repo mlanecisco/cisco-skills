@@ -44,6 +44,8 @@ Favor low reasoning effort and use medium when needed. Reserve high for demonstr
 
 Add runtime enforcement if a hard cumulative budget is required. Prompt instructions alone do not provide that enforcement. Check unsupported-model and no-delegation fallbacks as well.
 
+Working efficiency `0.2.0` adds a compact selection rubric informed by a pinned upstream review, with the existing models and workers retained. New compatibility, incomplete-test-coverage, controlled tool-failure, and execution-metadata cases have inputs; agent trials remain pending. New run templates distinguish selection intent from observed coordinator and worker execution, preserving historical records. Use those fields to establish actual routing before drawing conclusions about savings.
+
 Acceptance: publish measured results for the pilot tasks, including cases where delegation does not help. Choose defaults from the evidence rather than assuming that more agents or less expensive models always reduce total cost.
 
 ## 4. Validate Cisco presentations

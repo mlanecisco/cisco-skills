@@ -130,6 +130,7 @@ class PilotToolingTests(unittest.TestCase):
             os="test",
             model="test-model",
             reasoning_effort="low",
+            execution_evidence="Host receipt identifies test-model at low effort.",
         )
         data["source"]["revision"] = "0" * 40
         data["installed_skills"] = [{"name": "demo", "version": "0.1.0"}]
@@ -142,6 +143,138 @@ class PilotToolingTests(unittest.TestCase):
             {"path": "output/response.txt", "sha256": sha256(artifact)}
         ]
         return data
+
+    def test_new_records_separate_requests_from_unknown_execution(self) -> None:
+        data = self.record()
+        self.assertEqual(data["schema_version"], 2)
+        self.assertIsNone(data["environment"]["requested_model"])
+        self.assertIsNone(data["environment"]["model"])
+        self.assertEqual(data["routing"], [])
+
+    def test_unknown_execution_can_be_reported_without_fabricating_model_identity(
+        self,
+    ) -> None:
+        data = self.completed()
+        data["environment"].update(
+            requested_model="economical-model",
+            requested_reasoning_effort="low",
+            model=None,
+            reasoning_effort=None,
+            execution_evidence="",
+        )
+        self.assertTrue(validate_record(data, self.case))
+        data["limitations"] = [
+            "The host exposes requested configuration but no execution receipt."
+        ]
+        self.assertEqual(validate_record(data, self.case), [])
+
+    def test_requested_configuration_is_not_observed_execution_evidence(self) -> None:
+        data = self.completed()
+        data["environment"]["requested_model"] = data["environment"]["model"]
+        data["environment"]["execution_evidence"] = ""
+        self.assertIn(
+            "observed execution requires evidence",
+            " ".join(validate_record(data, self.case)),
+        )
+
+    def test_environment_substitution_requires_an_explanation(self) -> None:
+        data = self.completed()
+        data["environment"]["requested_model"] = "different-model"
+        self.assertIn(
+            "mismatch requires an adjustment note",
+            " ".join(validate_record(data, self.case)),
+        )
+        data["environment"]["model_changes"] = [
+            "A synthetic host override selected test-model."
+        ]
+        self.assertEqual(validate_record(data, self.case), [])
+
+    def routing_entry(self) -> dict:
+        return {
+            "task": "Check batch coverage",
+            "rationale": "Source identifiers and counts can be independently checked.",
+            "requested_model": "economical-model",
+            "effective_model": None,
+            "requested_reasoning_effort": "low",
+            "effective_reasoning_effort": None,
+            "adjustments": [],
+            "evidence": "Synthetic client exposes no per-worker execution metadata.",
+        }
+
+    def test_worker_routing_preserves_unknown_metadata_and_selection_rationale(
+        self,
+    ) -> None:
+        data = self.completed()
+        data["routing"] = [self.routing_entry()]
+        self.assertEqual(validate_record(data, self.case), [])
+        data["routing"][0]["evidence"] = ""
+        self.assertIn(
+            "explain unavailable execution metadata",
+            " ".join(validate_record(data, self.case)),
+        )
+
+    def test_worker_substitution_requires_evidence_and_adjustment(self) -> None:
+        data = self.completed()
+        entry = self.routing_entry()
+        entry.update(
+            effective_model="capable-model",
+            effective_reasoning_effort="medium",
+            evidence="Worker receipt identifies capable-model at medium effort.",
+        )
+        data["routing"] = [entry]
+        self.assertTrue(validate_record(data, self.case))
+        entry["adjustments"] = [
+            "The synthetic configured worker overrides the requested model and effort."
+        ]
+        self.assertEqual(validate_record(data, self.case), [])
+        entry["evidence"] = ""
+        self.assertIn(
+            "observed execution requires evidence",
+            " ".join(validate_record(data, self.case)),
+        )
+
+    def test_routing_rejects_incomplete_and_malformed_entries(self) -> None:
+        original = self.completed()
+        for key, value in [
+            ("rationale", ""),
+            ("requested_model", True),
+            ("adjustments", "fallback"),
+            ("effective_reasoning_effort", 42),
+            ("unexpected", "field"),
+        ]:
+            with self.subTest(key=key):
+                data = copy.deepcopy(original)
+                entry = self.routing_entry()
+                entry[key] = value
+                data["routing"] = [entry]
+                self.assertTrue(validate_record(data, self.case))
+        data = self.record()
+        data["routing"] = {}
+        self.assertTrue(validate_record(data, self.case))
+
+    def test_schema_one_records_remain_valid_without_being_rewritten(self) -> None:
+        data = self.completed()
+        data["schema_version"] = 1
+        data.pop("routing")
+        for key in [
+            "requested_model",
+            "requested_reasoning_effort",
+            "execution_evidence",
+            "model_changes",
+        ]:
+            data["environment"].pop(key)
+        before = copy.deepcopy(data)
+        self.assertEqual(validate_record(data, self.case, self.root), [])
+        self.assertEqual(data, before)
+
+    def test_record_schema_versions_and_nested_fields_remain_strict(self) -> None:
+        for version in [True, 0, 3, "2"]:
+            data = self.record()
+            data["schema_version"] = version
+            self.assertTrue(validate_record(data, self.case))
+        data = self.record()
+        data["environment"]["unexpected"] = "field"
+        self.assertTrue(validate_record(data, self.case))
 
     def test_archives_include_complete_skills_and_exclude_repository_assets(
         self,

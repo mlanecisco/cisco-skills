@@ -64,7 +64,7 @@ def new_record(
         package_version = package["release_version"]
         package_hash = sha256(package_manifest)
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "author": evaluator.strip(),
         "run_id": "",
         "case_id": case_id,
@@ -81,7 +81,12 @@ def new_record(
             "model": None,
             "reasoning_effort": None,
             "other_skills": [],
+            "requested_model": None,
+            "requested_reasoning_effort": None,
+            "execution_evidence": "",
+            "model_changes": [],
         },
+        "routing": [],
         "source": {
             "revision": revision,
             "dirty": dirty,
@@ -128,6 +133,41 @@ def validate_record(
             return False
         return True
 
+    def execution_details(value: dict[str, Any], label: str) -> None:
+        for key in [
+            "requested_model",
+            "effective_model",
+            "requested_reasoning_effort",
+            "effective_reasoning_effort",
+        ]:
+            if value[key] is not None and not text(value[key]):
+                errors.append(f"{label}.{key}: expected nonempty text or null")
+        if not isinstance(value["evidence"], str):
+            errors.append(f"{label}.evidence: expected text")
+        if not isinstance(value["adjustments"], list) or any(
+            not text(change) for change in value["adjustments"]
+        ):
+            errors.append(f"{label}.adjustments: expected a list of nonempty text")
+        if any(
+            value[key] is not None
+            for key in ["effective_model", "effective_reasoning_effort"]
+        ) and not text(value["evidence"]):
+            errors.append(f"{label}: observed execution requires evidence")
+        changed = any(
+            value[requested] is not None
+            and value[effective] is not None
+            and value[requested] != value[effective]
+            for requested, effective in [
+                ("requested_model", "effective_model"),
+                ("requested_reasoning_effort", "effective_reasoning_effort"),
+            ]
+        )
+        if changed and not value["adjustments"]:
+            errors.append(
+                f"{label}: requested/observed mismatch requires an adjustment note"
+            )
+
+    schema = data.get("schema_version") if isinstance(data, dict) else None
     fields = {
         "schema_version",
         "author",
@@ -153,13 +193,15 @@ def validate_record(
         "started_at",
         "finished_at",
     }
+    if schema == 2:
+        fields.add("routing")
     if not shape(data, fields, "record"):
         return errors
     completed = data["status"] == "completed"
     passed = completed and data["outcome"] == "pass"
     if (
         type(data["schema_version"]) is not int
-        or data["schema_version"] != 1
+        or data["schema_version"] not in {1, 2}
         or data["case_id"] != case["id"]
         or not text(data["author"])
         or data["status"] not in {"planned", "completed"}
@@ -175,23 +217,31 @@ def validate_record(
     if not completed and data["outcome"] is not None:
         errors.append("planned records cannot claim an outcome")
     env = data["environment"]
-    if shape(
-        env,
-        {
-            "product",
-            "interface",
-            "version",
-            "os",
-            "account_route",
-            "model",
-            "reasoning_effort",
-            "other_skills",
-        },
-        "environment",
-    ):
+    env_fields = {
+        "product",
+        "interface",
+        "version",
+        "os",
+        "account_route",
+        "model",
+        "reasoning_effort",
+        "other_skills",
+    }
+    if schema == 2:
+        env_fields.update(
+            {
+                "requested_model",
+                "requested_reasoning_effort",
+                "execution_evidence",
+                "model_changes",
+            }
+        )
+    if shape(env, env_fields, "environment"):
         if env["product"] not in PLATFORMS:
             errors.append("unsupported product")
-        for key in set(env) - {"product", "other_skills"}:
+        for key in set(env) - {"product", "other_skills", "model_changes"}:
+            if key == "execution_evidence":
+                continue
             if env[key] is not None and not text(env[key]):
                 errors.append(f"environment.{key}: expected text or null")
         if not isinstance(env["other_skills"], list) or any(
@@ -199,13 +249,69 @@ def validate_record(
         ):
             errors.append("environment.other_skills: expected skill names or versions")
         if completed and data["outcome"] != "blocked":
-            if any(
-                not text(env[key])
-                for key in ["interface", "version", "os", "model", "reasoning_effort"]
-            ):
+            required = ["interface", "version", "os"]
+            if schema == 1:
+                required += ["model", "reasoning_effort"]
+            if any(not text(env[key]) for key in required):
                 errors.append(
                     "completed attempts require environment and model details"
                 )
+        if schema == 2:
+            execution_details(
+                {
+                    "requested_model": env["requested_model"],
+                    "effective_model": env["model"],
+                    "requested_reasoning_effort": env["requested_reasoning_effort"],
+                    "effective_reasoning_effort": env["reasoning_effort"],
+                    "adjustments": env["model_changes"],
+                    "evidence": env["execution_evidence"],
+                },
+                "environment",
+            )
+            if (
+                completed
+                and (env["model"] is None or env["reasoning_effort"] is None)
+                and not data["limitations"]
+            ):
+                errors.append(
+                    "unknown execution metadata requires an explanation in limitations"
+                )
+    if schema == 2:
+        routing = data["routing"]
+        if not isinstance(routing, list):
+            errors.append("routing: expected a list")
+        else:
+            for index, entry in enumerate(routing):
+                label = f"routing[{index}]"
+                if not shape(
+                    entry,
+                    {
+                        "task",
+                        "rationale",
+                        "requested_model",
+                        "effective_model",
+                        "requested_reasoning_effort",
+                        "effective_reasoning_effort",
+                        "adjustments",
+                        "evidence",
+                    },
+                    label,
+                ):
+                    continue
+                if not text(entry["task"]) or not text(entry["rationale"]):
+                    errors.append(f"{label}: task and selection rationale are required")
+                execution_details(entry, label)
+                if (
+                    completed
+                    and (
+                        entry["effective_model"] is None
+                        or entry["effective_reasoning_effort"] is None
+                    )
+                    and not text(entry["evidence"])
+                ):
+                    errors.append(
+                        f"{label}: explain unavailable execution metadata in evidence"
+                    )
     source = data["source"]
     if shape(
         source,

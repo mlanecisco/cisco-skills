@@ -8,7 +8,7 @@ scope: Source review and reuse recommendations
 
 The library should use the open Agent Skills format, add Cisco-specific knowledge, and reuse suitable tools selectively. A shared format does not guarantee that a skill's dependencies, model controls, or installation method work in every product.
 
-This review covers the requested guidance, repository documentation, and selected relevant skills. It is not an audit of every file in the linked repositories. No upstream skill code or instructions have been copied into this pilot.
+This review covers the requested guidance, repository documentation, and selected relevant skills. It is not an audit of every file in the linked repositories. Most workflows are original; the efficiency selection rubric now adapts the pinned getedgehq material described below, with its source and license notices preserved.
 
 ## Foundational guidance
 
@@ -58,6 +58,12 @@ Useful ideas include a shared project vocabulary, turning an existing conversati
 Some reviewed workflows are deliberately demanding: `tdd` requires agreement on test boundaries, while `to-spec` requests extensive user stories and publishes to a configured issue tracker. Keep that depth optional. Our defaults should use a brief intake, small working increments, and appropriate verification. Publishing needs authorization in the actual task.
 
 `grill-me` is a small wrapper that invokes another skill, `grilling`. Installing only that wrapper would leave a dependency unresolved. Trace linked skills and scripts before selecting reusable units. The MIT license permits reuse with its required notices; no material has been copied here.
+
+### getedgehq model picker
+
+Reviewed [subagent-model-picker](https://github.com/getedgehq/skills/blob/20a91ea359e6d09c2cca50879f0e6a2c19e7e44c/subagent-model-picker/SKILL.md) and the repository license at revision `20a91ea359e6d09c2cca50879f0e6a2c19e7e44c`. The Apache 2.0 license includes `Copyright 2026 Floom`; its complete text is retained within the efficiency skill. Standard root and skill-directory NOTICE paths returned 404. The [adaptation record](../skills/efficient-workflow/references/upstream.md) identifies the source, review scope, preserved license, and local changes.
+
+The useful ideas are selecting delegated models from the task's ambiguity, independent checks, and consequences, and considering total completion cost. The local rubric also requires relevant evidence, preserves explicit settings, and diagnoses input or environment failures before changing capability. It adds task-specific requested/observed execution records. Upstream pricing tables, extra model tiers, fixed one-tier escalation, and the blanket restriction on cheaper reviewers are not adopted. Existing model defaults and worker definitions are unchanged.
 
 ## Recommended implementation decisions
 
