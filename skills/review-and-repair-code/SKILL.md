@@ -3,7 +3,7 @@ name: review-and-repair-code
 description: Review software against requirements and project standards, or diagnose and repair defects using reproducible evidence. Use for code review, debugging, and repair; review-only and diagnosis-only requests must preserve the project and its data.
 metadata:
   author: Mark A. Lane, Ph.D.
-  version: "0.2.1"
+  version: "0.2.2"
   status: draft
 ---
 
@@ -42,6 +42,8 @@ Test a focused explanation rather than making speculative changes. In diagnosis-
 For an authorized repair, reuse a relevant failing test or add a regression check for an important defect, then make the smallest sound correction. Use independently derived expected values. Completion means the original symptom is resolved, relevant regression checks pass, and unrelated work is preserved. Reuse applicable check results and rerun checks affected by the correction.
 
 Remove temporary instrumentation created for the investigation and inspect the final diff. After two unsuccessful attempts at the same symptom, reassess the evidence and approach instead of repeating the same change. Do not reset user data or rewrite working parts of the app to bypass the failure. Use a more capable model or higher reasoning effort only for a specific unresolved difficulty and within the applicable budget.
+
+Use Medium or High across providers: start main and more powerful models at Medium, and smaller workers at High. Use Extra/Extra High for harder work on smaller workers, or very difficult tasks or recurring reasoning problems on more powerful models. Low/Light is available for deliberately simple work. Never use Anthropic Max or OpenAI Ultra. Use standard speed only, including for reviewers and consultants. Never enable Fast, Ultrafast, or other premium speed modes. If the host prevents applying these limits, report the conflict without claiming the settings changed. Use `efficient-workflow` when available for model-routing guidance.
 
 ## Deliver
 

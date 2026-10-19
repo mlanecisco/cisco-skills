@@ -1,7 +1,7 @@
 ---
 author: Mark A. Lane, Ph.D.
 status: Draft library; initial Codex batch evidence recorded; broader validation pending
-date: 2026-10-16
+date: 2026-10-19
 ---
 
 # Cisco skills library
@@ -33,7 +33,7 @@ The [build plan](docs/build-plan.md) sets the implementation order and acceptanc
 
 For installation on macOS and Windows, start with the [setup guides](docs/setup/README.md). Maintainers can use the [repeatable check command](docs/maintaining.md). The [development evaluations](evals/development-cases.json) include a synthetic dashboard calculation fixture with known expected results.
 
-The [evaluation guide](docs/evaluations.md) explains the pilot procedure, runnable fixtures, initial Codex batch results, and requested-versus-observed execution records. Working sources contain efficiency `0.2.0`, with an evidence-based model-selection rubric and new assessment inputs. The current packaged draft remains `0.1.0-pilot.4`, which predates those changes. All product routes remain untested in colleague walkthroughs. Native Cursor Agent is included in the development pilot alongside Claude Code and Codex.
+The [evaluation guide](docs/evaluations.md) explains the pilot procedure, runnable fixtures, initial Codex batch results, and requested-versus-observed execution records. Working sources contain efficiency `0.3.0`, with a model-selection rubric, exceptional Fable/Astra escalation, and firm limits on reasoning and speed modes. The current packaged draft remains `0.1.0-pilot.4`, which predates those changes. All product routes remain untested in colleague walkthroughs. Native Cursor Agent is included in the development pilot alongside Claude Code and Codex.
 
 [Novice development cases](evals/novice-development-cases.json) specify checks for lost records, exposed credentials, incomplete access controls, failed saves, hosting mismatches, and excessive repair attempts. Their listed fixtures and product runs remain pending.
 
@@ -51,12 +51,12 @@ Keep Cisco templates and team knowledge distinct from personal preferences. Docu
 
 | Product | Primary model | Routine or repetitive work | Difficult work |
 | --- | --- | --- | --- |
-| Claude Code | Sonnet 5.5 | Haiku 5.5 | Sonnet first; Opus 5.5 for exceptionally difficult subtasks |
-| Codex | GPT-6.1 Sol | GPT-6 Luna | GPT-6.1 Sol with a justified increase in reasoning effort |
+| Claude Code | Sonnet 5.5 | Haiku 5.5 | Opus 5.5 for difficult work or focused consultation; Fable only in extreme situations |
+| Codex | GPT-6.1 Sol | GPT-6 Luna | Increase Sol effort when justified; use `gpt-6-astra` only in rare cases that need greater capability |
 
-Favor low reasoning effort and use medium when task complexity calls for it. Reserve high for demonstrated need. Strongly discourage the highest thinking levels as routine settings; use them only when the user explicitly chooses them or a relevant benchmark supports their cost. Model names and available effort settings must be checked in the target account.
+Use Medium or High across both providers. Start Sonnet, Opus, Fable, Sol, and Astra at Medium, increasing to High when warranted. Start the smaller Haiku and Luna workers at High; use Extra on Haiku or Extra High on Luna for harder work or recurring reasoning problems. Reserve Extra/Extra High on the more powerful models for very difficult tasks or repeated issues that warrant deeper reasoning. Low/Light remains available for deliberately simple work. Never use Anthropic Max, OpenAI Ultra, or Fast/Ultrafast modes. These limits apply to coordinators, workers, and consultants; check the account's available controls before selecting settings.
 
-These are library defaults, not claims that one effort level always gives the best result. Measure cost per acceptable result, including failed attempts, coordinator overhead, and verification. Subscription usage and API charges require different reporting.
+Prefer Opus 5.5 with a justified increase to High or Extra before considering Fable. The [routing reference](skills/efficient-workflow/references/routing.md) defines escalation conditions and distinguishes these library choices from provider performance claims. Fast modes carry higher pricing or usage multipliers; that does not mean they always generate twice as many tokens. Measure cost per acceptable result, including retries, coordinator overhead, and verification, and distinguish subscription usage from API charges.
 
 ## Proposed next skills
 
@@ -90,7 +90,7 @@ For broader team distribution, use verified packages and an installation guide. 
 
 A release needs correct triggering, valid artifacts, appropriate handling of missing inputs, and successful use in both target products. Check cases that should not activate the skill, as well as ordinary and difficult requests. For efficiency, compare total usage and quality against the same baseline task. A valid `SKILL.md` alone does not establish those results.
 
-The latest local maintainer run passed linting, formatting, type checking, 88 regression tests, structural validation of six skills and 50 evaluation definitions, and validation of two historical run records. Tests cover packaging, execution-record consistency, calculation and compatibility fixtures, non-fixing checks, isolated data targets, batch integrity, and controlled clients. Separate historical Codex batch attempts produced correct outputs: explicit invocation of efficiency `0.1.1` passed, while automatic activation remained unconfirmed. Current efficiency `0.2.0` and its new selection cases have no fresh product runs. Twenty-one cases still list needed inputs. No token savings, completed installation walkthroughs, or validated presentation sample is claimed.
+The latest local maintainer run passed linting, formatting, type checking, 88 regression tests, structural validation of six skills and 50 evaluation definitions, and validation of two historical run records. Tests cover packaging, execution-record consistency, calculation and compatibility fixtures, non-fixing checks, isolated data targets, batch integrity, and controlled clients. Separate historical Codex batch attempts produced correct outputs: explicit invocation of efficiency `0.1.1` passed, while automatic activation remained unconfirmed. Current efficiency `0.3.0` and its new selection cases have no fresh product runs. Twenty-one cases still list needed inputs. No token savings, completed installation walkthroughs, or validated presentation sample is claimed.
 
 The [validator](scripts/validate_library.py) checks local Markdown links throughout each skill, rejects symlinked skill resources, requires existing relative local fixture paths, and rejects unknown evaluation fields and unsupported suite locations. The maintainer command also validates retained run records. The [audit follow-up](docs/audits/2026-10-16-follow-up.md) and [skill revision record](docs/audits/2026-10-16-skill-revision.md) distinguish implemented changes from pending product evidence.
 

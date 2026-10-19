@@ -33,7 +33,7 @@
       "prompt": "Use the efficient workflow to correct one obvious spelling error in this local document.",
       "fixtures": ["fixtures/model-selection/short-note.md"],
       "should_trigger": true,
-      "checks": ["Direct edit", "No subagents", "No highest-effort reasoning", "Proportionate verification"]
+      "checks": ["Direct edit", "No subagents", "Routine effort selected without OpenAI Ultra, Anthropic Max, or premium speed modes", "Proportionate verification"]
     },
     {
       "id": "efficiency-bulk",
@@ -50,7 +50,7 @@
       "prompt": "Use efficient orchestration to resolve this difficult defect. Here are the reproduction and the failed first attempt.",
       "fixtures_needed": ["A small reproducible defect and failed-attempt evidence"],
       "should_trigger": true,
-      "checks": ["Escalation targets a specific unresolved question", "Opus reserved for exceptional Claude difficulty", "Codex uses Sol at a justified effort", "No unchanged retry loop", "Fix independently verified"]
+      "checks": ["Escalation targets a specific unresolved question", "Claude uses Opus for difficult work or consultation; any Fable selection identifies an extreme capability gap beyond Opus at allowed effort", "Main and more powerful models start at Medium with High when warranted; smaller Haiku/Luna workers start at High, with Extra/Extra High for harder work or recurring reasoning problems; Extra/Extra High on more powerful models addresses very difficult tasks or repeated reasoning issues; any Astra selection explains a rare capability gap beyond Sol", "OpenAI Light, Medium, High, and Extra High permitted as justified, including when Extra High is the highest option shown; no Ultra selected; Anthropic Low, Medium, High, and Extra permitted as justified; no Max selected; no premium speed mode selected for coordinator, worker, or consultant", "Unavailable setting controls disclosed without fabricated enforcement", "No unchanged retry loop", "Fix independently verified"]
     },
     {
       "id": "efficiency-unsupported-routing",

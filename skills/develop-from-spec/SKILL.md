@@ -3,7 +3,7 @@ name: develop-from-spec
 description: Build or change software from requirements or a specification, using acceptance criteria, small working increments, tests, and review. Use for feature or application development; a simple explanation or a request only to run checks does not need this workflow.
 metadata:
   author: Mark A. Lane, Ph.D.
-  version: "0.2.1"
+  version: "0.2.2"
   status: draft
 ---
 
@@ -44,7 +44,9 @@ When using a companion skill, carry forward authorization, acceptance criteria, 
 
 ## Keep the work economical
 
-Run fast, focused feedback during implementation and the relevant broader checks before delivery. Avoid repeated full-suite runs after unchanged results. Prefer scripts for deterministic transformations. Use low or medium reasoning as appropriate; deeper reasoning and delegated reviews should address a concrete difficulty. Use `efficient-workflow` when available for substantial or repetitive work, without making it a prerequisite for ordinary development.
+Run fast, focused feedback during implementation and the relevant broader checks before delivery. Avoid repeated full-suite runs after unchanged results. Prefer scripts for deterministic transformations. Choose reasoning effort for the task under the limits below; delegated reviews should address a concrete need. Use `efficient-workflow` when available for substantial or repetitive work, without making it a prerequisite for ordinary development.
+
+Use Medium or High across providers: start main and more powerful models at Medium, and smaller workers at High. Use Extra/Extra High for harder work on smaller workers, or very difficult tasks or recurring reasoning problems on more powerful models. Low/Light is available for deliberately simple work. Never use Anthropic Max or OpenAI Ultra. Use standard speed only, including for delegated work. Never enable Fast, Ultrafast, or other premium speed modes. If the host prevents applying these limits, report the conflict without claiming the settings changed.
 
 Do not weaken tests, lint rules, or the specification just to make checks pass. Identify existing failures separately from failures introduced by this change. Continue independent work when a missing tool blocks only one check.
 

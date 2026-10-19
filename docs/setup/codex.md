@@ -50,13 +50,13 @@ The maintained source folder is `skills/check-code-quality` in this library. Pre
 
 ## Select economical model settings
 
-Use GPT-6.1 Sol with low effort for routine work, medium when needed, and Luna for suitable repetitive subtasks. Verify that the account supports those choices.
+Use GPT-6.1 Sol for most work, starting at Medium and using High when warranted. Luna handles suitable repetitive subtasks at High, with Extra High for harder work or recurring reasoning problems. Reserve `gpt-6-astra` for rare capability gaps; start it at Medium. On Sol and Astra, reserve Extra High for very difficult tasks or repeated issues that warrant deeper reasoning. OpenAI allows Light, Medium, High, and Extra High; Ultra is prohibited. Light (`low` in CLI configuration) remains available for deliberately simple work. Diagnose input, permission, and tool failures before increasing effort. Use standard speed only, with Fast and Ultrafast disabled, including for workers and consultants. Verify account support for the selected model and settings.
 
 Where the active Codex configuration uses TOML, the main-model settings are:
 
 ```toml
 model = "gpt-6.1-sol"
-model_reasoning_effort = "low"
+model_reasoning_effort = "medium"
 ```
 
 Merge these into the active configuration or profile rather than replacing the file or creating duplicate keys. The usual personal file is `~/.codex/config.toml`, or `.codex\config.toml` in the Windows user profile. The [routing reference](../../skills/efficient-workflow/references/routing.md) links the official configuration guidance and provides the optional Luna worker. Installing a task skill does not configure that worker.

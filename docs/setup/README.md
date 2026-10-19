@@ -24,7 +24,7 @@ The product installation, account sign-in, library installation, and verificatio
 2. Obtain a selected skill ZIP and its version manifest from the maintainer, or the source folder for local development. The [packaging guide](../packaging.md) explains package identity, verification, updates, and rollback. This repository currently has no published GitHub URL or release download.
 3. Add one relevant draft skill, preserving its full folder and references.
 4. Run that guide's first-use check before asking for a larger project.
-5. Use low or medium reasoning for ordinary work. Model routing needs the product configuration described in the [routing reference](../../skills/efficient-workflow/references/routing.md); installing its skill alone does not configure workers.
+5. Use Medium or High across providers: start main and more powerful models at Medium, and smaller workers at High. Use Extra/Extra High for harder work on smaller workers, or very difficult tasks or recurring reasoning problems on more powerful models. Never use Anthropic Max, OpenAI Ultra, or premium speed modes such as Fast or Ultrafast. Model routing and available controls are described in the [routing reference](../../skills/efficient-workflow/references/routing.md); installing its skill alone does not configure workers or enforce these limits.
 
 For local coding products, work in a selected project folder so the agent has a clear scope. For document work, attach the actual input and template. A skill cannot replace missing files, accounts, or tool permissions.
 

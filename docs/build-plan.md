@@ -1,6 +1,6 @@
 ---
 author: Mark A. Lane, Ph.D.
-date: 2026-10-16
+date: 2026-10-19
 status: Implementation plan
 ---
 
@@ -38,13 +38,13 @@ Acceptance: pilot a small dashboard feature and a reproducible defect. Demonstra
 
 ## 3. Evaluate efficient execution
 
-Create representative fixtures for repetitive classification, a small coding task, and a difficult defect. Compare a direct baseline with the agreed routing: Sonnet 5.5 coordinating Haiku 5.5, Opus 5.5 for exceptional difficulty, and GPT-6.1 Sol coordinating Luna in Codex.
+Create representative fixtures for repetitive classification, a small coding task, and a difficult defect. Compare a direct baseline with the agreed routing: Sonnet 5.5 coordinating Haiku 5.5, Opus 5.5 for difficult work or consultation, and Fable only in extreme situations. In Codex, use GPT-6.1 Sol coordinating Luna, with GPT-6 Astra reserved for rare problems that need greater capability.
 
-Favor low reasoning effort and use medium when needed. Reserve high for demonstrated difficulty. Keep the highest levels exceptional. Measure coordinator and worker usage, retries, latency, and whether the result meets the same acceptance criteria.
+Use Medium or High across providers. Start Sonnet, Opus, Fable, Sol, and Astra at Medium, increasing to High when warranted. Start Haiku and Luna at High, with Extra/Extra High for harder work or recurring reasoning problems. Reserve Extra/Extra High on more powerful models for very difficult tasks or repeated issues that warrant deeper reasoning. Diagnose failures before escalating effort. Never select Anthropic Max, OpenAI Ultra, or premium speed modes. Apply these limits to coordinators, workers, and consultants. Prefer Opus at High or Extra when justified before considering Fable. Measure usage, retries, latency, and whether the result meets the same acceptance criteria.
 
 Add runtime enforcement if a hard cumulative budget is required. Prompt instructions alone do not provide that enforcement. Check unsupported-model and no-delegation fallbacks as well.
 
-Working efficiency `0.2.0` adds a compact selection rubric informed by a pinned upstream review, with the existing models and workers retained. New compatibility, incomplete-test-coverage, controlled tool-failure, and execution-metadata cases have inputs; agent trials remain pending. New run templates distinguish selection intent from observed coordinator and worker execution, preserving historical records. Use those fields to establish actual routing before drawing conclusions about savings.
+Working efficiency `0.3.0` includes a compact selection rubric informed by a pinned upstream review and the October 19 library escalation policy. Compatibility, incomplete-test-coverage, controlled tool-failure, and execution-metadata cases have inputs; agent trials remain pending. Run templates distinguish selection intent from observed coordinator and worker execution, preserving historical records. Use those fields to establish actual routing before drawing conclusions about savings.
 
 Acceptance: publish measured results for the pilot tasks, including cases where delegation does not help. Choose defaults from the evidence rather than assuming that more agents or less expensive models always reduce total cost.
 

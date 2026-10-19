@@ -30,13 +30,13 @@ Reopen the terminal and run `claude --version`. A version number confirms the co
 
 Change to the actual project folder with `cd`, then run `claude`. Follow the browser sign-in for the intended Claude account or the organization's configured provider. The [quickstart's account guidance](https://code.claude.com/docs/en/quickstart) distinguishes subscription, Console, and enterprise-provider routes. Do not add an API key merely because a different sign-in route is unavailable.
 
-Start with Sonnet 5.5 and low reasoning effort when available. The [CLI reference](https://code.claude.com/docs/en/cli-reference) documents model and effort flags:
+Start with Sonnet 5.5 at Medium reasoning effort; use High when warranted. The [CLI reference](https://code.claude.com/docs/en/cli-reference) documents model and effort flags:
 
 ```bash
-claude --model claude-sonnet-5-5 --effort low
+claude --model claude-sonnet-5-5 --effort medium
 ```
 
-Check the installed version's `claude --help` if an option is unavailable. Use medium when the work warrants it and keep the highest effort exceptional.
+Check the installed version's `claude --help` if an option is unavailable. Anthropic exposes Low, Medium, High, Extra, and Max. This library allows Low through Extra and prohibits Max. Start Sonnet, Opus, and Fable at Medium and use High when warranted. Start Haiku workers at High, with Extra for harder work or recurring reasoning problems. Reserve Extra on the more powerful models for very difficult tasks or repeated issues that warrant deeper reasoning. Keep fast mode off and use standard speed.
 
 ## Add the library
 
@@ -57,6 +57,6 @@ Confirm the answer refers to the actual project and does not claim missing check
 
 ## Workers, updates, and troubleshooting
 
-The [efficient-workflow routing reference](../../skills/efficient-workflow/references/routing.md) explains the optional Haiku and Opus worker definitions. Copying a task skill does not install or activate those agents.
+The [efficient-workflow routing reference](../../skills/efficient-workflow/references/routing.md) explains the optional Haiku worker for easy or repetitive work and the Opus worker for difficult questions or consultation. Prefer Opus at High or Extra when justified before considering Fable, which is reserved for extreme situations. All workers and consultants use standard speed and never select Max. Copying a task skill does not install or activate those agents.
 
 Native installations update automatically; package-manager installations use their own update commands. Recheck `claude --version` after updating. For command-not-found errors, check PATH and reopen the terminal. For sign-in problems, verify the intended account and provider. For missing skills, check the project root, folder layout, exact filename, and duplicate account/project installations.
