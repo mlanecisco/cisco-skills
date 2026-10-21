@@ -30,7 +30,13 @@ Reopen the terminal and run `claude --version`. A version number confirms the co
 
 Change to the actual project folder with `cd`, then run `claude`. Follow the browser sign-in for the intended Claude account or the organization's configured provider. The [quickstart's account guidance](https://code.claude.com/docs/en/quickstart) distinguishes subscription, Console, and enterprise-provider routes. Do not add an API key merely because a different sign-in route is unavailable.
 
-Choose the model and effort from the [routing reference](../../skills/efficient-workflow/references/routing.md). The [CLI reference](https://code.claude.com/docs/en/cli-reference) documents the `--model` and `--effort` flags. Check the installed version's `claude --help` if an option is unavailable.
+Choose the model and effort from the [routing reference](../../skills/efficient-workflow/references/routing.md). The [CLI reference](https://code.claude.com/docs/en/cli-reference) documents the model and effort flags. To start a session with them:
+
+```bash
+claude --model claude-sonnet-5-5 --effort medium
+```
+
+If an option is missing, check `claude --help` for the installed version.
 
 ## Add the library
 

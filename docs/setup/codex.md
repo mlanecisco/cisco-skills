@@ -50,7 +50,14 @@ The maintained source folder is `skills/check-code-quality` in this library. Pre
 
 ## Select model settings
 
-Choose the model and reasoning effort from the [routing reference](../../skills/efficient-workflow/references/routing.md), which also links the official configuration guidance and the optional worker setup. Installing a task skill does not configure workers. Where the active configuration uses TOML, merge the model settings into the active configuration or profile rather than replacing the file or creating duplicate keys. The usual personal file is `~/.codex/config.toml`, or `.codex\config.toml` in the Windows user profile. Verify account support for the selected model and settings.
+Choose the model and reasoning effort by following the [routing reference](../../skills/efficient-workflow/references/routing.md), and verify account support for them. Where the active configuration uses TOML, the main-model settings look like this:
+
+```toml
+model = "gpt-6.1-sol"
+model_reasoning_effort = "medium"
+```
+
+Merge these into the active configuration or profile rather than replacing the file or creating duplicate keys. The usual personal file is `~/.codex/config.toml`, or `.codex\config.toml` in the Windows user profile. Installing a task skill does not configure the optional worker described in the routing reference.
 
 ## Verify and use other interfaces
 
