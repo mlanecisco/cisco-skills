@@ -25,7 +25,7 @@ py -3.12 -m venv .venv
 
 If the installed supported Python has a different command or version, use that command for the first line. Environment activation is optional because the remaining commands address its interpreter directly. With uv already installed, `uv venv --python 3.12 .venv` and `uv pip install --python .venv -r requirements-dev.txt` are alternatives.
 
-After setup, run the last command whenever the library changes. CI uses `python scripts/check.py` in its configured Python environment. The workflow is prepared for GitHub; it has not run there while this repository has no remote.
+After setup, run the last command whenever the library changes. CI uses `python scripts/check.py` in its configured Python environment. The repository has a private GitHub remote, `mlanecisco/cisco-skills`, and the hosted "Library checks" workflow passed on commit `10a87bb` (run 39261842430, 2026-10-19). That run does not cover later commits.
 
 ## What the command checks
 
@@ -66,3 +66,13 @@ Use the [evaluation guide](evaluations.md) to prepare independent runs and recor
 ## Updating tools
 
 The supported ranges are in `requirements-dev.in`; exact resolved versions are in `requirements-dev.txt`. With uv, regenerate the pinned file using its recorded compile command, then reinstall and run the checks on supported Python versions. Review dependency changes before committing them. Do not edit tool rules or acceptance criteria merely to conceal a failure.
+
+## Release criteria and current status
+
+A release needs correct triggering, valid artifacts, appropriate handling of missing inputs, and successful use in both target products. Check cases that should not activate the skill, as well as ordinary and difficult requests. For efficiency, compare total usage and quality against the same baseline task. A valid `SKILL.md` alone does not establish those results.
+
+The latest local maintainer run passed linting, formatting, type checking, 88 regression tests, structural validation of six skills and 50 evaluation definitions, and validation of two historical run records. Tests cover packaging, execution-record consistency, calculation and compatibility fixtures, non-fixing checks, isolated data targets, batch integrity, and controlled clients. Separate historical Codex batch attempts produced correct outputs: explicit invocation of efficiency `0.1.1` passed, while automatic activation remained unconfirmed. Current efficiency `0.3.0` and its new selection cases have no fresh product runs. Twenty-one cases still list needed inputs. No token savings, completed installation walkthroughs, or validated presentation sample is claimed.
+
+The [validator](../scripts/validate_library.py) checks local Markdown links throughout each skill, rejects symlinked skill resources, requires existing relative local fixture paths, and rejects unknown evaluation fields and unsupported suite locations. The maintainer command also validates retained run records. The [audit follow-up](audits/2026-10-16-follow-up.md) and [skill revision record](audits/2026-10-16-skill-revision.md) distinguish implemented changes from pending product evidence.
+
+The repository has a local package builder and verifier and a private GitHub remote, `mlanecisco/cisco-skills`. The hosted "Library checks" workflow passed on commit `10a87bb` (run 39261842430, 2026-10-19). No release package is published, no installer is bundled, and no colleague installation trial has run. The immediate milestone is a tested pilot release with recorded artifacts, quality checks, installation results, and usage measurements.
