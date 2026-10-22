@@ -120,7 +120,7 @@ Use another fresh session and an identical starting project, host, model, effort
 
 Compare quality, total available usage, elapsed time, retries, and interventions. Capture these from the first runs, then compare routing strategies after the tasks and checks are stable. A single successful run is a useful smoke check, not evidence of consistent savings. Repeat critical or inconsistent cases before promotion.
 
-Browser-app, presentation, publishing, and installation trials remain separate work. Release a capability only for the environments its recorded evidence supports.
+Browser-app, publishing, and installation trials remain separate work. The [presentation pilot](presentation-pilot.md) covers Claude Desktop and ChatGPT. Release a capability only for the environments its recorded evidence supports.
 
 ## Recorded product attempts
 
