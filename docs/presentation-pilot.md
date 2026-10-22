@@ -44,7 +44,7 @@ Run the cases in [presentation pilot cases](../evals/presentation-pilot-cases.js
 2. `presentation-pilot-no-template`, with only the brief attached.
 3. `presentation-pilot-rubric-only`, with a deck from case 1 and a short rubric. This case should not trigger the presentation skill.
 
-Use each case's prompt exactly as written. The prompts do not name the skill, so they test whether the skill activates on ordinary wording. If it does not activate, record that result first. Then, in another new chat, you may add "Use cisco-presentation." to the start of the prompt and record that attempt separately as an explicit invocation.
+Use each case's prompt exactly as written and create the record with `--invocation automatic`. The prompts do not name the skill, so they test whether the skill activates on ordinary wording. If it does not activate, record that attempt as a failed activation. Then, in another new chat, you may add "Use cisco-presentation." to the start of the prompt and record that attempt separately with `--invocation explicit`, noting the added sentence in the record. An explicit pass shows the skill works when named; it does not count as automatic activation.
 
 Create a planned record before each attempt and fill it in from what you observed:
 
@@ -65,7 +65,21 @@ An attempt passes only if every check passes, the evidence is kept, and activati
 
 ## User walkthrough
 
-Choose a participant who did not help build the library and who would plausibly make Cisco presentations. Give them the archive, the brief, and the template, and point them only to the "Add a library skill" section of the [Claude Desktop](setup/claude-desktop.md) or [ChatGPT](setup/chatgpt.md) guide. Do not share the guides' "Verify first use" prompts or any example request before the attempt, because those name the skill and would shape the participant's wording. Ask them to install the skill and make a short leadership update from the brief, in their own words. You can show them the example prompts afterwards.
+Choose a participant who did not help build the library and who would plausibly make Cisco presentations. Give them the archive, the brief, the template, and only the installation steps below. Do not share the setup guides before the attempt: they contain example requests that name the skill, which would shape the participant's wording. Ask them to install the skill and make a short leadership update from the brief, in their own words. You can show them the guides afterwards.
+
+Installation steps for Claude Desktop:
+
+1. In Settings > Capabilities, make sure code execution and file creation are on. If you can't change this, tell the observer.
+2. Open Customize > Skills, choose the option to create or upload a skill, and upload the ZIP file.
+3. Turn the uploaded skill on.
+
+Installation steps for ChatGPT:
+
+1. Open Plugins in the sidebar, then the Skills tab.
+2. Choose Create > Upload from your computer, and upload the ZIP file.
+3. Complete any review and installation steps shown, and confirm the skill appears among your installed skills.
+
+If a step is missing or doesn't match what you see, tell the observer.
 
 The observer stays quiet unless the participant is stuck. Every hint counts as an intervention. Note:
 

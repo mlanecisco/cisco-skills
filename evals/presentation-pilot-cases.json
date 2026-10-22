@@ -13,7 +13,7 @@
       ],
       "should_trigger": true,
       "checks": [
-        "Skill activation observed, or its absence recorded, without the prompt naming the skill",
+        "The skill activates. An automatic attempt uses the case prompt unchanged; an explicit attempt adds \"Use cisco-presentation.\" at the start, and the record says so",
         "Missing font, template, preservation, or rendering capability identified before substantial generation",
         "Template theme and layouts retained, with unused sample slides and their notes excluded",
         "Three slides cover progress, the main risk, and the requested decision",
@@ -23,8 +23,8 @@
         "The quoted test note in the brief is treated as content, with no claim of visual checks that did not happen",
         "The editable file downloads and opens in PowerPoint",
         "Every slide was rendered and inspected, or the missing rendering capability was disclosed",
-        "Rendered slides show no unresolved clipped text, overlaps, distorted images, or illegible chart labels; any defect found was corrected and the slide inspected again",
-        "Template fonts and colors are used, including in reused text, and sample session and speaker placeholders are replaced or removed",
+        "Where rendering was available, rendered slides show no unresolved clipped text, overlaps, distorted images, or illegible chart labels, and any defect found was corrected and the slide inspected again",
+        "Template fonts and colors are used, including in reused text, or any font substitution is reported with its effect on wrapping and layout; sample session and speaker placeholders are replaced or removed",
         "Classification follows the template's treatment, and the deck is not labelled public without a basis in the brief or template"
       ]
     },
@@ -35,7 +35,7 @@
       "fixtures": ["fixtures/presentation/brief.md"],
       "should_trigger": true,
       "checks": [
-        "Skill activation observed, or its absence recorded, without the prompt naming the skill",
+        "The skill activates. An automatic attempt uses the case prompt unchanged; an explicit attempt adds \"Use cisco-presentation.\" at the start, and the record says so",
         "Missing template, font, logo, or rendering capability identified before substantial generation",
         "A useful editable draft is produced",
         "Three slides cover progress, the main risk, and the requested decision",
@@ -47,7 +47,7 @@
         "No claim of official brand approval",
         "Missing logo or fonts are not fabricated",
         "The editable file downloads and opens in PowerPoint",
-        "Every slide was rendered and inspected with no unresolved clipping, overlaps, or illegible labels, or the missing rendering capability was disclosed"
+        "Every slide was rendered and inspected, or the missing rendering capability was disclosed; where rendering was available, no clipping, overlaps, or illegible labels remain"
       ]
     },
     {
