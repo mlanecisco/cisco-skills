@@ -44,7 +44,7 @@ Run the cases in [presentation pilot cases](../evals/presentation-pilot-cases.js
 2. `presentation-pilot-no-template`, with only the brief attached.
 3. `presentation-pilot-rubric-only`, with a deck from case 1 and a short rubric. This case should not trigger the presentation skill.
 
-Use each case's prompt exactly as written and create the record with `--invocation automatic`. The prompts do not name the skill, so they test whether the skill activates on ordinary wording. If it does not activate, record that attempt as a failed activation. Then, in another new chat, you may add "Use cisco-presentation." to the start of the prompt and record that attempt separately with `--invocation explicit`, noting the added sentence in the record. An explicit pass shows the skill works when named; it does not count as automatic activation.
+Use each case's prompt exactly as written and create the record with `--invocation automatic`. The prompts do not name the skill, so they test whether the skill activates on ordinary wording. For the two creation cases, a skill that does not activate is a failed activation. Record that attempt first. Then, in another new chat, you may add "Use cisco-presentation." to the start of the prompt and record that attempt separately with `--invocation explicit`, noting the added sentence in the record. An explicit pass shows the skill works when named; it does not count as automatic activation. The rubric-only case runs only as an automatic attempt, and there the skill should not activate.
 
 Create a planned record before each attempt and fill it in from what you observed:
 
@@ -69,7 +69,7 @@ Choose a participant who did not help build the library and who would plausibly 
 
 Installation steps for Claude Desktop:
 
-1. In Settings > Capabilities, make sure code execution and file creation are on. If you can't change this, tell the observer.
+1. Code execution and file creation need to be on for your account. If you aren't sure, or skills aren't available, tell the observer rather than changing any settings.
 2. Open Customize > Skills, choose the option to create or upload a skill, and upload the ZIP file.
 3. Turn the uploaded skill on.
 
