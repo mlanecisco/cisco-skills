@@ -25,7 +25,7 @@ Documentation can lag the product, and account or administrator settings can cha
 | Claude Code | Unknown | Unknown: skills load from local folders (S2), but file access is not documented there | Unknown | Unknown | Unknown | Unknown | Unknown |
 | ChatGPT chat | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown |
 | ChatGPT Work | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown |
-| Codex Local (CLI, IDE, ChatGPT Desktop) | Unknown | Documented: runs in your current project directory on your computer (S7) | Unknown | Unknown | Unknown | Unknown | Unknown |
+| Codex Local (CLI, IDE, ChatGPT Desktop) | Unknown | Documented for ChatGPT Desktop: runs in your current project directory on your computer (S7). Unknown for the CLI and IDE extension, which S7 does not cover | Unknown | Unknown | Unknown | Unknown | Unknown |
 | Codex Worktree | Unknown | Documented: runs on your computer in a Git worktree separate from your checkout, for local Git projects (S7) | Unknown | Unknown | Unknown | Unknown | Unknown |
 | Codex Cloud tasks | Unknown | Documented: your computer's local files, processes, browser sign-ins, and VPN access aren't automatically transferred (S7) | Unknown | Unknown | Unknown | Unknown | Unknown |
 | Cursor Agent, local | Unknown | Unknown: skills load from local folders (S3), but file access is not documented there | Unknown | Unknown | Unknown | Unknown | Unknown |

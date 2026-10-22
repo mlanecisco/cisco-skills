@@ -79,7 +79,7 @@ GitHub Pages hosting and applications that need a backend require different depl
 2. Benchmark token efficiency alongside those tasks. Compare direct execution with selective delegation using the same inputs and acceptance criteria. Include coordinator usage, retries, latency, and result quality; cumulative budget enforcement still needs runtime implementation.
 3. Validate the Cisco business workflows. Generate an editable presentation and inspect every rendered slide. Test Confluence manual insertion and API publishing on a designated test page, including the actual Narva macro representation, interactions, and viewer access.
 4. Build dashboard design and GitHub Pages publishing skills. Use representative dashboard examples to establish visual conventions and reuse a synthetic dashboard across development and delivery evaluations.
-5. Validate a pilot release with colleagues on both operating systems using the generated ZIPs and manifests. Test installation, updates, and rollback, and correct the first-task walkthrough from observed friction. Run the hosted checks on each change to the private team repository.
+5. Validate a pilot release with colleagues on both operating systems using the generated ZIPs and manifests. Test installation, updates, and rollback, and correct the first-task walkthrough from observed friction. Run the hosted checks on each change to the team repository.
 6. Add rubric evaluation, followed by Cisco documents and workbooks. Reuse suitable upstream skills selectively, recording source revisions, licenses, dependencies, and required notices before bundling material.
 
 ## Trying a draft
@@ -92,4 +92,4 @@ For broader team distribution, use verified packages and an installation guide. 
 
 ## Release status
 
-Nothing here is a validated release. The private GitHub repository `mlanecisco/cisco-skills` exists, and its hosted "Library checks" workflow passed on commit `10a87bb` (run 39261842430, 2026-10-19). Published release packages and colleague installation trials remain pending. Release criteria, validator behavior, and the current evaluation counts are in the [maintainer guide](docs/maintaining.md).
+Nothing here is a validated release. The GitHub repository `mlanecisco/cisco-skills` is public (visibility checked 2026-10-22), and its hosted "Library checks" workflow passed on commit `10a87bb` (run 39261842430, 2026-10-19). Published release packages and colleague installation trials remain pending. Release criteria, validator behavior, and the current evaluation counts are in the [maintainer guide](docs/maintaining.md).

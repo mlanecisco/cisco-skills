@@ -25,7 +25,7 @@ py -3.12 -m venv .venv
 
 If the installed supported Python has a different command or version, use that command for the first line. Environment activation is optional because the remaining commands address its interpreter directly. With uv already installed, `uv venv --python 3.12 .venv` and `uv pip install --python .venv -r requirements-dev.txt` are alternatives.
 
-After setup, run the last command whenever the library changes. CI uses `python scripts/check.py` in its configured Python environment. The repository has a private GitHub remote, `mlanecisco/cisco-skills`, and the hosted "Library checks" workflow passed on commit `10a87bb` (run 39261842430, 2026-10-19). That run does not cover later commits.
+After setup, run the last command whenever the library changes. CI uses `python scripts/check.py` in its configured Python environment. The repository has a public GitHub remote, `mlanecisco/cisco-skills` (visibility checked 2026-10-22), and the hosted "Library checks" workflow passed on commit `10a87bb` (run 39261842430, 2026-10-19). That run does not cover later commits.
 
 ## What the command checks
 
@@ -75,4 +75,4 @@ The latest local maintainer run passed linting, formatting, type checking, 88 re
 
 The [validator](../scripts/validate_library.py) checks local Markdown links throughout each skill, rejects symlinked skill resources, requires existing relative local fixture paths, and rejects unknown evaluation fields and unsupported suite locations. The maintainer command also validates retained run records. The [audit follow-up](audits/2026-10-16-follow-up.md) and [skill revision record](audits/2026-10-16-skill-revision.md) distinguish implemented changes from pending product evidence.
 
-The repository has a local package builder and verifier and a private GitHub remote, `mlanecisco/cisco-skills`. The hosted "Library checks" workflow passed on commit `10a87bb` (run 39261842430, 2026-10-19). No release package is published, no installer is bundled, and no colleague installation trial has run. The immediate milestone is a tested pilot release with recorded artifacts, quality checks, installation results, and usage measurements.
+The repository has a local package builder and verifier and a public GitHub remote, `mlanecisco/cisco-skills` (visibility checked 2026-10-22). The hosted "Library checks" workflow passed on commit `10a87bb` (run 39261842430, 2026-10-19). No release package is published, no installer is bundled, and no colleague installation trial has run. The immediate milestone is a tested pilot release with recorded artifacts, quality checks, installation results, and usage measurements.
