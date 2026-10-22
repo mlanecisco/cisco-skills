@@ -1,14 +1,22 @@
 ---
 author: Mark A. Lane, Ph.D.
 status: Draft library; initial Codex batch evidence recorded; broader validation pending
-date: 2026-10-19
+date: 2026-10-22
 ---
 
 # Cisco skills library
 
-This library is for Cisco colleagues who build business deliverables and applications with an AI assistant, including people without a software background. It is organized by outcome. You can use a skill through any interface that provides the capabilities it needs: Claude Desktop, Claude Code, ChatGPT, Codex, or Cursor. The [capability matrix](docs/setup/capabilities.md) lists what each product and mode offers, with its source and verification status.
+Running out of tokens or hitting usage limits too soon? Not sure where to start, or what to ask for? Getting results that look finished until you check the numbers? Explaining the Cisco template to your assistant every time? Built an app that worked in the demo, then lost your data?
 
-The goal is reliable results with less prompting and a measured use of tokens. You should be able to say "build a dashboard from this data" or "evaluate this presentation against this rubric" without knowing which programming tools to select. Dedicated dashboard design, GitHub Pages, rubric evaluation, and document and workbook skills are planned.
+These skills are written for those moments. A skill is a short set of instructions your assistant picks up when your request needs it. You ask in plain words, and the skill brings the steps an expert would follow. It loads only what the task needs and uses scripts for counting and sorting instead of spending tokens on them. It works from the real Cisco template and checks its own results. Then it tells you what it checked and what it couldn't.
+
+They're written for the assistants Cisco colleagues already use: Claude Desktop, ChatGPT, Codex, Cursor, and Claude Code. The [capability matrix](docs/setup/capabilities.md) shows what each product and mode offers, with its source and verification status.
+
+## Why I built it
+
+I'm a seasoned developer, and I've built a lot of apps with AI tools. I think the next wave belongs to people without that background, who know their work and want to use these tools to create amazing things. I built this library to help them build things properly and use their AI tools effectively and efficiently. The skills below are the first set, and several more are planned.
+
+It's early. Every skill here is a draft, and none has been through a colleague trial yet. If you'd like to try one on real work and tell me where it falls short, reach me on Webex or by email at malane2@cisco.com.
 
 For people building apps without a software background, the [app-building guide](docs/building-apps.md) explains what to tell the assistant, what it should verify, and what a useful handoff looks like.
 
