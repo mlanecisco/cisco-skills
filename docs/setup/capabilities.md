@@ -27,7 +27,7 @@ Documentation can lag the product, and account or administrator settings can cha
 | ChatGPT Work | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown |
 | Codex Local (CLI, IDE, ChatGPT Desktop) | Unknown | Documented: runs in your current project directory on your computer (S7) | Unknown | Unknown | Unknown | Unknown | Unknown |
 | Codex Worktree | Unknown | Documented: runs on your computer in a Git worktree separate from your checkout, for local Git projects (S7) | Unknown | Unknown | Unknown | Unknown | Unknown |
-| Codex Cloud tasks | Unknown | Documented: your computer's local files, processes, browser sign-ins, and VPN access are not transferred (S7) | Unknown | Unknown | Unknown | Unknown | Unknown |
+| Codex Cloud tasks | Unknown | Documented: your computer's local files, processes, browser sign-ins, and VPN access aren't automatically transferred (S7) | Unknown | Unknown | Unknown | Unknown | Unknown |
 | Cursor Agent, local | Unknown | Unknown: skills load from local folders (S3), but file access is not documented there | Unknown | Unknown | Unknown | Unknown | Unknown |
 | Cursor Cloud Agents | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown |
 
@@ -42,7 +42,7 @@ Documentation can lag the product, and account or administrator settings can cha
 | Codex Worktree | Unknown | Unknown: the modes page (S7) does not address skills | Unknown |
 | Codex Cloud tasks | Documented: requires an accessible published environment, which you create or get from a workspace admin (S7) | Unknown: skill support in Codex Cloud is not addressed (S4, S7) | Unknown |
 | Cursor Agent, local | Unknown | Documented: project `.agents/skills/` or `.cursor/skills/`, user `~/.agents/skills/` or `~/.cursor/skills/`. Cursor also reads `.claude/skills/` and `.codex/skills/` (S3) | Documented: package as a plugin and publish to a team marketplace. A GitHub import needs `.cursor-plugin/marketplace.json`. Personal sync is private and does not share with teammates (S3) |
-| Cursor Cloud Agents | Documented for personal skills: only `~/.cursor/skills/` syncs to Cloud Agents, and only with Sync Skills for Cloud Agents turned on. Admins can turn that sync off for a team (S3) | Documented: the page lists project skills, `~/.agents/skills/`, and unsynced local skills as not available to Cloud Agents (S3). Unknown: availability of skills distributed as plugins | Unknown: self-hosted workers do not receive personal skills, and the page suggests project skills from the repository or skills baked into the worker image (S3), which conflicts with the project-skills line above and needs a test |
+| Cursor Cloud Agents | Documented for personal skills: only `~/.cursor/skills/` syncs to Cloud Agents, and only with Sync Skills for Cloud Agents turned on. Admins can turn that sync off for a team (S3) | Documented: personal sync copies only `~/.cursor/skills/`, and does not copy project skills or other local skill directories (S3). Unknown: availability through repository and plugin distribution, which needs separate verification | Documented: for self-hosted workers, the documentation describes using project skills from the repository or skills included in the worker image (S3). Unknown for other distribution routes |
 
 ## Sources
 
@@ -58,7 +58,7 @@ Documentation can lag the product, and account or administrator settings can cha
 
 ## Reading the gaps
 
-Where an official page documents a capability, the cell says Documented with its prerequisites. Each Documented claim still needs a test in a Cisco tenant or account, and the Observed status is reserved for that. Where the pages read so far say nothing about files, tools, rendering, or publishing, the cell stays Unknown. A skill that needs rendering or publishing should say so up front and report what the session actually did.
+Where an official page documents a capability, the cell says Documented with its prerequisites. Further official documentation can move a cell from Unknown to Documented. Tenant or account tests establish account-specific availability and are the only route to Observed, which no cell has yet. A skill that needs rendering or publishing should say so up front and report what the session actually did.
 
 Local Cursor and Codex project folders are separate from Cloud Agent or cloud task environments. A skill that works in a local folder is not thereby available in a cloud environment.
 
