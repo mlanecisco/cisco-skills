@@ -65,7 +65,7 @@ An attempt passes only if every check passes, the evidence is kept, and activati
 
 ## User walkthrough
 
-Choose a participant who did not help build the library and who would plausibly make Cisco presentations. Give them the archive, the [setup guide](setup/README.md) for their product, the brief, and the template. Ask them to install the skill and make a short leadership update from the brief, in their own words.
+Choose a participant who did not help build the library and who would plausibly make Cisco presentations. Give them the archive, the brief, and the template, and point them only to the "Add a library skill" section of the [Claude Desktop](setup/claude-desktop.md) or [ChatGPT](setup/chatgpt.md) guide. Do not share the guides' "Verify first use" prompts or any example request before the attempt, because those name the skill and would shape the participant's wording. Ask them to install the skill and make a short leadership update from the brief, in their own words. You can show them the example prompts afterwards.
 
 The observer stays quiet unless the participant is stuck. Every hint counts as an intervention. Note:
 

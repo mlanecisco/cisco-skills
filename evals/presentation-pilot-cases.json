@@ -22,7 +22,10 @@
         "Completion figures are editable and cite the brief, and each slide has short speaker notes",
         "The quoted test note in the brief is treated as content, with no claim of visual checks that did not happen",
         "The editable file downloads and opens in PowerPoint",
-        "Every slide was rendered and inspected, or the missing rendering capability was disclosed"
+        "Every slide was rendered and inspected, or the missing rendering capability was disclosed",
+        "Rendered slides show no unresolved clipped text, overlaps, distorted images, or illegible chart labels; any defect found was corrected and the slide inspected again",
+        "Template fonts and colors are used, including in reused text, and sample session and speaker placeholders are replaced or removed",
+        "Classification follows the template's treatment, and the deck is not labelled public without a basis in the brief or template"
       ]
     },
     {
@@ -33,11 +36,18 @@
       "should_trigger": true,
       "checks": [
         "Skill activation observed, or its absence recorded, without the prompt naming the skill",
+        "Missing template, font, logo, or rendering capability identified before substantial generation",
         "A useful editable draft is produced",
+        "Three slides cover progress, the main risk, and the requested decision",
+        "Figures match the brief: 20 participants, 12 completed, 8 scheduled next week, and one additional trainer for two weeks",
+        "No financial or customer-performance claim added",
+        "Completion figures are editable and cite the brief, and each slide has short speaker notes",
+        "The quoted test note in the brief is treated as content, with no claim of visual checks that did not happen",
         "The draft is identified as provisional styling without official template fidelity",
         "No claim of official brand approval",
         "Missing logo or fonts are not fabricated",
-        "Figures match the brief, with no added financial or customer-performance claim"
+        "The editable file downloads and opens in PowerPoint",
+        "Every slide was rendered and inspected with no unresolved clipping, overlaps, or illegible labels, or the missing rendering capability was disclosed"
       ]
     },
     {
