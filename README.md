@@ -10,13 +10,13 @@ Running out of tokens or hitting usage limits too soon? Not sure where to start,
 
 These skills are written for those moments. A skill is a short set of instructions your assistant picks up when your request needs it. You ask in plain words, and the skill brings the steps an expert would follow. It loads only what the task needs and uses scripts for counting and sorting instead of spending tokens on them. It works from the real Cisco template and checks its own results. Then it tells you what it checked and what it couldn't.
 
-They're written for the assistants Cisco colleagues already use: Claude Desktop, ChatGPT, Codex, Cursor, and Claude Code. The [capability matrix](docs/setup/capabilities.md) shows what each product and mode offers, with its source and verification status.
+They're written for the assistants people at Cisco already use: Claude Desktop, ChatGPT, Codex, Cursor, and Claude Code. The [capability matrix](docs/setup/capabilities.md) shows what each product and mode offers, with its source and verification status.
 
 ## Why I built it
 
 I'm a seasoned developer, and I've built a lot of apps with AI tools. I think the next wave belongs to people without that background, who know their work and want to use these tools to create amazing things. I built this library to help them build things properly and use their AI tools effectively and efficiently. The skills below are the first set, and several more are planned.
 
-It's early. Every skill here is a draft, and none has been through a colleague trial yet. If you'd like to try one on real work and tell me where it falls short, reach me on Webex or by email at malane2@cisco.com.
+It's early. Every skill here is a draft, and none has been through a user trial yet. If you'd like to try one on real work and tell me where it falls short, reach me on Webex or by email at malane2@cisco.com.
 
 For people building apps without a software background, the [app-building guide](docs/building-apps.md) explains what to tell the assistant, what it should verify, and what a useful handoff looks like.
 
@@ -52,7 +52,7 @@ The [build plan](docs/build-plan.md) sets the implementation order and acceptanc
 
 For installation on macOS and Windows, start with the [setup guides](docs/setup/README.md). Maintainers can use the [repeatable check command](docs/maintaining.md). The [development evaluations](evals/development-cases.json) include a synthetic dashboard calculation fixture with known expected results.
 
-The [evaluation guide](docs/evaluations.md) explains the pilot procedure, runnable fixtures, initial Codex batch results, and requested-versus-observed execution records. Working sources contain efficiency `0.3.0`, with a model-selection rubric, exceptional Fable/Astra escalation, and firm limits on reasoning and speed modes. The current packaged draft remains `0.1.0-pilot.4`, which predates those changes. All product routes remain untested in colleague walkthroughs. Native Cursor Agent is included in the development pilot alongside Claude Code and Codex.
+The [evaluation guide](docs/evaluations.md) explains the pilot procedure, runnable fixtures, initial Codex batch results, and requested-versus-observed execution records. Working sources contain efficiency `0.3.0`, with a model-selection rubric, exceptional Fable/Astra escalation, and firm limits on reasoning and speed modes. The current packaged draft remains `0.1.0-pilot.4`, which predates those changes. All product routes remain untested in user walkthroughs. Native Cursor Agent is included in the development pilot alongside Claude Code and Codex.
 
 [Novice development cases](evals/novice-development-cases.json) specify checks for lost records, exposed credentials, incomplete access controls, failed saves, hosting mismatches, and excessive repair attempts. Their listed fixtures and product runs remain pending.
 
@@ -87,7 +87,7 @@ GitHub Pages hosting and applications that need a backend require different depl
 2. Benchmark token efficiency alongside those tasks. Compare direct execution with selective delegation using the same inputs and acceptance criteria. Include coordinator usage, retries, latency, and result quality; cumulative budget enforcement still needs runtime implementation.
 3. Validate the Cisco business workflows. Generate an editable presentation and inspect every rendered slide. Test Confluence manual insertion and API publishing on a designated test page, including the actual Narva macro representation, interactions, and viewer access.
 4. Build dashboard design and GitHub Pages publishing skills. Use representative dashboard examples to establish visual conventions and reuse a synthetic dashboard across development and delivery evaluations.
-5. Validate a pilot release with colleagues on both operating systems using the generated ZIPs and manifests. Test installation, updates, and rollback, and correct the first-task walkthrough from observed friction. Run the hosted checks on each change to the team repository.
+5. Validate a pilot release with pilot users on both operating systems using the generated ZIPs and manifests. Test installation, updates, and rollback, and correct the first-task walkthrough from observed friction. Run the hosted checks on each change to the team repository.
 6. Add rubric evaluation, followed by Cisco documents and workbooks. Reuse suitable upstream skills selectively, recording source revisions, licenses, dependencies, and required notices before bundling material.
 
 ## Trying a draft
@@ -100,4 +100,4 @@ For broader team distribution, use verified packages and an installation guide. 
 
 ## Release status
 
-Nothing here is a validated release. The GitHub repository `mlanecisco/cisco-skills` is public (visibility checked 2026-10-22), and its hosted "Library checks" workflow passed on commit `10a87bb` (run 39261842430, 2026-10-19). Published release packages and colleague installation trials remain pending. Release criteria, validator behavior, and the current evaluation counts are in the [maintainer guide](docs/maintaining.md).
+Nothing here is a validated release. The GitHub repository `mlanecisco/cisco-skills` is public (visibility checked 2026-10-22), and its hosted "Library checks" workflow passed on commit `10a87bb` (run 39261842430, 2026-10-19). Published release packages and user installation trials remain pending. Release criteria, validator behavior, and the current evaluation counts are in the [maintainer guide](docs/maintaining.md).
