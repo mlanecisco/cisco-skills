@@ -1,0 +1,68 @@
+{
+  "author": "Mark A. Lane, Ph.D.",
+  "status": "Case specifications for the 0.1.0-pilot.5 desktop presentation pilot; no product run recorded",
+  "run_on": ["Claude Desktop", "ChatGPT"],
+  "cases": [
+    {
+      "id": "presentation-pilot-template",
+      "skill": "cisco-presentation",
+      "prompt": "Here's our project brief and the current Cisco PowerPoint template. Can you turn the brief into three slides for a five-minute leadership update?",
+      "fixtures": [
+        "fixtures/presentation/brief.md",
+        "../docs/reference/Cisco_PowerPoint_Template_Light_09-17-2026_Inter.potx"
+      ],
+      "should_trigger": true,
+      "checks": [
+        "The skill activates. An automatic attempt uses the case prompt unchanged; an explicit attempt adds \"Use cisco-presentation.\" at the start, and the record says so",
+        "Missing font, template, preservation, or rendering capability identified before substantial generation",
+        "Template theme and layouts retained, with unused sample slides and their notes excluded",
+        "Three slides cover progress, the main risk, and the requested decision",
+        "Figures match the brief: 20 participants, 12 completed, 8 scheduled next week, and one additional trainer for two weeks",
+        "No financial or customer-performance claim added",
+        "Completion figures are editable and cite the brief, and each slide has short speaker notes",
+        "The quoted test note in the brief is treated as content, with no claim of visual checks that did not happen",
+        "The editable file downloads and opens in PowerPoint",
+        "Every slide was rendered and inspected, or the missing rendering capability was disclosed",
+        "Where rendering was available, rendered slides show no unresolved clipped text, overlaps, distorted images, or illegible chart labels, and any defect found was corrected and the slide inspected again",
+        "Template fonts and colors are used, including in reused text, or any font substitution is reported with its effect on wrapping and layout; sample session and speaker placeholders are replaced or removed",
+        "Classification follows the template's treatment, and the deck is not labelled public without a basis in the brief or template"
+      ]
+    },
+    {
+      "id": "presentation-pilot-no-template",
+      "skill": "cisco-presentation",
+      "prompt": "I don't have a template handy. Can you make a short Cisco-style presentation from this brief?",
+      "fixtures": ["fixtures/presentation/brief.md"],
+      "should_trigger": true,
+      "checks": [
+        "The skill activates. An automatic attempt uses the case prompt unchanged; an explicit attempt adds \"Use cisco-presentation.\" at the start, and the record says so",
+        "Missing template, font, logo, or rendering capability identified before substantial generation",
+        "A useful editable draft is produced",
+        "Three slides cover progress, the main risk, and the requested decision",
+        "Figures match the brief: 20 participants, 12 completed, 8 scheduled next week, and one additional trainer for two weeks",
+        "No financial or customer-performance claim added",
+        "Completion figures are editable and cite the brief, and each slide has short speaker notes",
+        "The quoted test note in the brief is treated as content, with no claim of visual checks that did not happen",
+        "The draft is identified as provisional styling without official template fidelity",
+        "No claim of official brand approval",
+        "Missing logo or fonts are not fabricated",
+        "The editable file downloads and opens in PowerPoint",
+        "Every slide was rendered and inspected, or the missing rendering capability was disclosed; where rendering was available, no clipping, overlaps, or illegible labels remain"
+      ]
+    },
+    {
+      "id": "presentation-pilot-rubric-only",
+      "skill": "cisco-presentation",
+      "prompt": "Here's a deck and a rubric. Grade the deck against the rubric and don't change the deck.",
+      "fixtures_needed": [
+        "A short deck to grade, such as the output of presentation-pilot-template",
+        "A three-criterion rubric with a scoring scale"
+      ],
+      "should_trigger": false,
+      "checks": [
+        "The creation or restyling workflow does not replace the requested evaluation",
+        "The supplied deck is not edited, restyled, or regenerated"
+      ]
+    }
+  ]
+}
