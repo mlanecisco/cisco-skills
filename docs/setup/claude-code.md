@@ -30,17 +30,17 @@ Reopen the terminal and run `claude --version`. A version number confirms the co
 
 Change to the actual project folder with `cd`, then run `claude`. Follow the browser sign-in for the intended Claude account or the organization's configured provider. The [quickstart's account guidance](https://code.claude.com/docs/en/quickstart) distinguishes subscription, Console, and enterprise-provider routes. Do not add an API key merely because a different sign-in route is unavailable.
 
-Start with Sonnet 5.5 at Medium reasoning effort; use High when warranted. The [CLI reference](https://code.claude.com/docs/en/cli-reference) documents model and effort flags:
+Choose the model and effort from the [routing reference](../../skills/efficient-workflow/references/routing.md). The [CLI reference](https://code.claude.com/docs/en/cli-reference) documents the model and effort flags. To start a session with them:
 
 ```bash
 claude --model claude-sonnet-5-5 --effort medium
 ```
 
-Check the installed version's `claude --help` if an option is unavailable. Anthropic exposes Low, Medium, High, Extra, and Max. This library allows Low through Extra and prohibits Max. Start Sonnet, Opus, and Fable at Medium and use High when warranted. Start Haiku workers at High, with Extra for harder work or recurring reasoning problems. Reserve Extra on the more powerful models for very difficult tasks or repeated issues that warrant deeper reasoning. Keep fast mode off and use standard speed.
+If an option is missing, check `claude --help` for the installed version.
 
 ## Add the library
 
-Choose one route, following [Claude Code's skill documentation](https://code.claude.com/docs/en/skills):
+Capabilities and distribution routes are summarized in the [capability matrix](capabilities.md). Choose one route, following [Claude Code's skill documentation](https://code.claude.com/docs/en/skills):
 
 - Account route: enable the skill in the same Claude account used for terminal sign-in. Sync requires a supported CLI version; the reviewed documentation specifies v2.1.273 or later. API-key and cloud-provider sessions do not use that account-sync route.
 - Project route: create `.claude/skills/` inside the project and copy a complete selected skill folder there. The result should include `.claude/skills/check-code-quality/SKILL.md` and its `references/` folder.

@@ -18,7 +18,7 @@ The current [quickstart](https://developers.openai.com/codex/quickstart) disting
 
 ## Add a library skill
 
-The reviewed [Skills in ChatGPT guidance](https://help.openai.com/en/articles/20001066-skills-in-chatgpt) describes eligible Business, Enterprise, Healthcare, and Edu accounts, subject to workspace settings and availability.
+The [capability matrix](capabilities.md) records which parts of this are verified. The reviewed [Skills in ChatGPT guidance](https://help.openai.com/en/articles/20001066-skills-in-chatgpt) describes eligible Business, Enterprise, Healthcare, and Edu accounts, subject to workspace settings and availability.
 
 1. Open Plugins in the sidebar, then the Skills tab.
 2. If the team has shared the desired skill, locate it under Shared with me or the workspace list and install it.
@@ -33,7 +33,7 @@ For a first exercise, install `cisco-presentation`, attach a short brief and the
 
 > Use cisco-presentation to create a short update from these files. Identify the template or draft styling, preserve the source facts, and report the output checks you actually completed.
 
-Open the output and confirm the result against the supplied material. Treat an outline or an unrendered draft according to its stated limits. The skill's provisional brand reference does not establish official template fidelity.
+Open the output and confirm the result against the supplied material. Treat an outline or an unrendered draft according to its stated limits. The skill's brand reference is derived from the 2026 Inter templates, and a generated presentation still needs rendered visual validation before you treat it as faithful.
 
 An uploaded development skill can only run checks if the session has the necessary files, execution tools, and environment. It does not automatically gain access to the laptop's project folder. Configure a supported connected workflow or use Codex for that local task.
 

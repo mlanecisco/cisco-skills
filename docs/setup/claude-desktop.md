@@ -17,11 +17,11 @@ Use this route for presentations and other document work. For a local code proje
 
 ## Add a library skill
 
-Follow [Claude's skill guide](https://support.claude.com/en/articles/12512180-use-skills-in-claude). Enable code execution and file creation where required. Team settings may govern access.
+The [capability matrix](capabilities.md) covers chat, Cowork, and Code. Follow [Claude's skill guide](https://support.claude.com/en/articles/12512180-use-skills-in-claude). Enable code execution and file creation where required. Team settings may govern access.
 
 Open Customize > Skills. If the team already provides the selected skill, enable that copy. Otherwise use the create/upload option and upload a ZIP containing one complete skill folder, prepared as described in [common tools](common-tools.md). Enable the uploaded skill.
 
-Use `cisco-presentation` for the first document exercise. Its brand defaults are provisional until a current Cisco template is supplied. A local folder elsewhere on the machine does not by itself install a skill into account-based chat.
+Use `cisco-presentation` for the first document exercise. Its brand reference is derived from the 2026 Inter templates and has not been checked against a rendered presentation, so a generated deck still needs visual validation. A local folder elsewhere on the machine does not by itself install a skill into account-based chat.
 
 ## Verify first use
 

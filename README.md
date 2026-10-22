@@ -6,24 +6,35 @@ date: 2026-10-19
 
 # Cisco skills library
 
-This library is for Cisco colleagues building apps and business deliverables with Claude Code or Codex, including people without a software background. Setup guidance also covers Claude Desktop, ChatGPT, and Cursor. The current drafts support development, Cisco presentations, token efficiency, and Confluence dashboard publishing. Dedicated dashboard design, GitHub Pages, rubric evaluation, and document and workbook skills are planned.
+This library is for Cisco colleagues who build business deliverables and applications with an AI assistant, including people without a software background. It is organized by outcome. You can use a skill through any interface that provides the capabilities it needs: Claude Desktop, Claude Code, ChatGPT, Codex, or Cursor. The [capability matrix](docs/setup/capabilities.md) lists what each product and mode offers, with its source and verification status.
 
-The goal is reliable results with less prompting and a measured use of tokens. Users should be able to say "build a dashboard from this data" or "evaluate this presentation against this rubric" without knowing which programming tools to select.
+The goal is reliable results with less prompting and a measured use of tokens. You should be able to say "build a dashboard from this data" or "evaluate this presentation against this rubric" without knowing which programming tools to select. Dedicated dashboard design, GitHub Pages, rubric evaluation, and document and workbook skills are planned.
 
-For people building apps without a software background, the development workflows handle routine engineering choices and common failure checks. The [app-building guide](docs/building-apps.md) explains what to tell the assistant, what it should verify, and what a useful handoff looks like.
+For people building apps without a software background, the [app-building guide](docs/building-apps.md) explains what to tell the assistant, what it should verify, and what a useful handoff looks like.
 
 ## Start here
 
-Six draft skills capture the current priorities:
+All skills are drafts. Pick the track that matches what you want to produce, then try the example request after installing the skill with the [setup guides](docs/setup/README.md).
 
-| What you want to do | Purpose | Status |
+### Create and evaluate business deliverables
+
+| Skill | Example request | Status |
 | --- | --- | --- |
-| [Create a Cisco presentation](skills/cisco-presentation/SKILL.md) | Create and edit presentations using a supplied Cisco template and its font variant | Draft; 2026 Inter templates inspected; rendered sample pending |
-| [Work efficiently on large or repetitive tasks](skills/efficient-workflow/SKILL.md) | Control context, model routing, reasoning effort, and repeated work | Draft; needs runtime benchmarks |
-| [Build or improve an app](skills/develop-from-spec/SKILL.md) | Turn conversational requirements into working software with sensible defaults, tests, and review | Draft; product evaluations pending |
-| [Check code quality](skills/check-code-quality/SKILL.md) | Run, configure, or fix formatting, lint, type, test, and build checks within the requested scope | Draft; product evaluations pending |
-| [Review, diagnose, or repair code](skills/review-and-repair-code/SKILL.md) | Investigate existing apps or changes, preserving diagnosis-only and review-only scope | Draft; product evaluations pending |
-| [Publish a Confluence dashboard](skills/publish-confluence-dashboard/SKILL.md) | Prepare and publish HTML or iframe dashboards using Narva's Confluence Cloud app | Draft; tenant walkthrough and product evaluations pending |
+| [Create a Cisco presentation](skills/cisco-presentation/SKILL.md) | "Using this template and my project notes, make a three-slide update for my director." | Draft; 2026 Inter templates inspected; rendered sample pending |
+| [Publish a Confluence dashboard](skills/publish-confluence-dashboard/SKILL.md) | "Put this finished HTML dashboard on our team's Confluence page." | Draft; tenant walkthrough and product evaluations pending |
+| [Work efficiently on large or repetitive tasks](skills/efficient-workflow/SKILL.md) | "Sort these 400 survey comments into themes, and keep the token use low." | Draft; needs runtime benchmarks |
+
+Planned in this track: dashboard design, rubric evaluation of documents and presentations, and Cisco documents and workbooks.
+
+### Build and improve applications
+
+| Skill | Example request | Status |
+| --- | --- | --- |
+| [Build or improve an app](skills/develop-from-spec/SKILL.md) | "Build a small tracker where my team can add, filter, and export requests." | Draft; product evaluations pending |
+| [Check code quality](skills/check-code-quality/SKILL.md) | "Run whatever checks this project has and tell me what fails." | Draft; product evaluations pending |
+| [Review, diagnose, or repair code](skills/review-and-repair-code/SKILL.md) | "Saving a record sometimes loses data. Find out why before changing anything." | Draft; product evaluations pending |
+
+Planned in this track: publishing with GitHub Pages.
 
 For Cisco brand guidance and approved assets, visit the [Cisco Brand Exchange employee collection](https://bx.cisco.com/cisco-brand-exchange/employee). Sign in with Cisco SSO to find current resources for your deliverable.
 
@@ -49,14 +60,7 @@ Keep Cisco templates and team knowledge distinct from personal preferences. Docu
 
 ## Model policy
 
-| Product | Primary model | Routine or repetitive work | Difficult work |
-| --- | --- | --- | --- |
-| Claude Code | Sonnet 5.5 | Haiku 5.5 | Opus 5.5 for difficult work or focused consultation; Fable only in extreme situations |
-| Codex | GPT-6.1 Sol | GPT-6 Luna | Increase Sol effort when justified; use `gpt-6-astra` only in rare cases that need greater capability |
-
-Use Medium or High across both providers. Start Sonnet, Opus, Fable, Sol, and Astra at Medium, increasing to High when warranted. Start the smaller Haiku and Luna workers at High; use Extra on Haiku or Extra High on Luna for harder work or recurring reasoning problems. Reserve Extra/Extra High on the more powerful models for very difficult tasks or repeated issues that warrant deeper reasoning. Low/Light remains available for deliberately simple work. Never use Anthropic Max, OpenAI Ultra, or Fast/Ultrafast modes. These limits apply to coordinators, workers, and consultants; check the account's available controls before selecting settings.
-
-Prefer Opus 5.5 with a justified increase to High or Extra before considering Fable. The [routing reference](skills/efficient-workflow/references/routing.md) defines escalation conditions and distinguishes these library choices from provider performance claims. Fast modes carry higher pricing or usage multipliers; that does not mean they always generate twice as many tokens. Measure cost per acceptable result, including retries, coordinator overhead, and verification, and distinguish subscription usage from API charges.
+Model choices, reasoning settings, and escalation rules live in the [routing reference](skills/efficient-workflow/references/routing.md). Setup guides and the build plan link to it instead of repeating the rules.
 
 ## Proposed next skills
 
@@ -75,7 +79,7 @@ GitHub Pages hosting and applications that need a backend require different depl
 2. Benchmark token efficiency alongside those tasks. Compare direct execution with selective delegation using the same inputs and acceptance criteria. Include coordinator usage, retries, latency, and result quality; cumulative budget enforcement still needs runtime implementation.
 3. Validate the Cisco business workflows. Generate an editable presentation and inspect every rendered slide. Test Confluence manual insertion and API publishing on a designated test page, including the actual Narva macro representation, interactions, and viewer access.
 4. Build dashboard design and GitHub Pages publishing skills. Use representative dashboard examples to establish visual conventions and reuse a synthetic dashboard across development and delivery evaluations.
-5. Validate a pilot release with colleagues on both operating systems using the generated ZIPs and manifests. Test installation, updates, and rollback, and correct the first-task walkthrough from observed friction. Configure the team repository and run hosted CI.
+5. Validate a pilot release with colleagues on both operating systems using the generated ZIPs and manifests. Test installation, updates, and rollback, and correct the first-task walkthrough from observed friction. Run the hosted checks on each change to the team repository.
 6. Add rubric evaluation, followed by Cisco documents and workbooks. Reuse suitable upstream skills selectively, recording source revisions, licenses, dependencies, and required notices before bundling material.
 
 ## Trying a draft
@@ -86,12 +90,6 @@ Ask the assistant to install a selected draft into a test project, then try a re
 
 For broader team distribution, use verified packages and an installation guide. Add product-specific plugin metadata when using a plugin distribution route. ChatGPT workspace installation is a separate route and can depend on account eligibility and administrator settings. No team-wide installation or publishing is part of this pilot.
 
-## Release criteria
+## Release status
 
-A release needs correct triggering, valid artifacts, appropriate handling of missing inputs, and successful use in both target products. Check cases that should not activate the skill, as well as ordinary and difficult requests. For efficiency, compare total usage and quality against the same baseline task. A valid `SKILL.md` alone does not establish those results.
-
-The latest local maintainer run passed linting, formatting, type checking, 88 regression tests, structural validation of six skills and 50 evaluation definitions, and validation of two historical run records. Tests cover packaging, execution-record consistency, calculation and compatibility fixtures, non-fixing checks, isolated data targets, batch integrity, and controlled clients. Separate historical Codex batch attempts produced correct outputs: explicit invocation of efficiency `0.1.1` passed, while automatic activation remained unconfirmed. Current efficiency `0.3.0` and its new selection cases have no fresh product runs. Twenty-one cases still list needed inputs. No token savings, completed installation walkthroughs, or validated presentation sample is claimed.
-
-The [validator](scripts/validate_library.py) checks local Markdown links throughout each skill, rejects symlinked skill resources, requires existing relative local fixture paths, and rejects unknown evaluation fields and unsupported suite locations. The maintainer command also validates retained run records. The [audit follow-up](docs/audits/2026-10-16-follow-up.md) and [skill revision record](docs/audits/2026-10-16-skill-revision.md) distinguish implemented changes from pending product evidence.
-
-The repository has a local package builder and verifier, with no configured remote, published release, or bundled installer. Hosted CI has not run. The immediate milestone is a tested pilot release with recorded artifacts, quality checks, installation results, and usage measurements.
+Nothing here is a validated release. The GitHub repository `mlanecisco/cisco-skills` is public (visibility checked 2026-10-22), and its hosted "Library checks" workflow passed on commit `10a87bb` (run 39261842430, 2026-10-19). Published release packages and colleague installation trials remain pending. Release criteria, validator behavior, and the current evaluation counts are in the [maintainer guide](docs/maintaining.md).

@@ -34,7 +34,7 @@ Keep the selected permissions appropriate to the task. The [Windows sandbox guid
 
 ## Install a selected skill
 
-Follow [Codex's skill documentation](https://developers.openai.com/codex/skills). Create `.agents/skills/` at the project root and copy the whole selected skill folder into it. For example:
+See the [capability matrix](capabilities.md) for routes by product. Follow [Codex's skill documentation](https://developers.openai.com/codex/skills). Create `.agents/skills/` at the project root and copy the whole selected skill folder into it. For example:
 
 ```text
 your-project/
@@ -48,18 +48,16 @@ your-project/
 
 The maintained source folder is `skills/check-code-quality` in this library. Preserve any existing installed copy before replacing it. In the CLI, use `/skills` or type `$` to locate the installed skill. Restart the session if a new installation is not visible.
 
-## Select economical model settings
+## Select model settings
 
-Use GPT-6.1 Sol for most work, starting at Medium and using High when warranted. Luna handles suitable repetitive subtasks at High, with Extra High for harder work or recurring reasoning problems. Reserve `gpt-6-astra` for rare capability gaps; start it at Medium. On Sol and Astra, reserve Extra High for very difficult tasks or repeated issues that warrant deeper reasoning. OpenAI allows Light, Medium, High, and Extra High; Ultra is prohibited. Light (`low` in CLI configuration) remains available for deliberately simple work. Diagnose input, permission, and tool failures before increasing effort. Use standard speed only, with Fast and Ultrafast disabled, including for workers and consultants. Verify account support for the selected model and settings.
-
-Where the active Codex configuration uses TOML, the main-model settings are:
+Choose the model and reasoning effort by following the [routing reference](../../skills/efficient-workflow/references/routing.md), and verify account support for them. Where the active configuration uses TOML, the main-model settings look like this:
 
 ```toml
 model = "gpt-6.1-sol"
 model_reasoning_effort = "medium"
 ```
 
-Merge these into the active configuration or profile rather than replacing the file or creating duplicate keys. The usual personal file is `~/.codex/config.toml`, or `.codex\config.toml` in the Windows user profile. The [routing reference](../../skills/efficient-workflow/references/routing.md) links the official configuration guidance and provides the optional Luna worker. Installing a task skill does not configure that worker.
+Merge these into the active configuration or profile rather than replacing the file or creating duplicate keys. The usual personal file is `~/.codex/config.toml`, or `.codex\config.toml` in the Windows user profile. Installing a task skill does not configure the optional worker described in the routing reference.
 
 ## Verify and use other interfaces
 

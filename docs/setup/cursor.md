@@ -16,7 +16,7 @@ Open a selected project folder in Cursor. Use an existing project or a separate 
 
 ## Add skills for Cursor Agent
 
-The reviewed [Cursor skill documentation](https://cursor.com/docs/skills) supports local project folders `.agents/skills/` and `.cursor/skills/`. Use `.agents/skills/` when sharing the same installed copy with local Codex.
+Routes and cloud-agent limits are summarized in the [capability matrix](capabilities.md). The reviewed [Cursor skill documentation](https://cursor.com/docs/skills) supports local project folders `.agents/skills/` and `.cursor/skills/`. Use `.agents/skills/` when sharing the same installed copy with local Codex.
 
 Create the chosen directory under the project and copy one complete skill folder from this library. For `check-code-quality`, confirm that the destination contains `check-code-quality/SKILL.md` and its `references/tooling.md` resource.
 
@@ -32,7 +32,7 @@ In Cursor Agent, ask:
 
 Confirm that it uses the expected skill, cites the actual project configuration, and preserves the files. Then try the [dashboard calculation fixture](../../evals/fixtures/development/README.md) in an isolated project for a development task.
 
-Choose a model and reasoning setting available in the current Cursor interface. Use Medium or High across providers: start main and more powerful models at Medium, and smaller models at High. Use Extra/Extra High for harder work on smaller models, or very difficult tasks or recurring reasoning problems on more powerful models. Never use Anthropic Max or OpenAI Ultra. Use standard speed and never enable premium speed modes. The Claude Code and Codex worker examples in this library do not automatically configure Cursor's native Agent routing. Report unavailable controls without claiming the policy has been enforced.
+Choose a model and reasoning setting available in the current Cursor interface, following the [routing reference](../../skills/efficient-workflow/references/routing.md). The Claude Code and Codex worker examples in this library do not automatically configure Cursor's native Agent routing. Report unavailable controls without claiming the policy has been enforced.
 
 ## Using Codex inside Cursor
 
