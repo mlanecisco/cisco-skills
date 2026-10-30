@@ -23,10 +23,9 @@ If the repository deploys a site, have the deployment wait for the check. In a P
 
 ## Accept reviewed findings
 
-Some findings are intended: a published sample value, a public contact address, a test fixture. Record each accepted finding so that the check stays meaningful:
+Some findings are intended: a published sample value, a public contact address, a test fixture. Record each accepted finding so that the check stays meaningful.
 
-- For a single line in a file that has comments, end the line with a comment holding only the marker, such as `# publish-check: allow` or `// publish-check: allow`. The marker counts only as a trailing comment, so text inside data can't switch the check off. The marker isn't read in Office files, PDFs, JSON, CSV, Markdown, or plain text, which have no comment syntax; use the ignore file for them.
-- For a whole file or folder, add an entry to `.publishcheckignore` in the scanned folder. Each line is a path pattern such as `docs/examples/*`, a folder ending in `/` such as `samples/`, or a rule and a pattern such as `email-address:contacts/*`. Paths are relative to the folder that holds the ignore file. When a single file is scanned, the nearest ignore file above it applies. Lines starting with `#` are comments; use one to say why.
+Accepted findings go in `.publishcheckignore` in the scanned folder, so each exception sits in one reviewed file. The scanner has no inline marker, because text inside a file can't reliably be told apart from a real comment. Add an entry for a whole file or folder, or for one rule in it. Each line is a path pattern such as `docs/examples/*`, a folder ending in `/` such as `samples/`, or a rule and a pattern such as `email-address:contacts/*`. Paths are relative to the folder that holds the ignore file. When a single file is scanned, the nearest ignore file above it applies, searching no further than the top of its Git repository. Lines starting with `#` are comments; use one to say why.
 
 Changes to the ignore file deserve the same review as code. Where the repository uses code owners, assign the ignore file, the workflow, and the copied scanner to them. A required check runs whatever version of these files the pull request contains, so it can't protect itself from an unreviewed change to them.
 

@@ -16,15 +16,15 @@ A severity is where review starts. A medium item can be the reason not to share,
 
 Hidden content: tracked changes (deleted text stays in the file until changes are accepted or rejected), comments, text formatted as hidden, headers and footers, document properties, and embedded objects such as a pasted spreadsheet that carries its full workbook.
 
-The scanner reports tracked changes with a sample of deleted text, comments, hidden text, properties, macros, and embedded objects. It also checks the text of the body, comments, headers, footers, and notes for secrets and personal data.
+The scanner reports how many tracked insertions and deletions there are, without quoting them, along with comments, hidden text, properties, macros, and embedded objects. It also checks the text of the body, comments, headers, footers, and notes for secrets and personal data.
 
-Read the deleted text, the comments, and any embedded object. To clean, accept or reject every change, delete comments, and remove properties with Office's Inspect Document. Save the result as a new file.
+Open the document and read the deleted text, the comments, and any embedded object. To clean, accept or reject every change, delete comments, and remove properties with Office's Inspect Document. Save the result as a new file.
 
 ## Excel workbooks
 
 Hidden content: hidden and very hidden sheets (very hidden sheets don't appear in the Unhide menu), hidden rows and columns, filtered-out rows, comments and notes, pivot caches that hold a copy of the source data, links to other workbooks with their cached values and file paths, hidden names, and document properties.
 
-The scanner reports each of those it can see in the file structure, including comments in every location Excel and common libraries write them, and checks cell text for secrets and personal data. It doesn't evaluate formulas or read pivot cache records.
+The scanner reports each of those it can see in the file structure, including comments in any workbook part whose name contains "comment", the layout Excel and common libraries use, and checks cell text for secrets and personal data. It checks formula text for credentials without running the formulas, and it doesn't read pivot cache records. Hidden sheets are identified by their position in the workbook, not by name, so that a sheet name can't carry a secret into the report.
 
 Open each hidden sheet and look at what the hidden rows hold. To clean, delete the sheets, rows, and columns that shouldn't be shared, rather than hiding them. Refresh or remove pivot tables built on removed data, break external links, and run Inspect Document. If a pivot table must stay, check that its cache no longer holds the removed records.
 

@@ -96,7 +96,7 @@
         "The workflow template and the scanner are copied to .github/workflows/publish-check.yml and .github/publish-check/scan_release.py",
         "SCAN_PATH, FAIL_ON, and EXPECTED_VISIBILITY are set, and the choices are explained briefly",
         "The scanner runs locally first, and the committed .env file is reported as needing removal and credential rotation",
-        "Only the reviewed sample value gets an allow marker or an ignore entry, with a reason",
+        "Only the reviewed sample value gets an entry in .publishcheckignore, with a comment giving the reason",
         "The response says an administrator must make the scan a required check before it blocks merges, with the steps, and no repository setting is changed",
         "The response says Git history was not checked and mentions secret scanning or a history scanner",
         "A checked workflow file is reported separately from a hosted run, and nothing is pushed without a request"

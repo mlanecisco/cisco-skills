@@ -162,20 +162,91 @@ class PublishCheckTests(unittest.TestCase):
         code, data = scan(self.base)
         self.assertEqual((code, data["findings"]), (0, []))
 
-    def test_allow_marker_only_as_trailing_comment(self) -> None:
-        self.write("sample.py", f'TOKEN = "{GITHUB_TOKEN}"  # publish-check: allow\n')
-        _, data = scan(self.base / "sample.py")
-        self.assertEqual(data["findings"], [])
+    def test_inline_markers_never_suppress(self) -> None:
         for name, text in [
+            ("sample.py", f'TOKEN = "{GITHUB_TOKEN}"  # publish-check: allow\n'),
+            ("notes.yaml", f"text: |\n  {GITHUB_TOKEN} # publish-check: allow\n"),
             (
                 "data.json",
                 json.dumps({"password": PASSWORD, "d": "publish-check: allow"}),
             ),
             ("rows.csv", f"{GITHUB_TOKEN},# publish-check: allow\n"),
-            ("inline.py", f'TOKEN = "{GITHUB_TOKEN}"  # publish-check: allow later\n'),
         ]:
             code, _ = scan(self.write(name, text))
             self.assertEqual(code, 1, name)
+
+    def test_names_and_titles_are_never_repeated(self) -> None:
+        self.write(
+            "keys.json", json.dumps({"password_" + GITHUB_TOKEN: "ordinary-value"})
+        )
+        self.archive(
+            "titles.xlsx",
+            {
+                "xl/workbook.xml": f"<workbook {SHEET}><sheets>"
+                f'<sheet name="{PASSWORD}" sheetId="1" state="veryHidden"/>'
+                "</sheets></workbook>",
+                f"xl/worksheets/{GITHUB_TOKEN}.xml": f"<worksheet {SHEET}><sheetData>"
+                f'<row hidden="1"><c><is><t>{AWS_KEY}</t></is></c></row>'
+                "</sheetData></worksheet>",
+            },
+        )
+        _, data = scan(self.base)
+        self.assertTrue(
+            {"credential-assignment", "github-token", "hidden-sheet", "hidden-cells"}
+            <= rules(data)
+        )
+        self.assertIn(
+            "sheet 1 in workbook order", {f["location"] for f in data["findings"]}
+        )
+        self.assert_secret_hidden(self.base)
+
+    def test_quoted_values_keep_their_punctuation(self) -> None:
+        values = [
+            "!Q7v2kd9Lx3",
+            "{Q7v2kd9Lx3",
+            "(Q7v2kd9Lx3)",
+            "Q7v2(kd9Lx3",
+            "$Q7v2kd9Lx3",
+        ]
+        for index, value in enumerate(values):
+            self.write(f"p{index}.json", json.dumps({"password": value}))
+        _, data = scan(self.base)
+        flagged = {f["path"] for f in data["findings"]}
+        self.assertEqual(flagged, {f"p{i}.json" for i in range(len(values))})
+
+    def test_credential_aliases_and_run_together_names(self) -> None:
+        names = [
+            "pwd",
+            "authorization",
+            "bearer",
+            "dbpassword",
+            "apisecret",
+            "userToken",
+        ]
+        for name in names:
+            self.write(f"{name}.json", json.dumps({name: PASSWORD}))
+        _, data = scan(self.base)
+        self.assertEqual(len(data["findings"]), len(names))
+
+    def test_assignments_nested_in_other_values(self) -> None:
+        self.write(
+            "page.html",
+            f"<div data-settings='{json.dumps({'password': PASSWORD})}'></div>\n",
+        )
+        self.write("client.py", f'payload = "user=admin password={PASSWORD}"\n')
+        _, data = scan(self.base)
+        flagged = {
+            f["path"] for f in data["findings"] if f["rule"] == "credential-assignment"
+        }
+        self.assertEqual(flagged, {"page.html", "client.py"})
+
+    def test_long_values_are_not_cut_off(self) -> None:
+        self.write("long.json", json.dumps({"password": "Q7v2kd9L" * 40}))
+        self.write(
+            "url.txt", "postgres://admin:" + "Q7v2kd9L" * 25 + "@db.internal/app\n"
+        )
+        _, data = scan(self.base)
+        self.assertEqual(rules(data), {"credential-assignment", "url-credentials"})
 
     def test_long_lines_scan_quickly(self) -> None:
         self.write("bundle.js", "var a='" + "tokenpasswordx" * 20000 + "';\n")
@@ -302,7 +373,9 @@ class PublishCheckTests(unittest.TestCase):
         code, data = scan(path)
         self.assertEqual(code, 1)
         self.assertEqual(data["counts"]["high"], 1)
-        self.assertIn("Last", {f["location"][6:] for f in data["findings"]})
+        self.assertIn(
+            "sheet 22 in workbook order", {f["location"] for f in data["findings"]}
+        )
 
     # Office representations -------------------------------------------
 
@@ -339,6 +412,56 @@ class PublishCheckTests(unittest.TestCase):
         self.assertIn("hidden-text", by_file["hidden.docx"])
         self.assertIn("hidden-sheet", by_file["prefixed.xlsx"])
         self.assertTrue({"comments", "github-token"} <= by_file["comments.xlsx"])
+
+    def test_formula_text_is_scanned(self) -> None:
+        sheet = (
+            f'<worksheet {SHEET}><sheetData><row><c><f>HYPERLINK("https://admin:'
+            f'{PASSWORD}@db.internal/")</f><v></v></c></row></sheetData></worksheet>'
+        )
+        path = self.archive(
+            "formula.xlsx",
+            {
+                "xl/workbook.xml": f"<workbook {SHEET}><sheets/></workbook>",
+                "xl/worksheets/sheet1.xml": sheet,
+            },
+        )
+        _, data = scan(path)
+        self.assertIn("url-credentials", rules(data))
+
+    def test_declarations_are_found_whatever_the_encoding(self) -> None:
+        document = (
+            '<?xml version="1.0" encoding="{}"?>'
+            '<!DOCTYPE x [<!ENTITY a "b">]><x>&a;</x>'
+        )
+        for encoding in ["utf-8", "utf-16", "utf-16-be"]:
+            path = self.base / f"dtd-{encoding}.docx"
+            with ZipFile(path, "w") as archive:
+                archive.writestr(
+                    "word/document.xml", document.format(encoding).encode(encoding)
+                )
+        comment = self.archive(
+            "comment.docx", {"word/document.xml": "<x><!-- <!DOCTYPE html> --></x>"}
+        )
+        code, data = scan(self.base, "--strict")
+        self.assertEqual(code, 2)
+        self.assertEqual(len(data["incomplete"]), 3)
+        self.assertEqual(scan(comment, "--strict")[0], 0)
+
+    def test_many_parts_are_bounded(self) -> None:
+        def build(name: str, count: int) -> Path:
+            path = self.base / name
+            with ZipFile(path, "w") as archive:
+                archive.writestr(
+                    "xl/workbook.xml", f"<workbook {SHEET}><sheets/></workbook>"
+                )
+                for index in range(count):
+                    archive.writestr(f"xl/worksheets/sheet{index}.xml", "<worksheet/>")
+            return path
+
+        start = time.monotonic()
+        self.assertEqual(scan(build("some.xlsx", 15_000), "--strict")[0], 0)
+        self.assertEqual(scan(build("many.xlsx", 20_001), "--strict")[0], 2)
+        self.assertLess(time.monotonic() - start, 30)
 
     def test_cells_are_kept_apart_in_spreadsheets(self) -> None:
         sheet = (
@@ -410,7 +533,10 @@ class PublishCheckTests(unittest.TestCase):
         hidden = [f for f in data["findings"] if f["rule"] == "hidden-sheet"]
         self.assertEqual(
             {(f["location"], f["severity"]) for f in hidden},
-            {("sheet Roster", "medium"), ("sheet Planning", "high")},
+            {
+                ("sheet 2 in workbook order", "medium"),
+                ("sheet 3 in workbook order", "high"),
+            },
         )
         self.assertEqual(data["incomplete"], [])
 

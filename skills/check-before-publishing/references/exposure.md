@@ -41,4 +41,4 @@ Checked 2026-10-30:
 - GitHub, [Changing the visibility of your GitHub Pages site](https://docs.github.com/en/enterprise-cloud%40latest/pages/getting-started-with-github-pages/changing-the-visibility-of-your-github-pages-site)
 - Atlassian, [How secure are public links?](https://support.atlassian.com/confluence-cloud/docs/how-secure-are-public-links/)
 - Microsoft, [Shareable links: Anyone, Specific people, or People in your organization](https://learn.microsoft.com/en-us/sharepoint/shareable-links-anyone-specific-people-organization)
-- Microsoft, [Recall or replace an email message](https://support.microsoft.com/en-us/outlook/can-i-undo-recall-a-sent-email)
+- Microsoft, [Can I undo / recall a sent email?](https://support.microsoft.com/en-us/outlook/can-i-undo-recall-a-sent-email)
