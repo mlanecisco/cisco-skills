@@ -30,6 +30,7 @@ All skills are drafts. Pick the track that matches what you want to produce, the
 | --- | --- | --- |
 | [Create a Cisco presentation](skills/cisco-presentation/SKILL.md) | "Using this template and my project notes, make a three-slide update for my director." | Draft; 2026 Inter templates inspected; rendered sample pending |
 | [Publish a Confluence dashboard](skills/publish-confluence-dashboard/SKILL.md) | "Put this finished HTML dashboard on our team's Confluence page." | Draft; tenant walkthrough and product evaluations pending |
+| [Check before publishing](skills/check-before-publishing/SKILL.md) | "I'm about to send this deck and workbook to a partner. Is there anything in them I shouldn't share?" | Draft; scanner tests pass; product evaluations pending |
 | [Work efficiently on large or repetitive tasks](skills/efficient-workflow/SKILL.md) | "Sort these 400 survey comments into themes, and keep the token use low." | Draft; needs runtime benchmarks |
 
 Planned in this track: dashboard design, rubric evaluation of documents and presentations, and Cisco documents and workbooks.
@@ -42,17 +43,17 @@ Planned in this track: dashboard design, rubric evaluation of documents and pres
 | [Check code quality](skills/check-code-quality/SKILL.md) | "Run whatever checks this project has and tell me what fails." | Draft; product evaluations pending |
 | [Review, diagnose, or repair code](skills/review-and-repair-code/SKILL.md) | "Saving a record sometimes loses data. Find out why before changing anything." | Draft; product evaluations pending |
 
-Planned in this track: publishing with GitHub Pages.
+Planned in this track: publishing with GitHub Pages. Before sharing an app, use [Check before publishing](skills/check-before-publishing/SKILL.md); its CI workflow template can make the check required in a repository.
 
 For Cisco brand guidance and approved assets, visit the [Cisco Brand Exchange employee collection](https://bx.cisco.com/cisco-brand-exchange/employee). Sign in with Cisco SSO to find current resources for your deliverable.
 
 The [source review](docs/source-review.md) records the materials reviewed and the proposed reuse decisions. [Pilot cases](evals/pilot-cases.json) define observable checks; they are test specifications, not completed evaluations.
 
-The [build plan](docs/build-plan.md) sets the implementation order and acceptance criteria, including development workflows, automated quality checks, and efficiency benchmarks.
+The [roadmap](docs/roadmap.md) sets the order of work and what ends each phase. The [build plan](docs/build-plan.md) holds the acceptance criteria, including development workflows, automated quality checks, and efficiency benchmarks.
 
 For installation on macOS and Windows, start with the [setup guides](docs/setup/README.md). Maintainers can use the [repeatable check command](docs/maintaining.md). The [development evaluations](evals/development-cases.json) include a synthetic dashboard calculation fixture with known expected results.
 
-The [evaluation guide](docs/evaluations.md) explains the pilot procedure, runnable fixtures, initial Codex batch results, and requested-versus-observed execution records. Working sources contain efficiency `0.3.0`, with a model-selection rubric, exceptional Fable/Astra escalation, and firm limits on reasoning and speed modes. The current packaged draft remains `0.1.0-pilot.4`, which predates those changes. All product routes remain untested in user walkthroughs. Native Cursor Agent is included in the development pilot alongside Claude Code and Codex.
+The [evaluation guide](docs/evaluations.md) explains the pilot procedure, runnable fixtures, initial Codex batch results, and requested-versus-observed execution records. Working sources contain efficiency `0.3.0`, with a model-selection rubric, exceptional Fable/Astra escalation, and firm limits on reasoning and speed modes. The current pilot package is `0.1.0-pilot.5`, described in the [presentation pilot](docs/presentation-pilot.md); it doesn't include `check-before-publishing` yet. All product routes remain untested in user walkthroughs. Native Cursor Agent is included in the development pilot alongside Claude Code and Codex.
 
 [Novice development cases](evals/novice-development-cases.json) specify checks for lost records, exposed credentials, incomplete access controls, failed saves, hosting mismatches, and excessive repair attempts. Their listed fixtures and product runs remain pending.
 
@@ -70,7 +71,9 @@ Keep Cisco templates and team knowledge distinct from personal preferences. Docu
 
 Model choices, reasoning settings, and escalation rules live in the [routing reference](skills/efficient-workflow/references/routing.md). Setup guides and the build plan link to it instead of repeating the rules.
 
-## Proposed next skills
+## Planned skills
+
+The [roadmap](docs/roadmap.md) sets their order.
 
 | User outcome | Scope |
 | --- | --- |
@@ -83,12 +86,7 @@ GitHub Pages hosting and applications that need a backend require different depl
 
 ## Next steps
 
-1. Run the development pilot in Claude Code, Codex, and native Cursor Agent using the evaluation guide. Use the feature, blind review, repair, and check-only fixtures, then add a browser app covering saved records, filters, exports, and failed requests. Record actual results and user interventions.
-2. Benchmark token efficiency alongside those tasks. Compare direct execution with selective delegation using the same inputs and acceptance criteria. Include coordinator usage, retries, latency, and result quality; cumulative budget enforcement still needs runtime implementation.
-3. Validate the Cisco business workflows. Generate an editable presentation and inspect every rendered slide. Test Confluence manual insertion and API publishing on a designated test page, including the actual Narva macro representation, interactions, and viewer access.
-4. Build dashboard design and GitHub Pages publishing skills. Use representative dashboard examples to establish visual conventions and reuse a synthetic dashboard across development and delivery evaluations.
-5. Validate a pilot release with pilot users on both operating systems using the generated ZIPs and manifests. Test installation, updates, and rollback, and correct the first-task walkthrough from observed friction. Run the hosted checks on each change to the team repository.
-6. Add rubric evaluation, followed by Cisco documents and workbooks. Reuse suitable upstream skills selectively, recording source revisions, licenses, dependencies, and required notices before bundling material.
+The [roadmap](docs/roadmap.md) lists the next work in order, with the result that ends each phase.
 
 ## Trying a draft
 

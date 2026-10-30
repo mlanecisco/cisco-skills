@@ -6,7 +6,9 @@ status: Implementation plan
 
 # Build plan
 
-Build a small library that Cisco colleagues can use with Claude Code and Codex. Each release should help users complete real work, demonstrate the checks performed, and avoid unnecessary model usage.
+Build a small library that people at Cisco can use with Claude Desktop, ChatGPT, Claude Code, Codex, and Cursor. Each release should help users complete real work, demonstrate the checks performed, and avoid unnecessary model usage.
+
+The [roadmap](roadmap.md) sets the order of work and the gate for each phase. This plan holds the acceptance criteria.
 
 ## 1. Establish the repository and maintainer checks
 
@@ -60,9 +62,9 @@ Acceptance: the sample opens correctly, preserves the intended template, and pas
 
 Provide a catalog organized by user outcomes, a short installation guide for each target product, and example requests with expected deliverables. Package portable skill sources with the required product metadata. Avoid duplicate installations of the same skill in one host.
 
-Record each skill's owner, version, dependencies, evaluation results, and upstream revision and notices where applicable. Pilot installation with a colleague who did not help build the library.
+Record each skill's owner, version, dependencies, evaluation results, and upstream revision and notices where applicable. Pilot installation with someone who did not help build the library.
 
-Acceptance: that colleague can install the selected skills and complete the sample tasks in both target products with minimal guidance. Runtime claims match the recorded results.
+Acceptance: that person can install the selected skills and complete the sample tasks in both target products with minimal guidance. Runtime claims match the recorded results.
 
 ## 6. Expand from demonstrated demand
 
@@ -72,10 +74,16 @@ The Confluence pilot targets Confluence Cloud at `cisco-learning.atlassian.net`,
 
 Keep rubric evaluation separate from presentation creation. Require evidence for scores and distinguish slide content from spoken delivery. For dashboards, verify calculations as well as the interface. For GitHub Pages, choose a deployment approach compatible with the site's runtime needs.
 
+## 7. Check before publishing
+
+Give users a check before a deliverable or app is shared, and give teams a way to enforce it. Cover credentials, personal data, and content that viewers can recover but the author may not see, in business files as well as code. Use a deterministic scanner where the session can run one, and say plainly when it can't. Pair the skill with a CI workflow, because instructions alone don't enforce anything.
+
+Acceptance: the [publishing cases](../evals/publishing-cases.json) pass in a desktop and a coding product, with originals unchanged and no secret repeated in full. The workflow fails a pull request that adds a credential on a test repository and blocks the merge once it is a required check.
+
 ## Next implementation increment
 
 The repeatable maintainer command, CI workflow, and three development entrypoints are implemented. The [audit follow-up](audits/2026-10-16-follow-up.md) records fixture-path and symlink repairs, strict evaluation fields, versioned packaging, and run-record validation. The [skill revision record](audits/2026-10-16-skill-revision.md) covers operating modes, handoffs, host-policy placement, destination selection, and source-content boundaries. Inputs now include configuration-enabled lint fixes, diagnosis and shared-target sentinels, batch reconciliation, controlled publishing responses, and a three-slide presentation brief.
 
-Two initial Codex batch attempts are recorded: explicit efficiency invocation passed, while automatic activation remained unconfirmed. Use the [evaluation procedure](evaluations.md) for feature, review, repair, and check-only cases in fresh Claude Code, Codex, and native Cursor Agent sessions. Record matched baselines and retest the subsequent reference-loading clarification. The [package builder](packaging.md) creates complete individual ZIPs and a manifest; colleague installation, update, and rollback trials on macOS and Windows remain pending.
+Two initial Codex batch attempts are recorded: explicit efficiency invocation passed, while automatic activation remained unconfirmed. Use the [evaluation procedure](evaluations.md) for feature, review, repair, and check-only cases in fresh Claude Code, Codex, and native Cursor Agent sessions. Record matched baselines and retest the subsequent reference-loading clarification. The [package builder](packaging.md) creates complete individual ZIPs and a manifest; user installation, update, and rollback trials on macOS and Windows remain pending.
 
-Next, run the revision cases in fresh product sessions, build the reusable browser fixture, validate a rendered presentation sample, and test Confluence manual and API delivery separately. Keep untested capabilities in draft status. Distribution ownership, actual host routing, team-profile selection across products, presentation tooling, and untrusted-input behavior still need runtime evidence. Controlled publishing fixtures do not establish real API or Narva behavior. The public remote `mlanecisco/cisco-skills` (visibility checked 2026-10-22) exists and the hosted "Library checks" workflow passed on `10a87bb` (run 39261842430, 2026-10-19). Published release packages and colleague installation trials remain pending.
+The [roadmap](roadmap.md) now sets the next work. Still outstanding from this increment: run the revision cases in fresh product sessions, build the reusable browser fixture, validate a rendered presentation sample, and test Confluence manual and API delivery separately. Keep untested capabilities in draft status. Distribution ownership, actual host routing, team-profile selection across products, presentation tooling, and untrusted-input behavior still need runtime evidence. Controlled publishing fixtures do not establish real API or Narva behavior. The public remote `mlanecisco/cisco-skills` (visibility checked 2026-10-22) exists and the hosted "Library checks" workflow passed on `10a87bb` (run 39261842430, 2026-10-19). Published release packages and user installation trials remain pending.

@@ -44,7 +44,7 @@ Expect a short explanation of what works and where to try it, with the checks th
 
 Try your most important task with a small example you understand. For a tracker, create a record, change it, filter it, and reload. For a dashboard, compare a total or percentage with a known example. Your trial adds useful feedback; the assistant still owns its engineering checks.
 
-Before sharing an app, the intended audience, data access, and hosting must match its purpose. An attractive local preview does not establish that a shared deployment works. The agent should prepare and verify what it can within your instructions and identify any remaining decision or account setup.
+Before sharing an app, the intended audience, data access, and hosting must match its purpose. An attractive local preview does not establish that a shared deployment works. The agent should prepare and verify what it can within your instructions and identify any remaining decision or account setup. Before you share it, ask for a [check before publishing](../skills/check-before-publishing/SKILL.md): "Check this app before I share it with my team."
 
 ## When something goes wrong
 
