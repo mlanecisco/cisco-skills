@@ -8,7 +8,7 @@ A skill reminds the assistant to check. A required check in the repository block
 2. Copy [the scanner](../scripts/scan_release.py) to `.github/publish-check/scan_release.py`.
 3. Set the variables at the top of the workflow:
    - `SCAN_PATH`: the folder that gets published, or `.` for the whole repository.
-   - `FAIL_ON`: `high` blocks credentials, sensitive files such as keys, card numbers, national ID numbers, and very hidden sheets. `medium` also blocks hidden sheets, rows, and slides, speaker notes, comments, tracked changes, macros, and raw data in pages. Email addresses and document properties are `low`, so blocking them needs `low`, with reviewed exceptions for public contact addresses.
+   - `FAIL_ON`: `high` blocks tokens and keys in known formats, private keys, passwords in connection URLs, sensitive files such as key stores, card numbers, national ID numbers, and very hidden sheets. `medium` also blocks other values assigned to settings named like passwords or secrets, hidden sheets, rows, and slides, speaker notes, comments, tracked changes, macros, and raw data in pages. Email addresses and document properties are `low`, so blocking them needs `low`, with reviewed exceptions for public contact addresses.
    - `EXPECTED_VISIBILITY`: `private`, `internal`, or `public`, as the owner intends.
 4. Run the scanner locally on the same path before committing, so the first run doesn't fail on findings already there. Review each finding with the user.
 5. Commit the files on a branch and open a pull request if the user asked for that, so the check runs on the host before anything merges.
@@ -35,7 +35,7 @@ The scanner checks the files in the scanned path at the commit being tested. It 
 
 The report repeats file paths as they appear in the repository. It masks values it detected wherever they recur, and anything shaped like a known token, but it can't recognize a password that appears only in a file name. File names are already visible to anyone who can read the repository.
 
-Credential detection uses patterns, not a parser for each language, so some literal values pass. A password made only of letters and digits, assigned inside a string in source code, such as `"password=Q7v2kd9Lx3"`, looks the same as a variable name and isn't reported. Values that match a known token format are found wherever they appear.
+Credential detection uses patterns, not a parser for each language. Values that match a known token format are found wherever they appear, and they block at `high`. A value assigned to a setting named like a password, such as `password: ...`, is reported at `medium` instead, because a pattern can't reliably tell a literal from a reference to a value stored elsewhere in every format. At the default `high`, these findings appear in the report without failing the check. Some still pass unreported: a password made only of letters and digits inside a string in source code, such as `"password=Q7v2kd9Lx3"`, looks the same as a variable name, and a value written as `${...}` or `$NAME` is treated as a placeholder in every format. For broader blocking, set `FAIL_ON` to `medium`, or turn on GitHub secret scanning or an approved scanner such as gitleaks.
 
 A passing check means the patterns weren't found. People still decide whether content is fit for its audience, and the repository's visibility check only compares the setting with the stated intent.
 

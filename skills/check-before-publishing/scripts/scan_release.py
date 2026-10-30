@@ -205,7 +205,10 @@ NAME_OPERATOR = re.compile(
     r"""(?<![A-Za-z0-9_.-])(?P<name>[A-Za-z][A-Za-z0-9_.-]{0,63})["']?[ \t]{0,8}"""
     r"""(?::=|=>|:|=)[ \t]{0,8}"""
 )
-BARE_VALUE = re.compile(r"[^\s\"'#;,]+")
+# Plain text in an unquoted value, stopping where a substitution begins.
+BARE_CHUNK = re.compile(r"(?:[^\s\"'#;,$`]|\$(?![({]))+")
+# Values are read at most this far, which keeps every line linear.
+READ_LIMIT = 1024
 # In code, an unquoted value counts only if it looks like a literal secret,
 # such as one inside a string, rather than a variable or expression: letters,
 # digits, and at least one character an identifier can't contain.
@@ -318,21 +321,23 @@ PLACEHOLDER = re.compile(
         secret|password|token|true|false
     )$"""
 )
-# Unquoted values in configuration files that refer to a value held elsewhere.
 # References to a value held elsewhere. Which forms count depends on the
 # file format and on how the value is quoted, because a string that looks
 # like an expression in one format is a literal in another.
 ACTIONS_EXPRESSION = re.compile(r"\$\{\{[^{}]*\}\}")
-INTERPOLATION = re.compile(r"\$\{[A-Za-z_][\w.]*(?::?[-?=+][^{}]*)?\}")
-SHELL_REFERENCE = re.compile(r"\$[A-Za-z_]\w*|\$\((?:[^()]|\([^()]*\))*\)|`[^`]*`")
-BARE_REFERENCE = re.compile(
-    r"%[A-Za-z_]\w*%|[*&][\w-]+|process\.env\.\w+|"
-    r"os\.environ(?:\.get)?(?:\[[^\]]*\]|\([^()]*\))|(?:os\.)?getenv\([^()]*\)|"
-    r"env\([^()]*\)|(?:var|local|data|module)\.[\w.-]+(?:\[[^\]]*\][\w.-]*)*"
-)
+SHELL_VARIABLE = re.compile(r"\$[A-Za-z_]\w*")
+YAML_ALIAS = re.compile(r"\*[\w-]+")
+WINDOWS_VARIABLE = re.compile(r"%[A-Za-z_]\w*%")
 TERRAFORM_REFERENCE = re.compile(
     r"(?:var|local|data|module)\.[\w.-]+(?:\[[^\]\n]*\][\w.-]*)*"
 )
+# What may open inside each construct, by the character that closes it.
+NESTED = {
+    ")": ("$(", "${", "(", '"', "'", "`"),
+    "}": ("$(", "${", "{", '"', "'"),
+    '"': ("$(", "${", "`"),
+}
+CLOSERS = {"$(": ")", "${": "}", "(": ")", "{": "}", '"': '"', "'": "'", "`": "`"}
 PLAIN_URL = re.compile(r"^https?://[^@\s]+$")
 EMAIL = re.compile(
     r"(?<![A-Za-z0-9._%+-])[A-Za-z0-9._%+-]{1,64}@"
@@ -410,32 +415,66 @@ def credential_name(name: str) -> bool:
     return any(pair in CREDENTIAL_PAIRS for pair in zip(words, words[1:]))
 
 
-def assigned_value(line: str, start: int) -> tuple[str | None, str, int]:
-    """Read the value after an operator. Return it, its quote character (empty
-    when unquoted), and where it ends. Shell substitutions and Terraform
-    lookups are read whole, so that spaces or quotes inside them don't cut
-    them short."""
-    if start >= len(line):
+def construct_end(line: str, start: int, limit: int, kind: str) -> tuple[int, bool]:
+    """Find the end of the quoted string or substitution opening at start,
+    reading nested ones whole. Return where it ends and whether it closed
+    before the limit."""
+    stack: list[str] = []
+    index = start
+    while index < limit:
+        top = stack[-1] if stack else ""
+        if top and line[index] == top:
+            stack.pop()
+            index += 1
+            if not stack:
+                return index, True
+            continue
+        if top and line[index] == "\\" and top != "'":
+            index += 2
+            continue
+        allowed = NESTED.get(top, ()) if top else tuple(CLOSERS)
+        if top == '"' and kind not in {"shell", "hcl"}:
+            allowed = ()
+        opener = next((o for o in allowed if line.startswith(o, index)), "")
+        if opener:
+            stack.append(CLOSERS[opener])
+            index += len(opener)
+        elif not top:
+            break
+        else:
+            index += 1
+    return limit, False
+
+
+def whole_construct(value: str, kind: str) -> bool:
+    end, closed = construct_end(value, 0, len(value), kind)
+    return closed and end == len(value)
+
+
+def assigned_value(line: str, start: int, kind: str) -> tuple[str | None, str, int]:
+    """Read the value after an operator. Return it and its quote character,
+    which is empty when the value is unquoted, and where it ends.
+    Substitutions are read whole, and plain text touching them belongs to
+    the same value."""
+    limit = min(len(line), start + READ_LIMIT)
+    if start >= limit:
         return None, "", start
     first = line[start]
     if first in "\"'":
-        end = line.find(first, start + 1)
-        end = len(line) if end == -1 else end
-        return line[start + 1 : end], first, end + 1
-    if line.startswith("$(", start):
-        depth = 0
-        for index in range(start + 1, len(line)):
-            depth += {"(": 1, ")": -1}.get(line[index], 0)
-            if depth == 0:
-                return line[start : index + 1], "", index + 1
-        return line[start:], "", len(line)
-    for opener, closer in (("`", "`"), ("${", "}")):
-        if line.startswith(opener, start):
-            end = line.find(closer, start + len(opener))
-            end = len(line) if end == -1 else end + len(closer)
-            return line[start:end], "", end
-    match = TERRAFORM_REFERENCE.match(line, start) or BARE_VALUE.match(line, start)
-    return (match[0], "", match.end()) if match else (None, "", start)
+        end, closed = construct_end(line, start, limit, kind)
+        return line[start + 1 : end - 1 if closed else end], first, end
+    index = start
+    while index < limit:
+        if line.startswith(("$(", "${", "`"), index):
+            index = construct_end(line, index, limit, kind)[0]
+            continue
+        match = (
+            kind == "hcl" and TERRAFORM_REFERENCE.match(line, index, limit)
+        ) or BARE_CHUNK.match(line, index, limit)
+        if not match:
+            break
+        index = match.end()
+    return (line[start:index] or None), "", index
 
 
 def is_reference(value: str, quote: str, kind: str) -> bool:
@@ -444,13 +483,21 @@ def is_reference(value: str, quote: str, kind: str) -> bool:
         return True
     if quote == "'":
         return False
-    if kind in {"shell", "yaml", "hcl"} and INTERPOLATION.fullmatch(value):
-        return True
-    if (
-        kind == "shell" or (kind == "yaml" and not quote)
-    ) and SHELL_REFERENCE.fullmatch(value):
-        return True
-    return not quote and bool(BARE_REFERENCE.fullmatch(value))
+    if kind in {"shell", "yaml", "hcl"} and value.startswith("${"):
+        if whole_construct(value, kind):
+            return True
+    if kind == "shell" or (kind == "yaml" and not quote):
+        if SHELL_VARIABLE.fullmatch(value):
+            return True
+        if value.startswith(("$(", "`")) and whole_construct(value, "shell"):
+            return True
+    if quote:
+        return False
+    if kind == "hcl":
+        return bool(TERRAFORM_REFERENCE.fullmatch(value))
+    if kind == "yaml":
+        return bool(YAML_ALIAS.fullmatch(value))
+    return bool(WINDOWS_VARIABLE.fullmatch(value))
 
 
 def file_kind(name: str, suffix: str) -> str:
@@ -750,33 +797,37 @@ class Scanner:
                     # Keep every recognized password for masking, however short.
                     if "secret" in pattern.groupindex:
                         self.detected.add(match["secret"])
-            # A name inside a bare value already read is part of that value;
-            # skipping it keeps overlapping candidates from rescanning the line.
-            read_until = -1
+            # Names inside a reported value, a reference, or a placeholder
+            # belong to it. Names inside other rejected values are still read,
+            # since such a value may be an expression holding an assignment.
+            skip_until = -1
             for match in NAME_OPERATOR.finditer(line):
-                if match.start() < read_until or not credential_name(match["name"]):
+                if match.start() < skip_until or not credential_name(match["name"]):
                     continue
-                value, quote, end = assigned_value(line, match.end())
-                # Everything read belongs to this value, accepted or not, so
-                # names inside it aren't read again.
-                read_until = end
+                value, quote, end = assigned_value(line, match.end(), kind)
                 if value is None or not (
                     quote or config or BARE_LITERAL.fullmatch(value)
                 ):
                     continue
                 value = value.strip()
+                if PLACEHOLDER.match(value) or (
+                    (config or not quote) and is_reference(value, quote, kind)
+                ):
+                    skip_until = end
+                    continue
                 if (
                     len(value) < 8
-                    or PLACEHOLDER.match(value)
                     or PLAIN_URL.match(value)
-                    or ((config or not quote) and is_reference(value, quote, kind))
                     or (match["name"].lower() == "pwd" and value.startswith("/"))
                     or any(p.search(value) for _, _, p in SECRET_PATTERNS)
                 ):
                     continue
+                skip_until = end
+                # Medium, because telling a literal from a reference is a
+                # judgment that a pattern can't make reliably in every format.
                 self.add(
                     Finding(
-                        "high",
+                        "medium",
                         "credential-assignment",
                         shown,
                         location,

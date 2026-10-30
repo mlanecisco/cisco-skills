@@ -35,7 +35,7 @@ Gate: reviewed run records for both products, a walkthrough record, and matrix c
 Give builders a check before anything is shared, and give teams a way to enforce it. This phase started alongside Phase 1 because it doesn't depend on the pilot's results.
 
 - Run the [publishing cases](../evals/publishing-cases.json) in at least one desktop product and one coding product.
-- Install the CI workflow in a test repository, watch it fail a pull request that adds a credential, and confirm it blocks the merge once it is a required check.
+- Install the CI workflow in a test repository, watch it fail a pull request that adds a token in a known format, and confirm it blocks the merge once it is a required check.
 - Add `check-before-publishing` to the next pilot package.
 - Point the Confluence publishing skill at the check, so it runs before a dashboard goes live. The app-building guide already does.
 

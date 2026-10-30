@@ -6,8 +6,8 @@ Each file type below lists what can travel with the file without showing on scre
 
 | Severity | Meaning | Examples |
 | --- | --- | --- |
-| High | Fix before sharing with anyone outside the current audience | Passwords, keys, tokens, card numbers, national ID numbers, private key files, very hidden sheets |
-| Medium | Content the author probably can't see; review it for this audience | Hidden sheets, rows, and slides; speaker notes; comments; tracked changes; macros; embedded files; raw data in a web page |
+| High | Fix before sharing with anyone outside the current audience | Tokens and keys in known formats, passwords in connection URLs, card numbers, national ID numbers, private key files, very hidden sheets |
+| Medium | Content the author probably can't see, or a value the scanner can't classify; review it for this audience | Other values assigned to password or secret settings; hidden sheets, rows, and slides; speaker notes; comments; tracked changes; macros; embedded files; raw data in a web page |
 | Low | Usually fine, but worth a look | Author names in document properties, email addresses, HTML comments, photo metadata |
 
 A severity is where review starts. A medium item can be the reason not to share, and a high item can be a published test value that the user confirms is harmless.

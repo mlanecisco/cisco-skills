@@ -78,7 +78,7 @@ Keep rubric evaluation separate from presentation creation. Require evidence for
 
 Give users a check before a deliverable or app is shared, and give teams a way to enforce it. Cover credentials, personal data, and content that viewers can recover but the author may not see, in business files as well as code. Use a deterministic scanner where the session can run one, and say plainly when it can't. Pair the skill with a CI workflow, because instructions alone don't enforce anything.
 
-Acceptance: the [publishing cases](../evals/publishing-cases.json) pass in a desktop and a coding product, with originals unchanged and no secret repeated in full. The workflow fails a pull request that adds a credential on a test repository and blocks the merge once it is a required check.
+Acceptance: the [publishing cases](../evals/publishing-cases.json) pass in a desktop and a coding product, with originals unchanged and no secret repeated in full. The workflow fails a pull request that adds a token in a known format on a test repository and blocks the merge once it is a required check.
 
 ## Next implementation increment
 

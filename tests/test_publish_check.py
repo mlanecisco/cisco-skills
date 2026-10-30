@@ -174,7 +174,7 @@ class PublishCheckTests(unittest.TestCase):
             ),
             ("rows.csv", f"{GITHUB_TOKEN},# publish-check: allow\n"),
         ]:
-            code, _ = scan(self.write(name, text))
+            code, _ = scan(self.write(name, text), "--fail-on", "medium")
             self.assertEqual(code, 1, name)
 
     def test_names_and_titles_are_never_repeated(self) -> None:
@@ -301,7 +301,7 @@ class PublishCheckTests(unittest.TestCase):
         self.write("long.js", 'const s = "' + "password=" * 20_000 + 'Q7v2-kd9Lx3";\n')
         self.write("long.yaml", 'note: "' + "password=" * 20_000 + 'Q7v2-kd9Lx3"\n')
         start = time.monotonic()
-        code, _ = scan(self.base)
+        code, _ = scan(self.base, "--fail-on", "medium")
         self.assertEqual(code, 1)
         self.assertLess(time.monotonic() - start, 10)
 
@@ -365,6 +365,47 @@ class PublishCheckTests(unittest.TestCase):
         self.assertEqual(
             flagged, {"a.yaml", "b.toml", "c/.env", "d.tf", "e.yaml", "f.yaml"}
         )
+
+    def test_nested_substitutions_are_read_whole(self) -> None:
+        self.write(
+            "run.sh",
+            'password="$(printf %s "$DB_PASSWORD")"\n'
+            'token="$(echo "(" | tr -d x)"\n'
+            "secret=$(one $(two $(three x)))\n",
+        )
+        self.write("lookup.tf", 'token = "${var.tokens["primary"]}"\n')
+        code, data = scan(self.base, "--fail-on", "low")
+        self.assertEqual((code, data["findings"]), (0, []))
+
+    def test_literals_beside_or_inside_expressions_are_found(self) -> None:
+        for name, text in [
+            ("login.py", 'token = service.login(password="Q7v2kd9Lx3")\n'),
+            ("a/.env", "PASSWORD=${MISSING}Q7v2kd9Lx3\n"),
+            ("b.sh", 'password=$(printf %s "")Q7v2kd9Lx3\n'),
+            ("c.yaml", "password: var.Q7v2kd9Lx3!\n"),
+            ("d.ini", "password = var.Q7v2kd9Lx3\n"),
+            ("e.yaml", "password: process.env.Q7v2kd9Lx3\n"),
+            ("f.ini", "password = getenv(Q7v2kd9Lx3)\n"),
+        ]:
+            self.write(name, text)
+        _, data = scan(self.base)
+        flagged = {
+            f["path"] for f in data["findings"] if f["rule"] == "credential-assignment"
+        }
+        self.assertEqual(
+            flagged,
+            {"login.py", "a/.env", "b.sh", "c.yaml", "d.ini", "e.yaml", "f.ini"},
+        )
+
+    def test_generic_assignments_report_without_blocking(self) -> None:
+        self.write("settings.yaml", f"password: {PASSWORD}\n")
+        code, data = scan(self.base)
+        self.assertEqual(code, 0)
+        self.assertEqual(
+            [(f["rule"], f["severity"]) for f in data["findings"]],
+            [("credential-assignment", "medium")],
+        )
+        self.assertEqual(scan(self.base, "--fail-on", "medium")[0], 1)
 
     def test_rejected_candidates_scan_quickly(self) -> None:
         for name, fragment, tail in [
@@ -674,7 +715,7 @@ class PublishCheckTests(unittest.TestCase):
         self.assertEqual(data["incomplete"], [])
 
     def test_dashboard_fixture_and_clean_summary(self) -> None:
-        code, data = scan(FIXTURES / "dashboard")
+        code, data = scan(FIXTURES / "dashboard", "--fail-on", "medium")
         self.assertEqual(code, 1)
         self.assertTrue(
             {"credential-assignment", "embedded-data", "email-address"} <= rules(data)
