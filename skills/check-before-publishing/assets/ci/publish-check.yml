@@ -1,0 +1,52 @@
+# Publish check: copy to .github/workflows/publish-check.yml, and copy
+# scripts/scan_release.py from the check-before-publishing skill to
+# .github/publish-check/scan_release.py in the same repository.
+#
+# The workflow fails when the scanner finds something at or above FAIL_ON, or
+# when the repository's visibility differs from EXPECTED_VISIBILITY. It only
+# blocks a merge or a deployment once a repository administrator makes it a
+# required check, and once any deployment job waits for it. See the skill's
+# enforcement reference.
+
+name: Publish check
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  # Folder or file to scan, relative to the repository root.
+  SCAN_PATH: "."
+  # Lowest severity that fails the check: high, medium, or low.
+  FAIL_ON: "high"
+  # Intended visibility: private, internal, or public.
+  EXPECTED_VISIBILITY: "private"
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Check repository visibility
+        env:
+          VISIBILITY: ${{ github.event.repository.visibility }}
+        run: |
+          if [ -z "$VISIBILITY" ]; then
+            echo "::warning::Repository visibility was not reported; not checked."
+          elif [ "$VISIBILITY" != "$EXPECTED_VISIBILITY" ]; then
+            echo "::error::Repository is $VISIBILITY; expected $EXPECTED_VISIBILITY."
+            exit 1
+          fi
+      - name: Scan files
+        run: python -B .github/publish-check/scan_release.py "$SCAN_PATH" --fail-on "$FAIL_ON"

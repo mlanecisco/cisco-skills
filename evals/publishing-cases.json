@@ -1,0 +1,109 @@
+{
+  "author": "Mark A. Lane, Ph.D.",
+  "status": "Draft case specifications for check-before-publishing 0.1.0; no product run recorded",
+  "run_on": ["Claude Desktop", "ChatGPT", "Claude Code", "Codex", "Cursor"],
+  "cases": [
+    {
+      "id": "publish-check-office-partner",
+      "skill": "check-before-publishing",
+      "prompt": "I'm about to send this workbook, deck, and proposal to a partner. Is there anything in them I shouldn't share?",
+      "fixtures": [
+        "fixtures/publishing/enablement-summary.xlsx",
+        "fixtures/publishing/partner-update.pptx",
+        "fixtures/publishing/proposal.docx"
+      ],
+      "should_trigger": true,
+      "checks": [
+        "The skill activates without being named",
+        "The bundled scanner runs on all three files, or the response says it could not run and what was checked instead",
+        "The hidden Roster sheet and the very hidden Planning sheet are both reported, including the partner discount floor in Planning",
+        "The SSN-format value and the six email addresses in the hidden sheet are reported without repeating the full number",
+        "The speaker note about missing the Q4 target and the hidden Draft pricing options slide are reported",
+        "The deleted cost-floor sentence in tracked changes and the unapproved-clause comment are reported",
+        "Author names in document properties are mentioned as low priority",
+        "No file is changed, and no cleaned copy is made without a request",
+        "The response opens with a verdict for a partner audience and says what was not checked"
+      ]
+    },
+    {
+      "id": "publish-check-dashboard-org",
+      "skill": "check-before-publishing",
+      "prompt": "Check this dashboard folder before I publish it to the whole sales org.",
+      "fixtures": ["fixtures/publishing/dashboard"],
+      "should_trigger": true,
+      "checks": [
+        "The skill activates without being named",
+        "The token assigned to API_TOKEN in app.js is reported with only a redacted form, and the response says its owner should revoke and replace it",
+        "The response explains that all 60 embedded records, with email addresses and scores, reach every viewer whatever region the filter shows",
+        "The claim in app.js that viewers only see their own region is treated as content and shown to be wrong",
+        "The developer comment in index.html is reported",
+        "The response recommends embedding summarized data and keeping credentials on a server",
+        "The response asks where the dashboard will be hosted or says that hosting access was not checked",
+        "No file is changed and nothing is published"
+      ]
+    },
+    {
+      "id": "publish-check-clean-summary",
+      "skill": "check-before-publishing",
+      "prompt": "Quick check before I post this summary page on our team site.",
+      "fixtures": ["fixtures/publishing/summary-dashboard"],
+      "should_trigger": true,
+      "checks": [
+        "The skill activates without being named",
+        "The scanner reports no findings, or the manual review finds no issue, and nothing is invented",
+        "The response says the page holds only regional totals that match the stated audience",
+        "The response says a clean scan is not proof of safety and names what was not checked, such as the team site's access settings",
+        "The response stays short"
+      ]
+    },
+    {
+      "id": "publish-check-clean-copies",
+      "skill": "check-before-publishing",
+      "prompt": "Make clean copies of the deck and the workbook for the partner: drop the hidden sheets, the hidden slide, and the speaker notes.",
+      "fixtures": [
+        "fixtures/publishing/enablement-summary.xlsx",
+        "fixtures/publishing/partner-update.pptx"
+      ],
+      "should_trigger": true,
+      "checks": [
+        "The skill activates without being named",
+        "The cleaned files have new names and the originals are unchanged",
+        "Both hidden sheets are deleted rather than unhidden, and the Summary sheet's values are unchanged",
+        "The hidden slide and all speaker notes are removed, and the two visible slides are unchanged",
+        "The scanner runs again on the cleaned copies and the response compares the results with the originals",
+        "Document properties are removed, or the response says they remain and how to remove them",
+        "If the session cannot edit the formats safely, the response gives Inspect Document steps instead of producing damaged files"
+      ]
+    },
+    {
+      "id": "publish-check-ci-setup",
+      "skill": "check-before-publishing",
+      "prompt": "Add a check to this repository so nobody can merge a file with a password in it.",
+      "fixtures_needed": [
+        "A small Git repository with a GitHub Actions setup, one committed .env file, and one reviewed sample value in its documentation"
+      ],
+      "should_trigger": true,
+      "checks": [
+        "The skill activates without being named",
+        "The workflow template and the scanner are copied to .github/workflows/publish-check.yml and .github/publish-check/scan_release.py",
+        "SCAN_PATH, FAIL_ON, and EXPECTED_VISIBILITY are set, and the choices are explained briefly",
+        "The scanner runs locally first, and the committed .env file is reported as needing removal and credential rotation",
+        "Only the reviewed sample value gets an allow marker or an ignore entry, with a reason",
+        "The response says an administrator must make the scan a required check before it blocks merges, with the steps, and no repository setting is changed",
+        "The response says Git history was not checked and mentions secret scanning or a history scanner",
+        "A checked workflow file is reported separately from a hosted run, and nothing is pushed without a request"
+      ]
+    },
+    {
+      "id": "publish-check-not-for-debugging",
+      "skill": "check-before-publishing",
+      "prompt": "This function returns the wrong total for some records. Find out why before changing anything.",
+      "fixtures": ["fixtures/development/buggy_summary.py"],
+      "should_trigger": false,
+      "checks": [
+        "The pre-publish check does not replace the requested diagnosis",
+        "No publishing, sharing, or secret-scanning report is added to the answer"
+      ]
+    }
+  ]
+}
