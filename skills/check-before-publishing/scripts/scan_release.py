@@ -54,6 +54,9 @@ MAX_PER_RULE = 20
 MAX_MEMBERS = 20_000
 
 CONFIG_SUFFIXES = {
+    ".tf",
+    ".tfvars",
+    ".hcl",
     ".env",
     ".yaml",
     ".yml",
@@ -146,7 +149,7 @@ SECRET_PATTERNS: list[tuple[str, str, re.Pattern[str]]] = [
     (
         "aws-access-key",
         "AWS access key ID",
-        re.compile(r"(?<![A-Za-z0-9])(?:AKIA|ASIA)[0-9A-Z]{16}\b"),
+        re.compile(r"(?<![A-Za-z0-9])(?:AKIA|ASIA)[0-9A-Z]{16}(?![0-9A-Z])"),
     ),
     (
         "github-token",
@@ -168,7 +171,7 @@ SECRET_PATTERNS: list[tuple[str, str, re.Pattern[str]]] = [
     (
         "google-api-key",
         "Google API key",
-        re.compile(r"(?<![A-Za-z0-9])AIza[0-9A-Za-z_-]{35}\b"),
+        re.compile(r"(?<![A-Za-z0-9])AIza[0-9A-Za-z_-]{35}(?![0-9A-Za-z-])"),
     ),
     (
         "ai-api-key",
@@ -190,7 +193,7 @@ SECRET_PATTERNS: list[tuple[str, str, re.Pattern[str]]] = [
         "Password inside a connection URL",
         re.compile(
             r"(?<![A-Za-z0-9+.-])[a-z][a-z0-9+.-]{1,20}://"
-            r"[^\s:/@'\"]{1,256}:[^\s@/'\"]{3,2048}@[^\s'\"]{1,255}"
+            r"[^\s:/@'\"]+:[^\s@/'\"]{3,}@[^\s'\"/]+"
         ),
     ),
 ]
@@ -203,9 +206,12 @@ NAME_OPERATOR = re.compile(
     r"""(?::=|=>|:|=)[ \t]{0,8}"""
 )
 BARE_VALUE = re.compile(r"[^\s\"'#;,]+")
-# In code, an unquoted value counts only if it looks like a literal secret
-# rather than an expression: letters and digits, no calls or attribute access.
-BARE_LITERAL = re.compile(r"(?=[^\d]*\d)(?=[^A-Za-z]*[A-Za-z])[\w!@%^~+=/-]{8,}")
+# In code, an unquoted value counts only if it looks like a literal secret,
+# such as one inside a string, rather than a variable or expression: letters,
+# digits, and at least one character an identifier can't contain.
+BARE_LITERAL = re.compile(
+    r"(?=[^\d]*\d)(?=[^A-Za-z]*[A-Za-z])(?=[\w]*[!@%^~+=/-])[\w!@%^~+=/-]{8,}"
+)
 CREDENTIAL_WORDS = {
     "password",
     "passwd",
@@ -300,7 +306,8 @@ DESCRIPTIVE_WORDS = {
 }
 PLACEHOLDER = re.compile(
     r"""(?ix)^(?:
-        x{3,}|\*{3,}|\.{3,}|<[^>]*>|\$\{[^}]*\}|(?-i:\$[A-Z_][A-Z0-9_]*)|\{\{[^}]*\}\}|
+        x{3,}|\*{3,}|\.{3,}|<[^>]*>|\$\{\{[^{}]*\}\}|\$\{[^}]*\}|(?-i:\$[A-Z_][A-Z0-9_]*)|
+        \{\{[^}]*\}\}|
         \{[^}]*\}|%\([^)]*\)s|%[A-Z_]+%|
         (?:your|my|the)[-_ ]?(?:own[-_ ]?)?
             (?:password|passphrase|secret|token|api[-_ ]?key|key)(?:[-_ ]?here)?|
@@ -312,9 +319,12 @@ PLACEHOLDER = re.compile(
     )$"""
 )
 # Unquoted values in configuration files that refer to a value held elsewhere.
-BARE_REFERENCE = re.compile(
-    r"^(?:\$\{?[A-Za-z_]\w*\}?|%[A-Za-z_]\w*%|[*&][\w-]+|"
-    r"(?:process\.env|os\.environ|getenv|env)\b.*)$"
+# Values in configuration files that refer to a value held elsewhere. Each
+# form must be complete; a leading slash or "env-" alone proves nothing.
+REFERENCE = re.compile(
+    r"^(?:\$\{\{[^{}]*\}\}|\$\{[A-Za-z_][\w.:-]*\}|\$[A-Za-z_]\w*|\$\([^()]*\)|`[^`]*`|"
+    r"%[A-Za-z_]\w*%|[*&][\w-]+|process\.env\.\w+|os\.environ(?:\.get)?[\[(].*|"
+    r"(?:os\.)?getenv\(.*\)|env\(.*\)|var\.\w+|local\.\w+|data\.[\w.]+)$"
 )
 PLAIN_URL = re.compile(r"^https?://[^@\s]+$")
 EMAIL = re.compile(
@@ -340,7 +350,16 @@ NOTES_PLACEHOLDERS = {"sldNum", "sldImg", "hdr", "ftr", "dt"}
 TRUE_VALUES = {"1", "true", "on"}
 
 PartReader = Callable[[str], "ET.Element | None"]
-SAFE_PART = re.compile(r"(?:[A-Za-z]{1,20}/){1,3}[A-Za-z]{1,24}\d{0,6}\.xml")
+# Part names an Office application writes; anything else could carry copied text.
+SAFE_PART = re.compile(
+    r"docProps/(?:core|app|custom)\.xml|"
+    r"word/(?:document|styles|footnotes|endnotes|header\d+|footer\d+|"
+    r"comments(?:Extended|Ids|Extensible)?)\.xml|"
+    r"xl/(?:workbook|sharedStrings|comments\d+)\.xml|"
+    r"xl/(?:worksheets/sheet|comments/comment|threadedComments/threadedComment)\d+\.xml|"
+    r"ppt/(?:slides/slide|notesSlides/notesSlide|comments/comment)\d+\.xml|"
+    r"ppt/comments/modernComment_[0-9A-Fa-f_]{1,80}\.xml"
+)
 
 
 @dataclass
@@ -401,8 +420,12 @@ def part_label(member: str) -> str:
     return member if SAFE_PART.fullmatch(member) else "a part with an unusual name"
 
 
-def scrub(text: str) -> str:
-    """Mask anything secret-shaped in text the report repeats, such as paths."""
+def scrub(text: str, known: list[str]) -> str:
+    """Mask detected values, and anything secret-shaped, in text the report
+    repeats, such as paths and locations."""
+    for value in known:
+        if value in text:
+            text = text.replace(value, redact(value))
     for _, _, pattern in SECRET_PATTERNS:
         text = pattern.sub(lambda m: redact(m[0]), text)
     return NATIONAL_ID.sub(lambda m: redact(m[0]), text)
@@ -516,6 +539,7 @@ class Scanner:
         self.scanned = 0
         self._counts: dict[tuple[str, str], int] = {}
         self._shown: dict[tuple[str, str], int] = {}
+        self.detected: set[str] = set()
 
     # Recording -----------------------------------------------------------
 
@@ -529,7 +553,9 @@ class Scanner:
                 return True
         return False
 
-    def add(self, finding: Finding) -> None:
+    def add(self, finding: Finding, value: str = "") -> None:
+        if len(value.strip()) >= 6:
+            self.detected.add(value.strip())
         if self.ignored(finding.rule, finding.path):
             return
         self.severities.append(finding.severity)
@@ -669,28 +695,30 @@ class Scanner:
             for rule, label, pattern in SECRET_PATTERNS:
                 for match in pattern.finditer(line):
                     self.add(
-                        Finding("high", rule, shown, location, label, redact(match[0]))
+                        Finding("high", rule, shown, location, label, redact(match[0])),
+                        match[0],
                     )
+            # A name inside a bare value already read is part of that value;
+            # skipping it keeps overlapping candidates from rescanning the line.
+            read_until = -1
             for match in NAME_OPERATOR.finditer(line):
-                if not credential_name(match["name"]):
+                if match.start() < read_until or not credential_name(match["name"]):
                     continue
                 value, quoted = assigned_value(line, match.end())
                 if value is None or not (
                     quoted or config or BARE_LITERAL.fullmatch(value)
                 ):
                     continue
+                if not quoted:
+                    read_until = match.end() + len(value)
                 value = value.strip()
                 if (
                     len(value) < 8
                     or PLACEHOLDER.match(value)
                     or PLAIN_URL.match(value)
+                    or ((config or not quoted) and REFERENCE.match(value))
+                    or (match["name"].lower() == "pwd" and value.startswith("/"))
                     or any(p.search(value) for _, _, p in SECRET_PATTERNS)
-                    or (
-                        not quoted
-                        and (
-                            BARE_REFERENCE.match(value) or value.startswith(("/", "~/"))
-                        )
-                    )
                 ):
                     continue
                 self.add(
@@ -701,7 +729,8 @@ class Scanner:
                         location,
                         "Value assigned to a credential setting",
                         redact(value),
-                    )
+                    ),
+                    value,
                 )
             for match in NATIONAL_ID.finditer(line):
                 self.add(
@@ -712,7 +741,8 @@ class Scanner:
                         location,
                         "Number in US Social Security number format",
                         redact(match[0]),
-                    )
+                    ),
+                    match[0],
                 )
             for match in CARD.finditer(line):
                 if luhn(match[0]):
@@ -724,7 +754,8 @@ class Scanner:
                             location,
                             "Number that passes the payment card checksum",
                             redact(match[0]),
-                        )
+                        ),
+                        match[0],
                     )
             found = [
                 m[0]
@@ -1197,7 +1228,13 @@ def counts(scanner: Scanner) -> dict[str, int]:
 
 
 def result(scanner: Scanner) -> dict[str, object]:
-    """Collect the report, masking anything secret-shaped in every field."""
+    """Collect the report, masking detected values and anything secret-shaped
+    in every field."""
+    known = sorted(scanner.detected, key=len, reverse=True)
+
+    def scrub_all(text: str) -> str:
+        return scrub(text, known)
+
     findings = sorted(
         scanner.findings,
         key=lambda f: (-SEVERITIES[f.severity], f.path, f.rule, f.location),
@@ -1206,15 +1243,16 @@ def result(scanner: Scanner) -> dict[str, object]:
         "scanned": scanner.scanned,
         "counts": counts(scanner),
         "findings": [
-            {key: scrub(value) for key, value in asdict(f).items()} for f in findings
+            {key: scrub_all(value) for key, value in asdict(f).items()}
+            for f in findings
         ],
         "not_listed": [
-            {"path": scrub(path), "rule": rule, "count": extra}
+            {"path": scrub_all(path), "rule": rule, "count": extra}
             for (path, rule), extra in sorted(scanner.truncated.items())
         ],
-        "incomplete": [scrub(item) for item in scanner.incomplete],
-        "skipped": [scrub(item) for item in scanner.skipped],
-        "errors": [scrub(item) for item in scanner.errors],
+        "incomplete": [scrub_all(item) for item in scanner.incomplete],
+        "skipped": [scrub_all(item) for item in scanner.skipped],
+        "errors": [scrub_all(item) for item in scanner.errors],
     }
 
 

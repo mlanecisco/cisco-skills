@@ -256,6 +256,79 @@ class PublishCheckTests(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertLess(time.monotonic() - start, 10)
 
+    def test_ordinary_references_pass(self) -> None:
+        self.write(
+            ".github/workflows/ci.yml",
+            "env:\n"
+            '  DB_PASSWORD: "${{ secrets.DB_PASSWORD }}"\n'
+            "  ACCESS_TOKEN: '${{github.token}}'\n"
+            "  API_KEY: ${{ secrets.API_KEY }}\n",
+        )
+        self.write(
+            "deploy.sh",
+            'password="$(get_password)"\ntoken=$(get_token)\n'
+            'secret="$db_secret"\nauth_token=`vault read -field=token x`\n',
+        )
+        self.write(
+            "main.tf",
+            "password = var.db_password\napi_key = data.vault_secret.key.value\n",
+        )
+        self.write("app.py", "password = token2fa_value1\n")
+        code, data = scan(self.base)
+        self.assertEqual((code, data["findings"]), (0, []))
+
+    def test_literal_values_in_configuration_are_found(self) -> None:
+        for index, value in enumerate(
+            ["/Q7v2kd9Lx3", "~/Q7v2kd9Lx3", "env-Q7v2kd9Lx3"]
+        ):
+            self.write(f"y{index}.yaml", f"password: {value}\n")
+            self.write(f"e{index}/.env.local", f"PASSWORD={value}\n")
+        self.write("vars.tf", f'db_password = "{PASSWORD}"\n')
+        _, data = scan(self.base)
+        self.assertEqual(
+            {
+                f["path"]
+                for f in data["findings"]
+                if f["rule"] == "credential-assignment"
+            },
+            {"y0.yaml", "y1.yaml", "y2.yaml", "vars.tf"}
+            | {f"e{i}/.env.local" for i in range(3)},
+        )
+
+    def test_overlapping_candidates_scan_quickly(self) -> None:
+        self.write("long.js", 'const s = "' + "password=" * 20_000 + 'Q7v2-kd9Lx3";\n')
+        self.write("long.yaml", 'note: "' + "password=" * 20_000 + 'Q7v2-kd9Lx3"\n')
+        start = time.monotonic()
+        code, _ = scan(self.base)
+        self.assertEqual(code, 1)
+        self.assertLess(time.monotonic() - start, 10)
+
+    def test_detected_values_are_masked_everywhere(self) -> None:
+        folder = self.base / PASSWORD
+        self.write(f"{PASSWORD}/config.json", json.dumps({"password": PASSWORD}))
+        self.archive(
+            "book.xlsx",
+            {
+                "xl/workbook.xml": f"<workbook {SHEET}><sheets/></workbook>",
+                f"xl/worksheets/{PASSWORD.replace('-', '')}.xml": "not xml",
+            },
+        )
+        _, data = scan(
+            folder, self.base / "book.xlsx", self.base / f"x_{AWS_KEY}_y.json"
+        )
+        self.assertTrue(data["errors"] and data["incomplete"])
+        self.assert_secret_hidden(folder, self.base / "book.xlsx")
+        output = run(self.base / f"x_{AWS_KEY}_y.json").stdout
+        self.assertNotIn(AWS_KEY, output)
+        self.assertNotIn(PASSWORD.replace("-", ""), json.dumps(data))
+
+    def test_url_passwords_have_no_length_limit(self) -> None:
+        self.write(
+            "url.txt", "postgres://admin:" + "Q7v2kd9L" * 400 + "@db.internal/app\n"
+        )
+        _, data = scan(self.base)
+        self.assertEqual(rules(data), {"url-credentials"})
+
     # Personal data and file names --------------------------------------
 
     def test_personal_data_needs_valid_formats(self) -> None:

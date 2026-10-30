@@ -33,6 +33,8 @@ Changes to the ignore file deserve the same review as code. Where the repository
 
 The scanner checks the files in the scanned path at the commit being tested. It doesn't check Git history, so a credential committed and later deleted still passes. Where the organization offers GitHub secret scanning and push protection, ask an administrator to turn them on; they check pushes and history for many known credential formats. A history scanner such as gitleaks can run in the same workflow if the team approves it.
 
+The report repeats file paths as they appear in the repository. It masks values it detected wherever they recur, and anything shaped like a known token, but it can't recognize a password that appears only in a file name. File names are already visible to anyone who can read the repository.
+
 A passing check means the patterns weren't found. People still decide whether content is fit for its audience, and the repository's visibility check only compares the setting with the stated intent.
 
 ## Updating
