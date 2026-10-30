@@ -193,7 +193,7 @@ SECRET_PATTERNS: list[tuple[str, str, re.Pattern[str]]] = [
         "Password inside a connection URL",
         re.compile(
             r"(?<![A-Za-z0-9+.-])[a-z][a-z0-9+.-]{1,20}://"
-            r"[^\s:/@'\"]+:[^\s@/'\"]{3,}@[^\s'\"/]+"
+            r"[^\s:/@'\"]+:(?P<secret>[^\s@/'\"]{3,})@[^\s'\"/]+"
         ),
     ),
 ]
@@ -319,12 +319,19 @@ PLACEHOLDER = re.compile(
     )$"""
 )
 # Unquoted values in configuration files that refer to a value held elsewhere.
-# Values in configuration files that refer to a value held elsewhere. Each
-# form must be complete; a leading slash or "env-" alone proves nothing.
-REFERENCE = re.compile(
-    r"^(?:\$\{\{[^{}]*\}\}|\$\{[A-Za-z_][\w.:-]*\}|\$[A-Za-z_]\w*|\$\([^()]*\)|`[^`]*`|"
-    r"%[A-Za-z_]\w*%|[*&][\w-]+|process\.env\.\w+|os\.environ(?:\.get)?[\[(].*|"
-    r"(?:os\.)?getenv\(.*\)|env\(.*\)|var\.\w+|local\.\w+|data\.[\w.]+)$"
+# References to a value held elsewhere. Which forms count depends on the
+# file format and on how the value is quoted, because a string that looks
+# like an expression in one format is a literal in another.
+ACTIONS_EXPRESSION = re.compile(r"\$\{\{[^{}]*\}\}")
+INTERPOLATION = re.compile(r"\$\{[A-Za-z_][\w.]*(?::?[-?=+][^{}]*)?\}")
+SHELL_REFERENCE = re.compile(r"\$[A-Za-z_]\w*|\$\((?:[^()]|\([^()]*\))*\)|`[^`]*`")
+BARE_REFERENCE = re.compile(
+    r"%[A-Za-z_]\w*%|[*&][\w-]+|process\.env\.\w+|"
+    r"os\.environ(?:\.get)?(?:\[[^\]]*\]|\([^()]*\))|(?:os\.)?getenv\([^()]*\)|"
+    r"env\([^()]*\)|(?:var|local|data|module)\.[\w.-]+(?:\[[^\]]*\][\w.-]*)*"
+)
+TERRAFORM_REFERENCE = re.compile(
+    r"(?:var|local|data|module)\.[\w.-]+(?:\[[^\]\n]*\][\w.-]*)*"
 )
 PLAIN_URL = re.compile(r"^https?://[^@\s]+$")
 EMAIL = re.compile(
@@ -403,16 +410,57 @@ def credential_name(name: str) -> bool:
     return any(pair in CREDENTIAL_PAIRS for pair in zip(words, words[1:]))
 
 
-def assigned_value(line: str, start: int) -> tuple[str | None, bool]:
-    """Read the value after an operator, and say whether it was quoted."""
+def assigned_value(line: str, start: int) -> tuple[str | None, str, int]:
+    """Read the value after an operator. Return it, its quote character (empty
+    when unquoted), and where it ends. Shell substitutions and Terraform
+    lookups are read whole, so that spaces or quotes inside them don't cut
+    them short."""
     if start >= len(line):
-        return None, False
-    quote = line[start]
-    if quote in "\"'":
-        end = line.find(quote, start + 1)
-        return (line[start + 1 : end] if end != -1 else line[start + 1 :]), True
-    match = BARE_VALUE.match(line, start)
-    return (match[0] if match else None), False
+        return None, "", start
+    first = line[start]
+    if first in "\"'":
+        end = line.find(first, start + 1)
+        end = len(line) if end == -1 else end
+        return line[start + 1 : end], first, end + 1
+    if line.startswith("$(", start):
+        depth = 0
+        for index in range(start + 1, len(line)):
+            depth += {"(": 1, ")": -1}.get(line[index], 0)
+            if depth == 0:
+                return line[start : index + 1], "", index + 1
+        return line[start:], "", len(line)
+    for opener, closer in (("`", "`"), ("${", "}")):
+        if line.startswith(opener, start):
+            end = line.find(closer, start + len(opener))
+            end = len(line) if end == -1 else end + len(closer)
+            return line[start:end], "", end
+    match = TERRAFORM_REFERENCE.match(line, start) or BARE_VALUE.match(line, start)
+    return (match[0], "", match.end()) if match else (None, "", start)
+
+
+def is_reference(value: str, quote: str, kind: str) -> bool:
+    """Decide whether a value refers to one held elsewhere in this format."""
+    if kind == "yaml" and ACTIONS_EXPRESSION.fullmatch(value):
+        return True
+    if quote == "'":
+        return False
+    if kind in {"shell", "yaml", "hcl"} and INTERPOLATION.fullmatch(value):
+        return True
+    if (
+        kind == "shell" or (kind == "yaml" and not quote)
+    ) and SHELL_REFERENCE.fullmatch(value):
+        return True
+    return not quote and bool(BARE_REFERENCE.fullmatch(value))
+
+
+def file_kind(name: str, suffix: str) -> str:
+    if suffix in {".sh", ".bash", ".zsh", ""} or name.startswith(".env"):
+        return "shell"
+    if suffix in {".yml", ".yaml"}:
+        return "yaml"
+    if suffix in {".tf", ".tfvars", ".hcl"}:
+        return "hcl"
+    return ""
 
 
 def part_label(member: str) -> str:
@@ -655,7 +703,7 @@ class Scanner:
                 self.incomplete.append(f"{shown}: not readable as text")
                 return
             config = suffix in CONFIG_SUFFIXES or name.startswith(".env")
-            self.text(text, shown, config=config)
+            self.text(text, shown, config=config, kind=file_kind(name, suffix))
             if suffix in {".html", ".htm"}:
                 self.html(text, shown)
             if suffix == ".map" or (
@@ -687,6 +735,7 @@ class Scanner:
         shown: str,
         where: str = "",
         config: bool = False,
+        kind: str = "",
     ) -> None:
         emails: list[str] = []
         first_email = ""
@@ -698,25 +747,28 @@ class Scanner:
                         Finding("high", rule, shown, location, label, redact(match[0])),
                         match[0],
                     )
+                    if "secret" in pattern.groupindex and len(match["secret"]) >= 6:
+                        self.detected.add(match["secret"])
             # A name inside a bare value already read is part of that value;
             # skipping it keeps overlapping candidates from rescanning the line.
             read_until = -1
             for match in NAME_OPERATOR.finditer(line):
                 if match.start() < read_until or not credential_name(match["name"]):
                     continue
-                value, quoted = assigned_value(line, match.end())
+                value, quote, end = assigned_value(line, match.end())
+                # Everything read belongs to this value, accepted or not, so
+                # names inside it aren't read again.
+                read_until = end
                 if value is None or not (
-                    quoted or config or BARE_LITERAL.fullmatch(value)
+                    quote or config or BARE_LITERAL.fullmatch(value)
                 ):
                     continue
-                if not quoted:
-                    read_until = match.end() + len(value)
                 value = value.strip()
                 if (
                     len(value) < 8
                     or PLACEHOLDER.match(value)
                     or PLAIN_URL.match(value)
-                    or ((config or not quoted) and REFERENCE.match(value))
+                    or ((config or not quote) and is_reference(value, quote, kind))
                     or (match["name"].lower() == "pwd" and value.startswith("/"))
                     or any(p.search(value) for _, _, p in SECRET_PATTERNS)
                 ):

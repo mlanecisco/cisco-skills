@@ -35,6 +35,8 @@ The scanner checks the files in the scanned path at the commit being tested. It 
 
 The report repeats file paths as they appear in the repository. It masks values it detected wherever they recur, and anything shaped like a known token, but it can't recognize a password that appears only in a file name. File names are already visible to anyone who can read the repository.
 
+Credential detection uses patterns, not a parser for each language, so some literal values pass. A password made only of letters and digits, assigned inside a string in source code, such as `"password=Q7v2kd9Lx3"`, looks the same as a variable name and isn't reported. Values that match a known token format are found wherever they appear.
+
 A passing check means the patterns weren't found. People still decide whether content is fit for its audience, and the repository's visibility check only compares the setting with the stated intent.
 
 ## Updating

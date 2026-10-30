@@ -1,5 +1,7 @@
 """Check the pre-publish scanner against seeded files and the committed fixtures."""
 
+from __future__ import annotations
+
 import json
 import os
 import shutil
@@ -328,6 +330,61 @@ class PublishCheckTests(unittest.TestCase):
         )
         _, data = scan(self.base)
         self.assertEqual(rules(data), {"url-credentials"})
+
+    def test_references_depend_on_format_and_quotes(self) -> None:
+        self.write(
+            "scripts/login.sh",
+            "password=$(retrieve_secret database)\napi_token=`retrieve_secret token`\n",
+        )
+        self.write(
+            "infra/vault.tf",
+            'password = data.vault_generic_secret.database.data["password"]\n'
+            'token = "${var.api_token}"\n',
+        )
+        self.write(
+            "compose.yml",
+            'POSTGRES_PASSWORD: "${DB_PASSWORD:?required}"\n'
+            "REDIS_PASSWORD: ${REDIS_PASSWORD:-unset_value}\n",
+        )
+        code, data = scan(self.base)
+        self.assertEqual((code, data["findings"]), (0, []))
+        literals = self.base / "literals"
+        for name, text in [
+            ("a.yaml", 'password: "$s8V3p9L2"\n'),
+            ("b.toml", 'password = "$s8V3p9L2"\n'),
+            ("c/.env", "PASSWORD='$s8V3p9L2'\n"),
+            ("d.tf", 'password = "$s8V3p9L2"\n'),
+            ("e.yaml", 'password: "process.env.SECRET_VALUE"\n'),
+            ("f.yaml", 'password: "os.environ[SECRET"\n'),
+        ]:
+            self.write(f"literals/{name}", text)
+        _, data = scan(literals)
+        flagged = {
+            f["path"] for f in data["findings"] if f["rule"] == "credential-assignment"
+        }
+        self.assertEqual(
+            flagged, {"a.yaml", "b.toml", "c/.env", "d.tf", "e.yaml", "f.yaml"}
+        )
+
+    def test_rejected_candidates_scan_quickly(self) -> None:
+        for name, fragment, tail in [
+            ("a.js", "password=", "no_digits"),
+            ("b.js", "password:", "Q7v2kd9Lx3"),
+        ]:
+            self.write(name, 'const s = "' + fragment * 20_000 + tail + '";\n')
+        start = time.monotonic()
+        scan(self.base)
+        self.assertLess(time.monotonic() - start, 10)
+
+    def test_url_password_is_masked_in_paths(self) -> None:
+        secret = "Q7v2kd9Lx3"
+        path = self.write(
+            f"{secret}.txt", f"postgres://admin:{secret}@db.internal/app\n"
+        )
+        for arguments in [("--json", path, self.base / f"{secret}-missing"), (path,)]:
+            output = run(*arguments).stdout
+            self.assertIn("url-credentials", output)
+            self.assertNotIn(secret, output)
 
     # Personal data and file names --------------------------------------
 
