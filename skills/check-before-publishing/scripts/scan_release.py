@@ -4,25 +4,29 @@ Looks for credentials, personal data, and content that viewers can recover but
 the author may not see: hidden sheets, speaker notes, tracked changes,
 comments, document metadata, and data embedded in web pages.
 
-Uses only the Python standard library. Never prints a full secret value.
+Uses only the Python standard library, never writes to the scanned files, and
+never prints source text except a masked form of what it matched.
 
 Usage:
-    python scan_release.py PATH [PATH ...] [--json] [--fail-on high|medium|low]
+    python scan_release.py PATH [PATH ...] [--json] [--fail-on LEVEL] [--strict]
 
-Exit status: 0 when nothing at or above --fail-on was found, 1 when something
-was, and 2 when a path cannot be read.
+Exit status: 0 when nothing at or above --fail-on was found; 1 when something
+was; 2 when a path couldn't be read or, with --strict, when a file of a
+supported type couldn't be fully inspected.
 """
 
 from __future__ import annotations
 
 import argparse
+import codecs
 import fnmatch
 import json
 import os
 import re
 import sys
+import xml.etree.ElementTree as ET
 import zipfile
-from collections.abc import Callable, Iterable, Iterator
+from collections.abc import Callable, Iterator
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
@@ -40,27 +44,32 @@ SKIP_DIRS = {
     ".pytest_cache",
 }
 IGNORE_FILE = ".publishcheckignore"
-ALLOW_MARKER = "publish-check: allow"
-MAX_TEXT_BYTES = 5 * 1024 * 1024
+MAX_TEXT_BYTES = 10 * 1024 * 1024
 MAX_MEMBER_BYTES = 20 * 1024 * 1024
 MAX_ARCHIVE_BYTES = 200 * 1024 * 1024
 LARGE_INLINE_BYTES = 20 * 1024
 MAX_PER_RULE = 20
 
-TEXT_SUFFIXES = {
-    ".txt",
-    ".md",
-    ".csv",
-    ".tsv",
-    ".json",
+CONFIG_SUFFIXES = {
+    ".env",
     ".yaml",
     ".yml",
     ".toml",
     ".ini",
     ".cfg",
     ".conf",
-    ".env",
     ".properties",
+    ".sh",
+    ".bash",
+    ".zsh",
+    "",
+}
+TEXT_SUFFIXES = CONFIG_SUFFIXES | {
+    ".txt",
+    ".md",
+    ".csv",
+    ".tsv",
+    ".json",
     ".xml",
     ".html",
     ".htm",
@@ -77,7 +86,6 @@ TEXT_SUFFIXES = {
     ".java",
     ".cs",
     ".php",
-    ".sh",
     ".ps1",
     ".sql",
     ".r",
@@ -117,6 +125,8 @@ SENSITIVE_SUFFIXES = {
     ".pfx": "Certificate bundle that can hold a private key",
     ".jks": "Java keystore",
     ".kdbx": "Password manager database",
+}
+REVIEW_SUFFIXES = {
     ".sqlite": "Database file; check whether its records are meant for viewers",
     ".sqlite3": "Database file; check whether its records are meant for viewers",
     ".db": "Database file; check whether its records are meant for viewers",
@@ -128,7 +138,7 @@ SECRET_PATTERNS: list[tuple[str, str, re.Pattern[str]]] = [
     (
         "private-key",
         "Private key block",
-        re.compile(r"-----BEGIN (?:[A-Z0-9]+ )*PRIVATE KEY(?: BLOCK)?-----"),
+        re.compile(r"-----BEGIN (?:[A-Z0-9]+ ){0,4}PRIVATE KEY(?: BLOCK)?-----"),
     ),
     (
         "aws-access-key",
@@ -138,56 +148,151 @@ SECRET_PATTERNS: list[tuple[str, str, re.Pattern[str]]] = [
     (
         "github-token",
         "GitHub token",
-        re.compile(r"\b(?:gh[pousr]_[A-Za-z0-9]{36,}|github_pat_[A-Za-z0-9_]{50,})\b"),
+        re.compile(r"\b(?:gh[pousr]_[A-Za-z0-9]{36,255}|github_pat_\w{50,255})"),
     ),
-    ("slack-token", "Slack token", re.compile(r"\bxox[abposr]-[A-Za-z0-9-]{10,}")),
+    ("slack-token", "Slack token", re.compile(r"\bxox[abposr]-[A-Za-z0-9-]{10,255}")),
     (
         "slack-webhook",
         "Slack webhook URL",
-        re.compile(r"https://hooks\.slack\.com/services/[A-Za-z0-9/_-]{20,}"),
+        re.compile(r"https://hooks\.slack\.com/services/[A-Za-z0-9/_-]{20,255}"),
     ),
     ("google-api-key", "Google API key", re.compile(r"\bAIza[0-9A-Za-z_-]{35}\b")),
     (
         "ai-api-key",
         "AI service API key",
-        re.compile(r"\bsk-(?:ant-|proj-)?[A-Za-z0-9_-]{32,}"),
+        re.compile(r"\bsk-(?:ant-|proj-)?[A-Za-z0-9_-]{32,255}"),
     ),
     (
         "atlassian-token",
         "Atlassian API token",
-        re.compile(r"\bATATT[A-Za-z0-9_=-]{40,}"),
+        re.compile(r"\bATATT[A-Za-z0-9_=-]{40,255}"),
     ),
     (
         "jwt",
         "Signed web token (JWT)",
-        re.compile(
-            r"\beyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}"
-        ),
+        re.compile(r"\beyJ[\w-]{10,4096}\.eyJ[\w-]{10,8192}\.[\w-]{10,4096}"),
     ),
     (
         "url-credentials",
         "Password inside a connection URL",
         re.compile(
-            r"\b[a-z][a-z0-9+.-]{1,20}://[^\s:/@'\"]{1,64}:[^\s@/'\"]{3,}@[^\s'\"]+"
+            r"(?<![A-Za-z0-9+.-])[a-z][a-z0-9+.-]{1,20}://"
+            r"[^\s:/@'\"]{1,64}:[^\s@/'\"]{3,128}@[^\s'\"]{1,255}"
         ),
     ),
 ]
+# The lookbehind anchors each name at the start of a token, so the bounded
+# name can't be retried from every position inside a long identifier.
 ASSIGNMENT = re.compile(
-    r"""(?ix)
-    (?P<name>[a-z0-9_.-]*(?:password|passwd|pwd|secret|token|api[_-]?key|apikey|
-        access[_-]?key|client[_-]?secret|auth[_-]?token|authorization|bearer)[a-z0-9_.-]*)
-    ["']?\s*[:=]\s*
-    (?P<quote>["'])(?P<value>[^"'\s]{8,})(?P=quote)
-    """
+    r"""(?<![A-Za-z0-9_.-])(?P<name>[A-Za-z][A-Za-z0-9_.-]{0,63})["']?[ \t]{0,8}"""
+    r"""(?::=|=>|:|=)[ \t]{0,8}"""
+    r"""(?:"(?P<dq>[^"\n]{1,256})"|'(?P<sq>[^'\n]{1,256})'|(?P<bare>[^\s"'#;,]{1,256}))"""
 )
+CREDENTIAL_WORDS = {
+    "password",
+    "passwd",
+    "passphrase",
+    "secret",
+    "token",
+    "apikey",
+    "credential",
+    "credentials",
+}
+CREDENTIAL_PAIRS = {
+    ("api", "key"),
+    ("access", "key"),
+    ("private", "key"),
+    ("secret", "key"),
+    ("signing", "key"),
+    ("client", "secret"),
+    ("auth", "token"),
+}
+# A final word like these describes a setting rather than holding a secret.
+DESCRIPTIVE_WORDS = {
+    "endpoint",
+    "url",
+    "uri",
+    "policy",
+    "name",
+    "names",
+    "id",
+    "type",
+    "length",
+    "file",
+    "path",
+    "header",
+    "expires",
+    "expiry",
+    "ttl",
+    "regex",
+    "pattern",
+    "hint",
+    "label",
+    "field",
+    "prompt",
+    "min",
+    "max",
+    "enabled",
+    "required",
+    "rotation",
+    "count",
+    "limit",
+    "format",
+    "version",
+    "prefix",
+    "description",
+    "help",
+    "placeholder",
+    "title",
+    "text",
+    "message",
+    "error",
+    "reset",
+    "changed",
+    "updated",
+    "date",
+    "time",
+    "age",
+    "strength",
+    "location",
+    "store",
+    "manager",
+    # File names such as credentials.json name a file, not a value.
+    "json",
+    "yaml",
+    "yml",
+    "txt",
+    "xml",
+    "ini",
+    "cfg",
+    "toml",
+}
 PLACEHOLDER = re.compile(
-    r"(?i)^(?:x+|\*+|\.+|<[^>]*>|\$?\{[^}]*\}|\{\{[^}]*\}\}|%\([^)]*\)s|"
-    r"(?:your|my|change|replace|example|sample|dummy|placeholder|redacted|"
-    r"insert|enter|todo|none|null|undefined|test)[a-z0-9_-]*)$"
+    r"""(?ix)^(?:
+        x{3,}|\*{3,}|\.{3,}|<[^>]*>|\$\{[^}]*\}|\$[A-Z_][A-Z0-9_]*|\{\{[^}]*\}\}|
+        \{[^}]*\}|%\([^)]*\)s|%[A-Z_]+%|
+        (?:your|my|the)[-_ ]?(?:own[-_ ]?)?
+            (?:password|passphrase|secret|token|api[-_ ]?key|key)(?:[-_ ]?here)?|
+        (?:enter|insert|add|put)[-_ ]?(?:your[-_ ]?)?
+            (?:password|secret|token|api[-_ ]?key|key)[-_ ]?here|
+        change[-_ ]?me|replace[-_ ]?me|example|sample|dummy|placeholder|redacted|
+        todo|tbd|none|null|nil|undefined|empty|not[-_ ]?set|
+        secret|password|token|true|false
+    )$"""
 )
-EMAIL = re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b")
+REFERENCE = re.compile(r"^[$%{(\[!*&]|\(|process\.env|os\.environ|getenv|env\(")
+PLAIN_URL = re.compile(r"^https?://[^@\s]+$")
+EMAIL = re.compile(
+    r"(?<![A-Za-z0-9._%+-])[A-Za-z0-9._%+-]{1,64}@"
+    r"[A-Za-z0-9-]{1,63}(?:\.[A-Za-z0-9-]{1,63}){0,8}\.[A-Za-z]{2,24}\b"
+)
 NATIONAL_ID = re.compile(r"\b(?!000|666|9\d\d)\d{3}-(?!00)\d{2}-(?!0000)\d{4}\b")
 CARD = re.compile(r"\b(?:\d[ -]?){13,19}\b")
+ALLOW = re.compile(
+    r"(?:#|//|--|;|/\*|<!--)[ \t]*publish-check:[ \t]*allow[ \t]*(?:\*/|-->)?[ \t]*$"
+)
+# Data formats have no comment syntax, so a marker there would be content.
+NO_ALLOW_SUFFIXES = {".csv", ".tsv", ".json", ".txt", ".md", ".log", ".ipynb", ".map"}
 EXAMPLE_EMAIL_DOMAINS = (
     "example.com",
     "example.org",
@@ -195,6 +300,14 @@ EXAMPLE_EMAIL_DOMAINS = (
     "test.com",
     "localhost",
 )
+TEXT_TAGS = {"t", "delText", "v", "instrText", "text"}
+LINE_TAGS = {"p", "si", "row", "tr"}
+CELL_TAGS = {"c", "tc"}
+BREAK_TAGS = {"tab", "br"}
+NOTES_PLACEHOLDERS = {"sldNum", "sldImg", "hdr", "ftr", "dt"}
+TRUE_VALUES = {"1", "true", "on"}
+
+PartReader = Callable[[str], "ET.Element | None"]
 
 
 @dataclass
@@ -208,7 +321,7 @@ class Finding:
 
 
 def redact(value: str) -> str:
-    """Show enough of a secret to find it again, and no more."""
+    """Show enough of a match to find it again, and no more."""
     value = value.strip()
     if len(value) <= 8:
         return "*" * len(value)
@@ -229,74 +342,189 @@ def luhn(number: str) -> bool:
     return total % 10 == 0
 
 
+def credential_name(name: str) -> bool:
+    words = [w.lower() for w in re.findall(r"[A-Z]?[a-z]+|[A-Z]+(?![a-z])|\d+", name)]
+    if not words or words[-1] in DESCRIPTIVE_WORDS:
+        return False
+    if any(word in CREDENTIAL_WORDS for word in words):
+        return True
+    return any(pair in CREDENTIAL_PAIRS for pair in zip(words, words[1:]))
+
+
+def decode(data: bytes) -> str | None:
+    """Decode text, honoring byte-order marks; return None for binary data."""
+    for bom, encoding in (
+        (codecs.BOM_UTF32_LE, "utf-32"),
+        (codecs.BOM_UTF32_BE, "utf-32"),
+        (codecs.BOM_UTF8, "utf-8-sig"),
+        (codecs.BOM_UTF16_LE, "utf-16"),
+        (codecs.BOM_UTF16_BE, "utf-16"),
+    ):
+        if data.startswith(bom):
+            return data.decode(encoding, errors="replace")
+    sample = data[:4096]
+    if b"\x00" not in sample:
+        return data.decode("utf-8", errors="replace")
+    half = max(len(sample) // 2, 1)
+    if sample[1::2].count(0) > half * 0.9:
+        return data.decode("utf-16-le", errors="replace")
+    if sample[0::2].count(0) > half * 0.9:
+        return data.decode("utf-16-be", errors="replace")
+    return None
+
+
+def local(tag: object) -> str:
+    return tag.rsplit("}", 1)[-1] if isinstance(tag, str) else ""
+
+
+def attribute(element: ET.Element, name: str) -> str | None:
+    for key, value in element.attrib.items():
+        if local(key) == name:
+            return value
+    return None
+
+
+def extract(root: ET.Element) -> str:
+    """Join an Office part's text, keeping paragraphs and cells apart."""
+    parts: list[str] = []
+    stack: list[tuple[ET.Element, bool]] = [(root, False)]
+    while stack:
+        element, closing = stack.pop()
+        name = local(element.tag)
+        if closing:
+            if name in LINE_TAGS:
+                parts.append("\n")
+            elif name in CELL_TAGS:
+                parts.append("\t")
+            continue
+        if name in BREAK_TAGS:
+            parts.append("\t")
+        if name in TEXT_TAGS and element.text:
+            parts.append(element.text)
+        stack.append((element, True))
+        stack.extend((child, False) for child in reversed(list(element)))
+    return "".join(parts)
+
+
+def parse_ignore(text: str) -> list[tuple[str | None, str]]:
+    entries: list[tuple[str | None, str]] = []
+    for line in text.splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        rule, separator, pattern = line.partition(":")
+        if separator and re.fullmatch(r"[a-z][a-z-]*", rule) and pattern:
+            entries.append((rule, pattern))
+        else:
+            entries.append((None, line))
+    return entries
+
+
 class Scanner:
-    def __init__(self, ignore: list[str]):
-        self.ignore = ignore
+    def __init__(self, extra_ignore: list[str]):
+        self.global_ignore = parse_ignore("\n".join(extra_ignore))
+        self.ignore: list[tuple[str | None, str]] = []
         self.findings: list[Finding] = []
+        self.severities: list[str] = []
         self.errors: list[str] = []
+        self.incomplete: list[str] = []
         self.skipped: list[str] = []
+        self.truncated: dict[tuple[str, str], int] = {}
         self.scanned = 0
         self._counts: dict[tuple[str, str], int] = {}
+        self._shown: dict[tuple[str, str], int] = {}
 
     # Recording -----------------------------------------------------------
 
-    def ignored(self, rule: str, path: str) -> bool:
-        for entry in self.ignore:
-            if ":" in entry and not entry.startswith(("*", "/", ".")):
-                entry_rule, _, pattern = entry.partition(":")
-                if entry_rule == rule and fnmatch.fnmatch(path, pattern):
-                    return True
-            elif fnmatch.fnmatch(path, entry):
+    def ignored(self, rule: str | None, path: str) -> bool:
+        for entry_rule, pattern in self.global_ignore + self.ignore:
+            if entry_rule is not None and entry_rule != rule:
+                continue
+            if fnmatch.fnmatch(path, pattern) or (
+                pattern.endswith("/") and path.startswith(pattern)
+            ):
                 return True
         return False
 
     def add(self, finding: Finding) -> None:
         if self.ignored(finding.rule, finding.path):
             return
+        self.severities.append(finding.severity)
         key = (finding.path, finding.rule)
         count = self._counts.get(key, 0) + 1
         self._counts[key] = count
-        if count <= MAX_PER_RULE:
+        level = SEVERITIES[finding.severity]
+        if count <= MAX_PER_RULE or level > self._shown.get(key, 0):
             self.findings.append(finding)
-        elif count == MAX_PER_RULE + 1:
-            self.findings.append(
-                Finding(
-                    finding.severity,
-                    finding.rule,
-                    finding.path,
-                    "",
-                    f"More matches for this rule in this file were not listed "
-                    f"(limit {MAX_PER_RULE})",
-                )
-            )
+            self._shown[key] = max(level, self._shown.get(key, 0))
+        else:
+            self.truncated[key] = self.truncated.get(key, 0) + 1
 
     # Walking -------------------------------------------------------------
 
-    def walk(self, paths: Iterable[Path]) -> Iterator[tuple[Path, str]]:
-        for root in paths:
-            if root.is_file():
-                yield root, root.name
-                continue
-            for directory, folders, files in os.walk(root):
-                folders[:] = sorted(f for f in folders if f not in SKIP_DIRS)
-                for name in sorted(files):
-                    full = Path(directory) / name
-                    yield full, full.relative_to(root).as_posix()
+    def load_ignore(self, base: Path) -> None:
+        self.ignore = []
+        path = base / IGNORE_FILE
+        try:
+            if path.is_file():
+                self.ignore = parse_ignore(path.read_bytes().decode("utf-8"))
+        except (OSError, UnicodeDecodeError) as exc:
+            self.errors.append(f"{path}: ignore file unreadable ({type(exc).__name__})")
 
-    def scan(self, paths: list[Path]) -> None:
-        for path in paths:
-            if not path.exists():
-                self.errors.append(f"{path}: not found")
-        for full, shown in self.walk(p for p in paths if p.exists()):
-            if full.is_symlink():
-                self.skipped.append(f"{shown}: symbolic link not followed")
-                continue
-            if self.ignored("", shown):
+    def single_file(self, path: Path) -> str:
+        """Use the nearest ignore file above a single file, as a folder scan would."""
+        full = path.resolve()
+        for base in full.parents:
+            if (base / IGNORE_FILE).is_file() or (base / ".git").exists():
+                break
+        else:
+            base = full.parent
+        self.load_ignore(base)
+        return full.relative_to(base).as_posix()
+
+    def files(self, root: Path) -> Iterator[tuple[Path, str]]:
+        def failed(exc: OSError) -> None:
+            where = exc.filename or root
+            self.errors.append(f"{where}: directory unreadable ({type(exc).__name__})")
+
+        for directory, folders, names in os.walk(root, onerror=failed):
+            folders[:] = sorted(f for f in folders if f not in SKIP_DIRS)
+            for name in sorted(names):
+                full = Path(directory) / name
+                yield full, full.relative_to(root).as_posix()
+
+    def scan(self, roots: list[Path]) -> None:
+        for root in roots:
+            try:
+                exists = root.exists()
+            except OSError:
+                exists = False
+            if not exists:
+                self.errors.append(f"{root}: not found or not accessible")
                 continue
             try:
-                self.scan_file(full, shown)
-            except (OSError, zipfile.BadZipFile, ValueError) as exc:
-                self.errors.append(f"{shown}: {exc}")
+                if root.is_dir():
+                    self.load_ignore(root)
+                    items: Iterator[tuple[Path, str]] = self.files(root)
+                else:
+                    items = iter([(root, self.single_file(root))])
+            except OSError as exc:
+                self.errors.append(f"{root}: not accessible ({type(exc).__name__})")
+                continue
+            for full, shown in items:
+                if full.is_symlink():
+                    self.skipped.append(f"{shown}: symbolic link not followed")
+                    continue
+                if shown == IGNORE_FILE or self.ignored(None, shown):
+                    continue
+                try:
+                    self.scan_file(full, shown)
+                except Exception as exc:  # contain any failure to this file
+                    self.errors.append(
+                        f"{shown}: could not inspect ({type(exc).__name__})"
+                    )
+            # Ignore entries apply only within the folder they came from.
+            self.ignore = []
 
     def scan_file(self, full: Path, shown: str) -> None:
         self.scanned += 1
@@ -309,15 +537,17 @@ class Scanner:
             self.pdf(full, shown)
         elif suffix in {".jpg", ".jpeg", ".tif", ".tiff", ".heic"}:
             self.image(full, shown)
-        elif suffix in TEXT_SUFFIXES or name.startswith(".env") or not suffix:
-            data = self.read_limited(full, shown)
-            if data is None:
+        elif suffix in TEXT_SUFFIXES or name.startswith(".env"):
+            if full.stat().st_size > MAX_TEXT_BYTES:
+                self.incomplete.append(f"{shown}: larger than {MAX_TEXT_BYTES} bytes")
                 return
-            if b"\x00" in data[:4096]:
-                self.skipped.append(f"{shown}: binary file not inspected")
+            text = decode(full.read_bytes())
+            if text is None:
+                self.incomplete.append(f"{shown}: not readable as text")
                 return
-            text = data.decode("utf-8", errors="replace")
-            self.text(text, shown)
+            config = suffix in CONFIG_SUFFIXES or name.startswith(".env")
+            allow = suffix not in NO_ALLOW_SUFFIXES
+            self.text(text, shown, allow=allow, config=config)
             if suffix in {".html", ".htm"}:
                 self.html(text, shown)
             if suffix == ".map" or (
@@ -328,47 +558,51 @@ class Scanner:
         else:
             self.skipped.append(f"{shown}: file type not inspected")
 
-    def read_limited(self, full: Path, shown: str) -> bytes | None:
-        size = full.stat().st_size
-        if size > MAX_TEXT_BYTES:
-            self.skipped.append(f"{shown}: larger than {MAX_TEXT_BYTES} bytes")
-            return None
-        return full.read_bytes()
-
     # Rules ---------------------------------------------------------------
 
     def sensitive_name(self, name: str, suffix: str, shown: str) -> None:
         if name in SAFE_ENV_NAMES:
             return
-        reason = SENSITIVE_NAMES.get(name)
+        reason = SENSITIVE_NAMES.get(name) or SENSITIVE_SUFFIXES.get(suffix)
         if reason is None and name.startswith(".env."):
             reason = SENSITIVE_NAMES[".env"]
-        if reason is None:
-            reason = SENSITIVE_SUFFIXES.get(suffix)
         if reason:
-            severity = (
-                "medium" if suffix in {".db", ".sqlite", ".sqlite3", ".bak"} else "high"
+            self.add(Finding("high", "sensitive-file", shown, "", reason))
+        elif suffix in REVIEW_SUFFIXES:
+            self.add(
+                Finding("medium", "sensitive-file", shown, "", REVIEW_SUFFIXES[suffix])
             )
-            self.add(Finding(severity, "sensitive-file", shown, "", reason))
 
-    def text(self, text: str, shown: str, where: str = "") -> None:
+    def text(
+        self,
+        text: str,
+        shown: str,
+        where: str = "",
+        allow: bool = False,
+        config: bool = False,
+    ) -> None:
         emails: list[str] = []
-        first_email: str | None = None
+        first_email = ""
         for number, line in enumerate(text.splitlines(), 1):
-            if ALLOW_MARKER in line:
+            if allow and ALLOW.search(line):
                 continue
             location = f"{where}, line {number}" if where else f"line {number}"
             for rule, label, pattern in SECRET_PATTERNS:
                 for match in pattern.finditer(line):
                     self.add(
-                        Finding(
-                            "high", rule, shown, location, label, redact(match.group(0))
-                        )
+                        Finding("high", rule, shown, location, label, redact(match[0]))
                     )
             for match in ASSIGNMENT.finditer(line):
-                value = match.group("value")
-                if PLACEHOLDER.match(value) or any(
-                    p.search(value) for _, _, p in SECRET_PATTERNS
+                if match["bare"] is not None and not config:
+                    continue
+                value = (match["dq"] or match["sq"] or match["bare"] or "").strip()
+                if (
+                    len(value) < 8
+                    or not credential_name(match["name"])
+                    or PLACEHOLDER.match(value)
+                    or REFERENCE.search(value)
+                    or PLAIN_URL.match(value)
+                    or any(p.search(value) for _, _, p in SECRET_PATTERNS)
                 ):
                     continue
                 self.add(
@@ -377,7 +611,7 @@ class Scanner:
                         "credential-assignment",
                         shown,
                         location,
-                        f"Value assigned to {match.group('name')}",
+                        f"Value assigned to {match['name']}",
                         redact(value),
                     )
                 )
@@ -389,11 +623,11 @@ class Scanner:
                         shown,
                         location,
                         "Number in US Social Security number format",
-                        redact(match.group(0)),
+                        redact(match[0]),
                     )
                 )
             for match in CARD.finditer(line):
-                if luhn(match.group(0)):
+                if luhn(match[0]):
                     self.add(
                         Finding(
                             "high",
@@ -401,18 +635,19 @@ class Scanner:
                             shown,
                             location,
                             "Number that passes the payment card checksum",
-                            redact(match.group(0)),
+                            redact(match[0]),
                         )
                     )
-            emails += [
-                m.group(0)
+            found = [
+                m[0]
                 for m in EMAIL.finditer(line)
-                if not m.group(0).lower().endswith(EXAMPLE_EMAIL_DOMAINS)
+                if not m[0].lower().endswith(EXAMPLE_EMAIL_DOMAINS)
             ]
-            if emails and first_email is None:
+            if found and not emails:
                 first_email = location
+            emails += found
         if emails:
-            local, _, domain = emails[0].partition("@")
+            user, _, domain = emails[0].partition("@")
             self.add(
                 Finding(
                     "low",
@@ -421,7 +656,7 @@ class Scanner:
                     f"first at {first_email}",
                     f"{len(emails)} email address(es), {len(set(emails))} distinct; "
                     "check that viewers may see them",
-                    f"{local[:2]}...@{domain}",
+                    f"{user[:2]}...@{domain}",
                 )
             )
 
@@ -429,7 +664,7 @@ class Scanner:
         for match in re.finditer(
             r"<script\b([^>]*)>(.*?)</script>", text, re.IGNORECASE | re.DOTALL
         ):
-            attributes, body = match.group(1), match.group(2)
+            attributes, body = match[1], match[2]
             size = len(body.encode("utf-8"))
             is_data = re.search(
                 r"type\s*=\s*[\"']application/(?:ld\+)?json", attributes
@@ -453,8 +688,8 @@ class Scanner:
                     )
                 )
         for match in re.finditer(r"<!--(.*?)-->", text, re.DOTALL):
-            body = match.group(1).strip()
-            if len(body) >= 40:
+            length = len(match[1].strip())
+            if length >= 40:
                 line = text.count("\n", 0, match.start()) + 1
                 self.add(
                     Finding(
@@ -462,14 +697,14 @@ class Scanner:
                         "html-comment",
                         shown,
                         f"line {line}",
-                        "HTML comment that viewers can read in the page source",
-                        body[:60].replace("\n", " "),
+                        f"HTML comment of {length} characters that viewers can read "
+                        "in the page source",
                     )
                 )
         for match in re.finditer(
             r"data:[a-z]+/[a-z0-9.+-]+;base64,([A-Za-z0-9+/=]+)", text
         ):
-            if len(match.group(1)) > 200_000:
+            if len(match[1]) > 200_000:
                 line = text.count("\n", 0, match.start()) + 1
                 self.add(
                     Finding(
@@ -494,24 +729,43 @@ class Scanner:
 
     def office(self, full: Path, shown: str) -> None:
         with zipfile.ZipFile(full) as archive:
-            members = archive.infolist()
-            total = sum(m.file_size for m in members)
-            if total > MAX_ARCHIVE_BYTES:
-                self.skipped.append(f"{shown}: unpacked size too large to inspect")
+            infos = archive.infolist()
+            if sum(i.file_size for i in infos) > MAX_ARCHIVE_BYTES:
+                self.incomplete.append(f"{shown}: unpacked size too large to inspect")
                 return
-            names = {m.filename for m in members}
+            names = sorted(i.filename for i in infos)
+            cache: dict[str, ET.Element | None] = {}
 
-            def read(member: str) -> str:
-                info = archive.getinfo(member)
-                if info.file_size > MAX_MEMBER_BYTES:
-                    self.skipped.append(f"{shown}: {member} too large to inspect")
-                    return ""
-                return archive.read(member).decode("utf-8", errors="replace")
+            def tree(member: str) -> ET.Element | None:
+                if member in cache:
+                    return cache[member]
+                result: ET.Element | None = None
+                if member in names:
+                    info = archive.getinfo(member)
+                    if info.file_size > MAX_MEMBER_BYTES:
+                        self.incomplete.append(
+                            f"{shown}: {member} too large to inspect"
+                        )
+                    else:
+                        data = archive.read(member)
+                        # Office parts never declare entities; refusing them
+                        # avoids entity-expansion attacks.
+                        if b"<!DOCTYPE" in data or b"<!ENTITY" in data:
+                            self.incomplete.append(f"{shown}: {member} declares a DTD")
+                        else:
+                            try:
+                                result = ET.fromstring(data)
+                            except ET.ParseError:
+                                self.incomplete.append(
+                                    f"{shown}: {member} is malformed"
+                                )
+                cache[member] = result
+                return result
 
-            self.office_metadata(names, read, shown)
+            self.office_metadata(tree, shown)
             if any(n.endswith("vbaProject.bin") for n in names):
                 self.add(Finding("medium", "macros", shown, "", "File contains macros"))
-            embedded = sorted(n for n in names if "/embeddings/" in n)
+            embedded = [n for n in names if "/embeddings/" in n]
             if embedded:
                 self.add(
                     Finding(
@@ -521,60 +775,79 @@ class Scanner:
                         "",
                         f"{len(embedded)} embedded file(s) or object(s), which can "
                         "carry their own data",
-                        embedded[0],
                     )
                 )
+            self.office_comments(names, tree, shown)
             kind = full.suffix.lower()[1:3]
             if kind == "do":
-                self.word(names, read, shown)
+                self.word(names, tree, shown)
             elif kind == "xl":
-                self.excel(names, read, shown)
-            elif kind in {"pp", "po"}:
-                self.powerpoint(names, read, shown)
+                self.excel(names, tree, shown)
+            else:
+                self.powerpoint(names, tree, shown)
 
-    def office_metadata(
-        self, names: set[str], read: Callable[[str], str], shown: str
-    ) -> None:
-        values = []
-        if "docProps/core.xml" in names:
-            core = read("docProps/core.xml")
-            for tag in ["creator", "lastModifiedBy"]:
-                found = re.search(rf"<(?:\w+:)?{tag}>([^<]+)<", core)
-                if found:
-                    values.append(f"{tag}={found.group(1).strip()}")
-        if "docProps/app.xml" in names:
-            app = read("docProps/app.xml")
-            for tag in ["Company", "Manager"]:
-                found = re.search(rf"<{tag}>([^<]+)<", app)
-                if found:
-                    values.append(f"{tag}={found.group(1).strip()}")
-        if "docProps/custom.xml" in names:
-            values.append("custom properties present")
-        if values:
+    def scan_part(self, tree: PartReader, member: str, shown: str) -> None:
+        root = tree(member)
+        if root is not None:
+            self.text(extract(root), shown, member)
+
+    def office_metadata(self, tree: PartReader, shown: str) -> None:
+        stored: list[str] = []
+        values: list[str] = []
+        wanted = {
+            "docProps/core.xml": {"creator", "lastModifiedBy"},
+            "docProps/app.xml": {"Company", "Manager"},
+        }
+        for member, fields in wanted.items():
+            root = tree(member)
+            for element in root.iter() if root is not None else []:
+                if local(element.tag) in fields and (element.text or "").strip():
+                    stored.append(local(element.tag))
+                    values.append(element.text or "")
+        custom = tree("docProps/custom.xml")
+        if custom is not None:
+            stored.append("custom properties")
+            values += [e.text for e in custom.iter() if e.text and e.text.strip()]
+        if stored:
             self.add(
                 Finding(
                     "low",
                     "document-metadata",
                     shown,
                     "document properties",
-                    "Names or properties stored in the file",
-                    "; ".join(values)[:120],
+                    "Stored properties: " + ", ".join(dict.fromkeys(stored)),
                 )
             )
+            self.text("\n".join(values), shown, "document properties")
 
-    def xml_text(self, xml: str) -> str:
-        # Keep cells, paragraphs, and line breaks apart so values don't run
-        # together, without splitting text that Word stores in several runs.
-        xml = re.sub(r"</(?:\w+:)?(?:p|si|row|tr)>", "\n", xml)
-        xml = re.sub(r"</c>|<(?:\w+:)?(?:br|tab)\b[^>]*/>", "\t", xml)
-        return re.sub(r"<[^>]+>", "", xml)
+    def office_comments(self, names: list[str], tree: PartReader, shown: str) -> None:
+        parts = [
+            n
+            for n in names
+            if n.endswith(".xml")
+            and "/_rels/" not in n
+            and "comment" in n.rsplit("/", 1)[-1].lower()
+            and "author" not in n.rsplit("/", 1)[-1].lower()
+        ]
+        count = 0
+        for member in parts:
+            root = tree(member)
+            if root is None:
+                continue
+            count += sum(
+                local(e.tag) in {"comment", "threadedComment", "cm"}
+                for e in root.iter()
+            )
+            self.text(extract(root), shown, member)
+        if count:
+            self.add(Finding("medium", "comments", shown, "", f"{count} comment(s)"))
 
-    def word(self, names: set[str], read: Callable[[str], str], shown: str) -> None:
-        document = read("word/document.xml") if "word/document.xml" in names else ""
-        insertions = len(re.findall(r"<w:ins\b", document))
-        deletions = len(re.findall(r"<w:del\b", document))
+    def word(self, names: list[str], tree: PartReader, shown: str) -> None:
+        document = tree("word/document.xml")
+        elements = list(document.iter()) if document is not None else []
+        insertions = sum(local(e.tag) == "ins" for e in elements)
+        deletions = sum(local(e.tag) == "del" for e in elements)
         if insertions or deletions:
-            deleted = " ".join(re.findall(r"<w:delText[^>]*>([^<]*)<", document))
             self.add(
                 Finding(
                     "medium",
@@ -582,61 +855,71 @@ class Scanner:
                     shown,
                     "document body",
                     f"{insertions} tracked insertion(s) and {deletions} deletion(s). "
-                    "Deleted text stays readable until changes are accepted or "
+                    "Deleted text stays in the file until changes are accepted or "
                     "rejected",
-                    deleted[:80],
                 )
             )
-        if re.search(r"<w:vanish\s*/?>", document):
-            self.add(
-                Finding(
-                    "medium",
-                    "hidden-text",
-                    shown,
-                    "document body",
-                    "Text formatted as hidden",
-                )
-            )
-        comments = [n for n in names if re.fullmatch(r"word/comments\w*\.xml", n)]
-        count = sum(len(re.findall(r"<w:comment\b", read(n))) for n in comments)
-        if count:
-            self.add(Finding("medium", "comments", shown, "", f"{count} comment(s)"))
-        for member in sorted(names):
-            if re.fullmatch(
-                r"word/(?:document|comments\w*|footnotes|endnotes|header\d*|footer\d*)\.xml",
-                member,
+        for member, where in [
+            ("word/document.xml", "document body"),
+            ("word/styles.xml", "styles"),
+        ]:
+            root = tree(member)
+            if root is not None and any(
+                local(e.tag) == "vanish"
+                and (attribute(e, "val") or "true").lower() in TRUE_VALUES
+                for e in root.iter()
             ):
-                self.text(self.xml_text(read(member)), shown, member)
+                self.add(
+                    Finding("medium", "hidden-text", shown, where, "Text set as hidden")
+                )
+        for member in names:
+            if re.fullmatch(
+                r"word/(?:document|footnotes|endnotes|header\d*|footer\d*)\.xml", member
+            ):
+                self.scan_part(tree, member, shown)
 
-    def excel(self, names: set[str], read: Callable[[str], str], shown: str) -> None:
-        workbook = read("xl/workbook.xml") if "xl/workbook.xml" in names else ""
-        for match in re.finditer(r"<sheet\b[^>]*>", workbook):
-            tag = match.group(0)
-            state = re.search(r'state="(hidden|veryHidden)"', tag)
-            if state:
-                title = re.search(r'name="([^"]*)"', tag)
+    def excel(self, names: list[str], tree: PartReader, shown: str) -> None:
+        workbook = tree("xl/workbook.xml")
+        for element in workbook.iter() if workbook is not None else []:
+            name = local(element.tag)
+            if name == "sheet":
+                state = attribute(element, "state")
+                if state in {"hidden", "veryHidden"}:
+                    title = attribute(element, "name") or "?"
+                    self.add(
+                        Finding(
+                            "medium" if state == "hidden" else "high",
+                            "hidden-sheet",
+                            shown,
+                            f"sheet {title}",
+                            "Hidden sheet"
+                            if state == "hidden"
+                            else "Very hidden sheet, which Excel's Unhide menu does "
+                            "not show",
+                        )
+                    )
+            elif name == "definedName" and (
+                (attribute(element, "hidden") or "").lower() in TRUE_VALUES
+            ):
                 self.add(
                     Finding(
-                        "medium" if state.group(1) == "hidden" else "high",
-                        "hidden-sheet",
-                        shown,
-                        f"sheet {title.group(1) if title else '?'}",
-                        "Hidden sheet"
-                        if state.group(1) == "hidden"
-                        else "Very hidden sheet, which Excel's Unhide menu does "
-                        "not show",
+                        "low", "hidden-name", shown, "workbook", "Hidden defined names"
                     )
                 )
-        if re.search(r"<definedName\b[^>]*hidden=\"(?:1|true)\"", workbook):
-            self.add(
-                Finding("low", "hidden-name", shown, "workbook", "Hidden defined names")
-            )
-        for member in sorted(
-            n for n in names if re.fullmatch(r"xl/worksheets/sheet\d+\.xml", n)
-        ):
-            sheet = read(member)
-            rows = len(re.findall(r"<row\b[^>]*hidden=\"(?:1|true)\"", sheet))
-            columns = len(re.findall(r"<col\b[^>]*hidden=\"(?:1|true)\"", sheet))
+        for member in names:
+            if not re.fullmatch(r"xl/worksheets/[^/]+\.xml", member):
+                continue
+            sheet = tree(member)
+            if sheet is None:
+                continue
+            rows = columns = 0
+            filtered = False
+            for element in sheet.iter():
+                name = local(element.tag)
+                hidden = (attribute(element, "hidden") or "").lower() in TRUE_VALUES
+                rows += name == "row" and hidden
+                columns += name == "col" and hidden
+                filtered = filtered or name == "autoFilter"
             if rows or columns:
                 self.add(
                     Finding(
@@ -647,7 +930,7 @@ class Scanner:
                         f"{rows} hidden row(s) and {columns} hidden column group(s)",
                     )
                 )
-            if "<autoFilter" in sheet:
+            if filtered:
                 self.add(
                     Finding(
                         "low",
@@ -657,18 +940,7 @@ class Scanner:
                         "Filter in place; filtered-out rows are still in the file",
                     )
                 )
-            self.text(self.xml_text(sheet), shown, member)
-        comments = [
-            n
-            for n in names
-            if re.fullmatch(r"xl/(?:comments\d*|threadedComments/\w+)\.xml", n)
-        ]
-        if comments:
-            self.add(
-                Finding(
-                    "medium", "comments", shown, "", f"{len(comments)} comment part(s)"
-                )
-            )
+            self.text(extract(sheet), shown, member)
         if any(n.startswith("xl/externalLinks/") for n in names):
             self.add(
                 Finding(
@@ -690,24 +962,35 @@ class Scanner:
                     "Pivot table cache, which keeps a copy of the source data",
                 )
             )
-        for member in ["xl/sharedStrings.xml"] + comments:
-            if member in names:
-                self.text(self.xml_text(read(member)), shown, member)
+        self.scan_part(tree, "xl/sharedStrings.xml", shown)
 
-    def powerpoint(
-        self, names: set[str], read: Callable[[str], str], shown: str
-    ) -> None:
-        notes = sorted(
-            n for n in names if re.fullmatch(r"ppt/notesSlides/notesSlide\d+\.xml", n)
-        )
-        with_text = []
-        for member in notes:
-            body = self.xml_text(read(member))
-            words = re.sub(r"\s+", " ", body).strip()
-            # Notes pages often hold only a slide number placeholder.
-            if len(re.sub(r"[\d\s]", "", words)) >= 3:
-                with_text.append(member)
-                self.text(body, shown, member)
+    def powerpoint(self, names: list[str], tree: PartReader, shown: str) -> None:
+        with_text = 0
+        with_pictures = 0
+        for member in names:
+            if not re.fullmatch(r"ppt/notesSlides/[^/]+\.xml", member):
+                continue
+            root = tree(member)
+            if root is None:
+                continue
+            # Scan everything first, so a note that is only a number is still
+            # checked for personal data.
+            self.text(extract(root), shown, member)
+            for shape in root.iter():
+                if local(shape.tag) != "sp":
+                    continue
+                kind = next(
+                    (
+                        attribute(e, "type")
+                        for e in shape.iter()
+                        if local(e.tag) == "ph"
+                    ),
+                    None,
+                )
+                if kind not in NOTES_PLACEHOLDERS and extract(shape).strip():
+                    with_text += 1
+                    break
+            with_pictures += any(local(e.tag) == "pic" for e in root.iter())
         if with_text:
             self.add(
                 Finding(
@@ -715,19 +998,31 @@ class Scanner:
                     "speaker-notes",
                     shown,
                     "",
-                    f"{len(with_text)} slide(s) with speaker notes, which travel "
+                    f"{with_text} slide(s) with speaker notes, which travel "
                     "with the file",
                 )
             )
-        slides = sorted(
-            n for n in names if re.fullmatch(r"ppt/slides/slide\d+\.xml", n)
-        )
+        if with_pictures:
+            self.add(
+                Finding(
+                    "medium",
+                    "notes-pictures",
+                    shown,
+                    "",
+                    f"{with_pictures} notes page(s) with pictures, which text "
+                    "checks can't read",
+                )
+            )
         hidden = []
-        for member in slides:
-            slide = read(member)
-            if re.search(r"<p:sld\b[^>]*\bshow=\"(?:0|false)\"", slide):
+        for member in names:
+            if not re.fullmatch(r"ppt/slides/[^/]+\.xml", member):
+                continue
+            slide = tree(member)
+            if slide is None:
+                continue
+            if (attribute(slide, "show") or "").lower() in {"0", "false", "off"}:
                 hidden.append(member.rsplit("/", 1)[1])
-            self.text(self.xml_text(slide), shown, member)
+            self.text(extract(slide), shown, member)
         if hidden:
             self.add(
                 Finding(
@@ -738,42 +1033,32 @@ class Scanner:
                     f"{len(hidden)} hidden slide(s), which are still in the file",
                 )
             )
-        comments = [
-            n
-            for n in names
-            if re.fullmatch(r"ppt/(?:comments/\w+|comments\d*)\.xml", n)
-        ]
-        if comments:
-            self.add(
-                Finding(
-                    "medium", "comments", shown, "", f"{len(comments)} comment part(s)"
-                )
-            )
-            for member in comments:
-                self.text(self.xml_text(read(member)), shown, member)
 
     # Other formats -------------------------------------------------------
 
     def pdf(self, full: Path, shown: str) -> None:
-        data = self.read_limited(full, shown)
-        if data is None:
+        if full.stat().st_size > MAX_TEXT_BYTES * 5:
+            self.incomplete.append(f"{shown}: too large to inspect")
             return
-        values = []
-        for key in [b"Author", b"Creator", b"Producer"]:
-            found = re.search(rb"/" + key + rb"\s*\(([^)]{1,80})\)", data)
+        data = full.read_bytes()
+        stored: list[str] = []
+        values: list[str] = []
+        for key in ["Author", "Creator", "Producer", "Title", "Subject", "Keywords"]:
+            found = re.search(rb"/" + key.encode() + rb"\s*\(([^)]{1,512})\)", data)
             if found:
-                values.append(f"{key.decode()}={found.group(1).decode('latin-1')}")
-        if values:
+                stored.append(key)
+                values.append(found[1].decode("latin-1"))
+        if stored:
             self.add(
                 Finding(
                     "low",
                     "document-metadata",
                     shown,
                     "document properties",
-                    "Names or tools stored in the PDF",
-                    "; ".join(values)[:120],
+                    "Stored properties: " + ", ".join(stored),
                 )
             )
+            self.text("\n".join(values), shown, "document properties")
         if b"/Annot" in data:
             self.add(
                 Finding(
@@ -797,8 +1082,8 @@ class Scanner:
         if b"/JavaScript" in data or b"/JS" in data:
             self.add(Finding("medium", "macros", shown, "", "PDF contains scripts"))
         self.skipped.append(
-            f"{shown}: PDF text was not extracted; compressed text and redaction "
-            "under black boxes were not checked"
+            f"{shown}: PDF page text not extracted; text in compressed content and "
+            "under black boxes was not checked"
         )
 
     def image(self, full: Path, shown: str) -> None:
@@ -819,29 +1104,19 @@ class Scanner:
             )
 
 
-def load_ignore(paths: list[Path], extra: list[str]) -> list[str]:
-    entries = list(extra)
-    for path in paths:
-        base = path if path.is_dir() else path.parent
-        ignore = base / IGNORE_FILE
-        if ignore.is_file():
-            for line in ignore.read_text(encoding="utf-8").splitlines():
-                line = line.strip()
-                if line and not line.startswith("#"):
-                    entries.append(line)
-    return entries
+def counts(scanner: Scanner) -> dict[str, int]:
+    return {s: scanner.severities.count(s) for s in SEVERITIES}
 
 
-def report(scanner: Scanner, fail_on: str) -> str:
-    lines = []
+def report(scanner: Scanner) -> str:
+    total = counts(scanner)
+    lines = [
+        f"Scanned {scanner.scanned} file(s): {total['high']} high, "
+        f"{total['medium']} medium, {total['low']} low."
+    ]
     order = sorted(
         scanner.findings,
         key=lambda f: (-SEVERITIES[f.severity], f.path, f.rule, f.location),
-    )
-    counts = {s: sum(f.severity == s for f in order) for s in SEVERITIES}
-    lines.append(
-        f"Scanned {scanner.scanned} file(s): {counts['high']} high, "
-        f"{counts['medium']} medium, {counts['low']} low."
     )
     for finding in order:
         where = f" ({finding.location})" if finding.location else ""
@@ -850,12 +1125,16 @@ def report(scanner: Scanner, fail_on: str) -> str:
             f"{finding.severity.upper():6} {finding.rule}: {finding.path}{where}: "
             f"{finding.message}{excerpt}"
         )
-    if scanner.skipped:
-        lines.append("Not inspected:")
-        lines.extend(f"  {item}" for item in scanner.skipped)
-    if scanner.errors:
-        lines.append("Errors:")
-        lines.extend(f"  {item}" for item in scanner.errors)
+    for (path, rule), extra in sorted(scanner.truncated.items()):
+        lines.append(f"       {rule}: {path}: {extra} more not listed")
+    for title, items in [
+        ("Not fully inspected:", scanner.incomplete),
+        ("Not inspected:", scanner.skipped),
+        ("Errors:", scanner.errors),
+    ]:
+        if items:
+            lines.append(title)
+            lines.extend(f"  {item}" for item in items)
     lines.append(
         "This scan checks patterns in the files given. It does not check Git "
         "history, hosting or sharing settings, or data the page loads at run time, "
@@ -865,7 +1144,7 @@ def report(scanner: Scanner, fail_on: str) -> str:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    parser = argparse.ArgumentParser(description=(__doc__ or "").split("\n\n")[0])
     parser.add_argument("paths", nargs="+", type=Path)
     parser.add_argument("--json", action="store_true", help="print JSON")
     parser.add_argument(
@@ -875,21 +1154,32 @@ def main(argv: list[str] | None = None) -> int:
         help="lowest severity that makes the exit status 1 (default: high)",
     )
     parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="exit 2 when a supported file couldn't be fully inspected",
+    )
+    parser.add_argument(
         "--ignore",
         action="append",
         default=[],
         metavar="PATTERN",
-        help="path glob, or rule:path-glob, to leave out (repeatable)",
+        help="path glob, or rule:path-glob, to leave out of every path (repeatable)",
     )
     args = parser.parse_args(argv)
-    scanner = Scanner(load_ignore(args.paths, args.ignore))
+    scanner = Scanner(args.ignore)
     scanner.scan(args.paths)
     if args.json:
         print(
             json.dumps(
                 {
                     "scanned": scanner.scanned,
+                    "counts": counts(scanner),
                     "findings": [asdict(f) for f in scanner.findings],
+                    "not_listed": [
+                        {"path": path, "rule": rule, "count": extra}
+                        for (path, rule), extra in sorted(scanner.truncated.items())
+                    ],
+                    "incomplete": scanner.incomplete,
                     "skipped": scanner.skipped,
                     "errors": scanner.errors,
                 },
@@ -897,13 +1187,11 @@ def main(argv: list[str] | None = None) -> int:
             )
         )
     else:
-        print(report(scanner, args.fail_on))
-    if scanner.errors:
+        print(report(scanner))
+    if scanner.errors or (args.strict and scanner.incomplete):
         return 2
     threshold = SEVERITIES[args.fail_on]
-    return (
-        1 if any(SEVERITIES[f.severity] >= threshold for f in scanner.findings) else 0
-    )
+    return 1 if any(SEVERITIES[s] >= threshold for s in scanner.severities) else 0
 
 
 if __name__ == "__main__":

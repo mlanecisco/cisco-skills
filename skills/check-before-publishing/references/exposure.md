@@ -20,11 +20,11 @@ A GitHub Pages site is public on the internet, even when the repository is priva
 
 ## Confluence pages
 
-A page inherits its space's permissions and can add its own restrictions. Check who can view the space, whether the page has view restrictions, and whether anonymous or public access is turned on for the site or space. Child pages and attachments follow the parent's restrictions unless set otherwise. An HTML macro embedding a hosted dashboard shows that dashboard to page viewers, but the dashboard's own hosting decides who else can reach it.
+A page inherits its space's permissions and can add its own restrictions. Check who can view the space, whether the page has view restrictions, and whether anonymous or public access is turned on for the site or space. Child pages and attachments follow the parent's restrictions unless set otherwise. Check separately whether the page has an active public link. A public link lets anyone with it view the page, and it overrides page, parent, space, and site restrictions, so a page can look restricted while its public link is open. Opening the ordinary page address while signed out doesn't test the public link. An HTML macro embedding a hosted dashboard shows that dashboard to page viewers, but the dashboard's own hosting decides who else can reach it.
 
 ## Shared files and links
 
-For OneDrive, SharePoint, Box, Webex, and similar services, check each link's setting. "Anyone with the link" can usually be opened by people outside Cisco and forwarded further. "People in the organization" and "specific people" are narrower. Check whether the link allows download or editing, and whether it expires. Files attached to email or chat can't be recalled once delivered.
+For OneDrive, SharePoint, Box, Webex, and similar services, check each link's setting. "Anyone with the link" can usually be opened by people outside Cisco and forwarded further. "People in the organization" and "specific people" are narrower. Check whether the link allows download or editing, and whether it expires. Don't rely on recalling a file sent by email or chat. Some services can recall a message in limited cases, such as Outlook within the same organization, but recall can't remove copies that were downloaded, forwarded, or delivered outside the organization.
 
 ## Hosted apps and dashboards
 
@@ -33,3 +33,12 @@ For an app on another host, find out who can open it. Check whether the host req
 ## Reporting
 
 Report the destination, the access you found and how you found it, whether that access matches the intended audience, and what you couldn't confirm.
+
+## Sources
+
+Checked 2026-10-30:
+
+- GitHub, [Changing the visibility of your GitHub Pages site](https://docs.github.com/en/enterprise-cloud%40latest/pages/getting-started-with-github-pages/changing-the-visibility-of-your-github-pages-site)
+- Atlassian, [How secure are public links?](https://support.atlassian.com/confluence-cloud/docs/how-secure-are-public-links/)
+- Microsoft, [Shareable links: Anyone, Specific people, or People in your organization](https://learn.microsoft.com/en-us/sharepoint/shareable-links-anyone-specific-people-organization)
+- Microsoft, [Recall or replace an email message](https://support.microsoft.com/en-us/outlook/can-i-undo-recall-a-sent-email)

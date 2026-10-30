@@ -8,12 +8,12 @@ A skill reminds the assistant to check. A required check in the repository block
 2. Copy [the scanner](../scripts/scan_release.py) to `.github/publish-check/scan_release.py`.
 3. Set the variables at the top of the workflow:
    - `SCAN_PATH`: the folder that gets published, or `.` for the whole repository.
-   - `FAIL_ON`: `high` to block credentials and personal data, `medium` to also block hidden content and raw data in pages.
+   - `FAIL_ON`: `high` blocks credentials, sensitive files such as keys, card numbers, national ID numbers, and very hidden sheets. `medium` also blocks hidden sheets, rows, and slides, speaker notes, comments, tracked changes, macros, and raw data in pages. Email addresses and document properties are `low`, so blocking them needs `low`, with reviewed exceptions for public contact addresses.
    - `EXPECTED_VISIBILITY`: `private`, `internal`, or `public`, as the owner intends.
 4. Run the scanner locally on the same path before committing, so the first run doesn't fail on findings already there. Review each finding with the user.
 5. Commit the files on a branch and open a pull request if the user asked for that, so the check runs on the host before anything merges.
 
-The workflow uses `actions/checkout` and `actions/setup-python` at the versions shown. If the organization pins actions to commit SHAs or requires approved versions, follow that rule.
+The workflow runs the scanner with `--strict`, so a supported file it can't fully inspect, such as one that is too large or malformed, fails the check instead of passing unexamined. It also fails if GitHub doesn't report the repository's visibility. The workflow uses `actions/checkout` and `actions/setup-python` at the versions shown. If the organization pins actions to commit SHAs or requires approved versions, follow that rule.
 
 ## Make it required
 
@@ -25,10 +25,10 @@ If the repository deploys a site, have the deployment wait for the check. In a P
 
 Some findings are intended: a published sample value, a public contact address, a test fixture. Record each accepted finding so that the check stays meaningful:
 
-- Add `publish-check: allow` to the end of that line, in a comment, for a single line.
-- Add an entry to `.publishcheckignore` in the scanned folder for a whole file or folder. Each line is a path pattern such as `docs/examples/*`, or a rule and a pattern such as `email-address:contacts/*`. Lines starting with `#` are comments; use one to say why.
+- For a single line in a file that has comments, end the line with a comment holding only the marker, such as `# publish-check: allow` or `// publish-check: allow`. The marker counts only as a trailing comment, so text inside data can't switch the check off. The marker isn't read in Office files, PDFs, JSON, CSV, Markdown, or plain text, which have no comment syntax; use the ignore file for them.
+- For a whole file or folder, add an entry to `.publishcheckignore` in the scanned folder. Each line is a path pattern such as `docs/examples/*`, a folder ending in `/` such as `samples/`, or a rule and a pattern such as `email-address:contacts/*`. Paths are relative to the folder that holds the ignore file. When a single file is scanned, the nearest ignore file above it applies. Lines starting with `#` are comments; use one to say why.
 
-Changes to the ignore file deserve the same review as code. Where the repository uses code owners, assign the ignore file and the workflow to the owners.
+Changes to the ignore file deserve the same review as code. Where the repository uses code owners, assign the ignore file, the workflow, and the copied scanner to them. A required check runs whatever version of these files the pull request contains, so it can't protect itself from an unreviewed change to them.
 
 ## Limits
 

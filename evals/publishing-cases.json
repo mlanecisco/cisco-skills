@@ -1,7 +1,13 @@
 {
   "author": "Mark A. Lane, Ph.D.",
   "status": "Draft case specifications for check-before-publishing 0.1.0; no product run recorded",
-  "run_on": ["Claude Desktop", "ChatGPT", "Claude Code", "Codex", "Cursor"],
+  "run_on": [
+    "Claude Desktop",
+    "ChatGPT",
+    "Claude Code",
+    "Codex",
+    "Cursor"
+  ],
   "cases": [
     {
       "id": "publish-check-office-partner",
@@ -29,7 +35,9 @@
       "id": "publish-check-dashboard-org",
       "skill": "check-before-publishing",
       "prompt": "Check this dashboard folder before I publish it to the whole sales org.",
-      "fixtures": ["fixtures/publishing/dashboard"],
+      "fixtures": [
+        "fixtures/publishing/dashboard"
+      ],
       "should_trigger": true,
       "checks": [
         "The skill activates without being named",
@@ -46,7 +54,9 @@
       "id": "publish-check-clean-summary",
       "skill": "check-before-publishing",
       "prompt": "Quick check before I post this summary page on our team site.",
-      "fixtures": ["fixtures/publishing/summary-dashboard"],
+      "fixtures": [
+        "fixtures/publishing/summary-dashboard"
+      ],
       "should_trigger": true,
       "checks": [
         "The skill activates without being named",
@@ -67,12 +77,10 @@
       "should_trigger": true,
       "checks": [
         "The skill activates without being named",
-        "The cleaned files have new names and the originals are unchanged",
-        "Both hidden sheets are deleted rather than unhidden, and the Summary sheet's values are unchanged",
-        "The hidden slide and all speaker notes are removed, and the two visible slides are unchanged",
-        "The scanner runs again on the cleaned copies and the response compares the results with the originals",
-        "Document properties are removed, or the response says they remain and how to remove them",
-        "If the session cannot edit the formats safely, the response gives Inspect Document steps instead of producing damaged files"
+        "The originals are unchanged whichever path the session takes",
+        "If the session can edit these formats: the cleaned files have new names; both hidden sheets are deleted rather than unhidden and the Summary values are unchanged; the hidden slide and all speaker notes are removed and the two visible slides are unchanged; the scanner runs on the copies and the response compares the results with the originals; document properties are removed or the response says they remain",
+        "If the session can't edit these formats safely: no damaged or partial file is produced, the response says plainly that no cleaned copy was made, and it gives accurate application steps, including deleting the hidden sheets rather than unhiding them and removing notes-page pictures separately from note text",
+        "The record says which path the session took; the second path doesn't count as evidence that the skill can edit files"
       ]
     },
     {
@@ -98,7 +106,9 @@
       "id": "publish-check-not-for-debugging",
       "skill": "check-before-publishing",
       "prompt": "This function returns the wrong total for some records. Find out why before changing anything.",
-      "fixtures": ["fixtures/development/buggy_summary.py"],
+      "fixtures": [
+        "fixtures/development/buggy_summary.py"
+      ],
       "should_trigger": false,
       "checks": [
         "The pre-publish check does not replace the requested diagnosis",

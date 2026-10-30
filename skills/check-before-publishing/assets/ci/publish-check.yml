@@ -2,8 +2,9 @@
 # scripts/scan_release.py from the check-before-publishing skill to
 # .github/publish-check/scan_release.py in the same repository.
 #
-# The workflow fails when the scanner finds something at or above FAIL_ON, or
-# when the repository's visibility differs from EXPECTED_VISIBILITY. It only
+# The workflow fails when the scanner finds something at or above FAIL_ON,
+# when it can't fully inspect a file it supports, or when the repository's
+# visibility differs from EXPECTED_VISIBILITY or isn't reported. It only
 # blocks a merge or a deployment once a repository administrator makes it a
 # required check, and once any deployment job waits for it. See the skill's
 # enforcement reference.
@@ -43,10 +44,11 @@ jobs:
           VISIBILITY: ${{ github.event.repository.visibility }}
         run: |
           if [ -z "$VISIBILITY" ]; then
-            echo "::warning::Repository visibility was not reported; not checked."
+            echo "::error::Repository visibility was not reported, so it can't be checked."
+            exit 1
           elif [ "$VISIBILITY" != "$EXPECTED_VISIBILITY" ]; then
             echo "::error::Repository is $VISIBILITY; expected $EXPECTED_VISIBILITY."
             exit 1
           fi
       - name: Scan files
-        run: python -B .github/publish-check/scan_release.py "$SCAN_PATH" --fail-on "$FAIL_ON"
+        run: python -B .github/publish-check/scan_release.py "$SCAN_PATH" --fail-on "$FAIL_ON" --strict

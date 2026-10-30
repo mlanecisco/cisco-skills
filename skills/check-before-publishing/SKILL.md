@@ -28,7 +28,7 @@ python3 scripts/scan_release.py path/to/folder-or-file
 python3 scripts/scan_release.py path/to/folder --json
 ```
 
-It uses only the standard library, reads without writing, and redacts what it finds. Exit status 1 means it found something at or above `--fail-on` (default `high`); 2 means a path couldn't be read. If the project already uses a secret scanner, run that too. If the session can't run Python, inspect the files with the tools you have, and say plainly that the scan didn't run.
+It uses only the standard library, reads without writing, and redacts what it finds. Exit status 1 means it found something at or above `--fail-on` (default `high`); 2 means a path couldn't be read. Files it lists as not fully inspected weren't checked: review them by hand or report them as unchecked. If the project already uses a secret scanner, run that too. If the session can't run Python, inspect the files with the tools you have, and say plainly that the scan didn't run.
 
 Never repeat a full password, key, or token in chat, a report, or a file. Quote the redacted form.
 

@@ -24,7 +24,7 @@ Read the deleted text, the comments, and any embedded object. To clean, accept o
 
 Hidden content: hidden and very hidden sheets (very hidden sheets don't appear in the Unhide menu), hidden rows and columns, filtered-out rows, comments and notes, pivot caches that hold a copy of the source data, links to other workbooks with their cached values and file paths, hidden names, and document properties.
 
-The scanner reports each of those it can see in the file structure and checks cell text for secrets and personal data. It doesn't evaluate formulas or read pivot cache records.
+The scanner reports each of those it can see in the file structure, including comments in every location Excel and common libraries write them, and checks cell text for secrets and personal data. It doesn't evaluate formulas or read pivot cache records.
 
 Open each hidden sheet and look at what the hidden rows hold. To clean, delete the sheets, rows, and columns that shouldn't be shared, rather than hiding them. Refresh or remove pivot tables built on removed data, break external links, and run Inspect Document. If a pivot table must stay, check that its cache no longer holds the removed records.
 
@@ -34,7 +34,7 @@ Hidden content: speaker notes, hidden slides, comments, slides kept off screen, 
 
 The scanner reports notes, hidden slides, comments, properties, macros, and embedded objects, and checks slide and notes text.
 
-Read every slide's notes and every hidden slide. Notes often say things meant only for the presenter. To clean, delete hidden slides that shouldn't go, remove notes (Inspect Document can remove all of them at once), and check that each embedded chart's data is fit for the audience. If the user wants to keep their notes, export a copy without them for sharing.
+Read every slide's notes and every hidden slide. Notes often say things meant only for the presenter. The scanner also reports notes pages that hold pictures, which its text checks can't read. To clean, delete hidden slides that shouldn't go and remove the notes. Inspect Document removes note text, but not pictures on notes pages, so delete those separately and check the saved copy. Check that each embedded chart's data is fit for the audience. If the user wants to keep their notes, export a copy without them for sharing.
 
 ## PDF files
 
@@ -66,6 +66,17 @@ The scanner checks the files currently in the folder. It doesn't read Git histor
 
 CSV, JSON, and database files often hold more columns or rows than the deliverable needs. The scanner flags database and backup files and checks text data for personal data. Compare the columns with what the audience needs, and share an extract rather than the full export.
 
+## Files the scanner couldn't read
+
+The scanner lists files it couldn't fully inspect, such as very large files, malformed Office parts, and text it couldn't decode. Review those by hand or report them as unchecked. Don't count them as clean.
+
 ## Other scanners
 
 The bundled scanner is a small, dependency-free first pass. Where the project or the organization provides a dedicated tool, such as a secret scanner, a data loss prevention service, or GitHub secret scanning, use it as well and report both results. Don't install a new tool, or send files to an external service, without the user's agreement.
+
+## Sources
+
+Checked 2026-10-30:
+
+- Microsoft, [Remove hidden data and personal information by inspecting documents, presentations, or workbooks](https://support.microsoft.com/en-us/office/collab-files/remove-hidden-data-and-personal-information-by-inspecting-documents-presentations-or-workbooks)
+- Microsoft, [Vanish class (Open XML SDK)](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.wordprocessing.vanish?view=openxml-3.0.1)
