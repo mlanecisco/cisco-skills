@@ -377,7 +377,10 @@ class PublishCheckTests(unittest.TestCase):
         self.assertLess(time.monotonic() - start, 10)
 
     def test_url_password_is_masked_in_paths(self) -> None:
-        secret = "Q7v2kd9Lx3"
+        for secret in ["Q7v2kd9Lx3", "q7X!"]:
+            self.check_url_password_masked(secret)
+
+    def check_url_password_masked(self, secret: str) -> None:
         path = self.write(
             f"{secret}.txt", f"postgres://admin:{secret}@db.internal/app\n"
         )

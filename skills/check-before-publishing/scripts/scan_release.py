@@ -747,7 +747,8 @@ class Scanner:
                         Finding("high", rule, shown, location, label, redact(match[0])),
                         match[0],
                     )
-                    if "secret" in pattern.groupindex and len(match["secret"]) >= 6:
+                    # Keep every recognized password for masking, however short.
+                    if "secret" in pattern.groupindex:
                         self.detected.add(match["secret"])
             # A name inside a bare value already read is part of that value;
             # skipping it keeps overlapping candidates from rescanning the line.
