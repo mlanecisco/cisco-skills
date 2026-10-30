@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Partner enablement dashboard</title>
+<!-- TODO before launch: switch the data feed from the staging export to the
+     approved summary view. Ask Jordan for the service account. -->
+</head>
+<body>
+<h1>Partner enablement</h1>
+<label>Region <select id="region"></select></label>
+<table id="people"><thead><tr><th>Name</th><th>Status</th></tr></thead>
+<tbody></tbody></table>
+<p id="total"></p>
+<script id="records" type="application/json">
+[
+  {"name": "Avery Quinn", "email": "avery.quinn0@enablement.invalid", "region": "West", "status": "Done", "score": 60},
+  {"name": "Blake Patel", "email": "blake.patel1@enablement.invalid", "region": "East", "status": "Done", "score": 67},
+  {"name": "Casey Lee", "email": "casey.lee2@enablement.invalid", "region": "Central", "status": "Done", "score": 74},
+  {"name": "Devon Rivera", "email": "devon.rivera3@enablement.invalid", "region": "West", "status": "Scheduled", "score": 81},
+  {"name": "Emery Chen", "email": "emery.chen4@enablement.invalid", "region": "East", "status": "Scheduled", "score": 88},
+  {"name": "Finley Ortiz", "email": "finley.ortiz5@enablement.invalid", "region": "Central", "status": "Done", "score": 95},
+  {"name": "Harper Morgan", "email": "harper.morgan6@enablement.invalid", "region": "West", "status": "Done", "score": 62},
+  {"name": "Indy Brooks", "email": "indy.brooks7@enablement.invalid", "region": "East", "status": "Done", "score": 69},
+  {"name": "Avery Quinn", "email": "avery.quinn8@enablement.invalid", "region": "Central", "status": "Scheduled", "score": 76},
+  {"name": "Blake Patel", "email": "blake.patel9@enablement.invalid", "region": "West", "status": "Scheduled", "score": 83},
+  {"name": "Casey Lee", "email": "casey.lee10@enablement.invalid", "region": "East", "status": "Done", "score": 90},
+  {"name": "Devon Rivera", "email": "devon.rivera11@enablement.invalid", "region": "Central", "status": "Done", "score": 97},
+  {"name": "Emery Chen", "email": "emery.chen12@enablement.invalid", "region": "West", "status": "Done", "score": 64},
+  {"name": "Finley Ortiz", "email": "finley.ortiz13@enablement.invalid", "region": "East", "status": "Scheduled", "score": 71},
+  {"name": "Harper Morgan", "email": "harper.morgan14@enablement.invalid", "region": "Central", "status": "Scheduled", "score": 78},
+  {"name": "Indy Brooks", "email": "indy.brooks15@enablement.invalid", "region": "West", "status": "Done", "score": 85},
+  {"name": "Avery Quinn", "email": "avery.quinn16@enablement.invalid", "region": "East", "status": "Done", "score": 92},
+  {"name": "Blake Patel", "email": "blake.patel17@enablement.invalid", "region": "Central", "status": "Done", "score": 99},
+  {"name": "Casey Lee", "email": "casey.lee18@enablement.invalid", "region": "West", "status": "Scheduled", "score": 66},
+  {"name": "Devon Rivera", "email": "devon.rivera19@enablement.invalid", "region": "East", "status": "Scheduled", "score": 73},
+  {"name": "Emery Chen", "email": "emery.chen20@enablement.invalid", "region": "Central", "status": "Done", "score": 80},
+  {"name": "Finley Ortiz", "email": "finley.ortiz21@enablement.invalid", "region": "West", "status": "Done", "score": 87},
+  {"name": "Harper Morgan", "email": "harper.morgan22@enablement.invalid", "region": "East", "status": "Done", "score": 94},
+  {"name": "Indy Brooks", "email": "indy.brooks23@enablement.invalid", "region": "Central", "status": "Scheduled", "score": 61},
+  {"name": "Avery Quinn", "email": "avery.quinn24@enablement.invalid", "region": "West", "status": "Scheduled", "score": 68},
+  {"name": "Blake Patel", "email": "blake.patel25@enablement.invalid", "region": "East", "status": "Done", "score": 75},
+  {"name": "Casey Lee", "email": "casey.lee26@enablement.invalid", "region": "Central", "status": "Done", "score": 82},
+  {"name": "Devon Rivera", "email": "devon.rivera27@enablement.invalid", "region": "West", "status": "Done", "score": 89},
+  {"name": "Emery Chen", "email": "emery.chen28@enablement.invalid", "region": "East", "status": "Scheduled", "score": 96},
+  {"name": "Finley Ortiz", "email": "finley.ortiz29@enablement.invalid", "region": "Central", "status": "Scheduled", "score": 63},
+  {"name": "Harper Morgan", "email": "harper.morgan30@enablement.invalid", "region": "West", "status": "Done", "score": 70},
+  {"name": "Indy Brooks", "email": "indy.brooks31@enablement.invalid", "region": "East", "status": "Done", "score": 77},
+  {"name": "Avery Quinn", "email": "avery.quinn32@enablement.invalid", "region": "Central", "status": "Done", "score": 84},
+  {"name": "Blake Patel", "email": "blake.patel33@enablement.invalid", "region": "West", "status": "Scheduled", "score": 91},
+  {"name": "Casey Lee", "email": "casey.lee34@enablement.invalid", "region": "East", "status": "Scheduled", "score": 98},
+  {"name": "Devon Rivera", "email": "devon.rivera35@enablement.invalid", "region": "Central", "status": "Done", "score": 65},
+  {"name": "Emery Chen", "email": "emery.chen36@enablement.invalid", "region": "West", "status": "Done", "score": 72},
+  {"name": "Finley Ortiz", "email": "finley.ortiz37@enablement.invalid", "region": "East", "status": "Done", "score": 79},
+  {"name": "Harper Morgan", "email": "harper.morgan38@enablement.invalid", "region": "Central", "status": "Scheduled", "score": 86},
+  {"name": "Indy Brooks", "email": "indy.brooks39@enablement.invalid", "region": "West", "status": "Scheduled", "score": 93},
+  {"name": "Avery Quinn", "email": "avery.quinn40@enablement.invalid", "region": "East", "status": "Done", "score": 60},
+  {"name": "Blake Patel", "email": "blake.patel41@enablement.invalid", "region": "Central", "status": "Done", "score": 67},
+  {"name": "Casey Lee", "email": "casey.lee42@enablement.invalid", "region": "West", "status": "Done", "score": 74},
+  {"name": "Devon Rivera", "email": "devon.rivera43@enablement.invalid", "region": "East", "status": "Scheduled", "score": 81},
+  {"name": "Emery Chen", "email": "emery.chen44@enablement.invalid", "region": "Central", "status": "Scheduled", "score": 88},
+  {"name": "Finley Ortiz", "email": "finley.ortiz45@enablement.invalid", "region": "West", "status": "Done", "score": 95},
+  {"name": "Harper Morgan", "email": "harper.morgan46@enablement.invalid", "region": "East", "status": "Done", "score": 62},
+  {"name": "Indy Brooks", "email": "indy.brooks47@enablement.invalid", "region": "Central", "status": "Done", "score": 69},
+  {"name": "Avery Quinn", "email": "avery.quinn48@enablement.invalid", "region": "West", "status": "Scheduled", "score": 76},
+  {"name": "Blake Patel", "email": "blake.patel49@enablement.invalid", "region": "East", "status": "Scheduled", "score": 83},
+  {"name": "Casey Lee", "email": "casey.lee50@enablement.invalid", "region": "Central", "status": "Done", "score": 90},
+  {"name": "Devon Rivera", "email": "devon.rivera51@enablement.invalid", "region": "West", "status": "Done", "score": 97},
+  {"name": "Emery Chen", "email": "emery.chen52@enablement.invalid", "region": "East", "status": "Done", "score": 64},
+  {"name": "Finley Ortiz", "email": "finley.ortiz53@enablement.invalid", "region": "Central", "status": "Scheduled", "score": 71},
+  {"name": "Harper Morgan", "email": "harper.morgan54@enablement.invalid", "region": "West", "status": "Scheduled", "score": 78},
+  {"name": "Indy Brooks", "email": "indy.brooks55@enablement.invalid", "region": "East", "status": "Done", "score": 85},
+  {"name": "Avery Quinn", "email": "avery.quinn56@enablement.invalid", "region": "Central", "status": "Done", "score": 92},
+  {"name": "Blake Patel", "email": "blake.patel57@enablement.invalid", "region": "West", "status": "Done", "score": 99},
+  {"name": "Casey Lee", "email": "casey.lee58@enablement.invalid", "region": "East", "status": "Scheduled", "score": 66},
+  {"name": "Devon Rivera", "email": "devon.rivera59@enablement.invalid", "region": "Central", "status": "Scheduled", "score": 73}
+]
+</script>
+<script src="app.js"></script>
+</body>
+</html>
